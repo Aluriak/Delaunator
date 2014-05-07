@@ -1,26 +1,35 @@
 # Delaunator
 2D Delaunay Triangulation in C++ with Python wrapper.  
-(or wathever you want, thanks to SWIG)  
+(or wathever you want, thanks to SWIG)   
+  
+__LICENSE:__ _GPL-2.0_; cf LICENSE.txt file.  
 
 
 
 
 ## TODO LIST
-- better management of moves (especially with _big_ moves);
-- implements DAG version of coordinates' container finding;
-- do benchmarks between DAG and current algo;
-- implements other primitives for improve accessibility and usability;
+- better management of moves (especially with _big_ moves);  
+- implements DAG version of coordinates' container finding;  
+- do benchmarks between DAG and current algo;  
+- implements other primitives for improve accessibility and usability;  
+- vertex deleting;  
+
+
+
+## MAYBE-A-DAY DO LIST
+- support third dimension;  
+
 
 ## DON'T DO LIST
 
 
 ## PROGRADE DIRECTION
-- do triangulation;                     DONE  
-- print it by Python script and pygame; DONE  
-- do delaunay triangulation;            DONE  
-- manage movement;                      DONE  
-- do a victory cry;                     IN PROGRESS  
-- improving.                            TODO  
+- [X] do triangulation; 
+- [X] print it by Python script and pygame; 
+- [X] do delaunay triangulation; 
+- [X] manage movement;  
+- [ ] do a victory cry; (IN PROGRESS)
+- [ ] improving. 
 
 
 ## INDICATIONS FOR SWIG USING
