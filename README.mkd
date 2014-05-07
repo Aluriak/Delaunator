@@ -8,29 +8,27 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 
 
 
-## TODO LIST
-- better management of moves (especially with _big_ moves);  
-- implements DAG version of coordinates' container finding;  
-- do benchmarks between DAG and current algo;  
-- implements other primitives for improve accessibility and usability;  
-- vertex deleting;  
-
-
-
-## MAYBE-A-DAY DO LIST
-- support third dimension;  
-
-
-## DON'T DO LIST
-
 
 ## PROGRADE DIRECTION
 - [x] do triangulation; 
 - [x] print it by Python script and pygame; 
 - [x] do delaunay triangulation; 
 - [x] manage movement;  
-- [ ] do a victory cry; (IN PROGRESS)
-- [ ] improving. 
+- [x] do a victory cry;  
+- [ ] use threads;
+- [ ] better management of moves (especially with _big_ moves);  
+- [ ] implements DAG version of coordinates' container finding;  
+- [ ] do benchmarks between DAG and current algo;  
+- [ ] implements other primitives for improve accessibility and usability;  
+- [ ] vertex deleting;  
+
+
+## MAYBE-A-DAY DO LIST
+- support the third dimension;  
+
+
+## DON'T DO LIST
+
 
 
 ## INDICATIONS FOR SWIG USING
