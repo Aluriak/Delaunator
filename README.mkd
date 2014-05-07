@@ -15,6 +15,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] do delaunay triangulation; 
 - [x] manage movement;  
 - [x] do a victory cry;  
+- [ ] find a better way than TTL limit for fix infinite recursion problem;
 - [ ] use threads;
 - [ ] better management of moves (especially with _big_ moves);  
 - [ ] implements DAG version of coordinates' container finding;  
