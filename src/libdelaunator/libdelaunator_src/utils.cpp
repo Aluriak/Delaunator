@@ -56,7 +56,7 @@ std::string randstr(size_t size, char* caracs) {
         unsigned int nb_caracs = strlen(caracs);
         std::string ret = "";
 // TREATMENT
-        for(unsigned int i; i < size; i++) {
+        for(unsigned int i = 0; i < size; i++) {
                 ret += caracs[randN(nb_caracs)];
         }
         return ret;
