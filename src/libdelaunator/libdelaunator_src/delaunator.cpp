@@ -171,16 +171,12 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
         f1->setEdge(p2_p0); // p1_p2 is already set to f1. If we use setEdge(p0_p1), p2_p0 will never be updated.
         f2->setEdge(p3_p0);
         f3->setEdge(p1_p0);
+#if DEBUG
         this->DEBUG_tests();
+#endif
 
 #if DELAUNAY_CONDITION
 // apply delaunay restrictions
-        // for each face in f1,f2,f3:
-        //      look at the vertex destination of next right edge of each edge of face.
-        //      if in face's circumcircle:
-        //              flip !
-        //              call flip on the two new triangles.
-
         this->flipOn(f1);
         this->flipOn(f2);
         this->flipOn(f3);
