@@ -105,7 +105,19 @@ Delaunator::Delaunator(const float xmin, const float xmax,
 #endif
 }
 
+
+
 Delaunator::~Delaunator() {
+        // free's !
+        for(Face* it : this->faces) {
+                delete it;
+        }
+        for(Vertex* it : this->vertices) {
+                delete it;
+        }
+        for(Edge* it : this->edges) {
+                delete it;
+        }
 }
 
 
@@ -222,6 +234,9 @@ void Delaunator::moveVertex(Vertex* v, float vec_x, float vec_y) {
         } while(edge != v->getEdge());
 
         for(Face* f : nei_faces) {
+#if DEBUG
+                assert(f != NULL);
+#endif
                 this->flipOn(f);
         }
 #endif 
