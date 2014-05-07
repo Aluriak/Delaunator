@@ -1,0 +1,43 @@
+# Delaunator
+Delaunay data structure in 2D space.
+
+
+
+
+## TODO LIST
+- better management of moves (especially with _big_ moves);
+- implements DAG version of coordinates' container finding;
+- do benchmarks between DAG and current algo;
+- implements other primitives for improve accessibility and usability;
+
+## DON'T DO LIST
+
+
+## PROGRADE DIRECTION
+- do triangulation;                     DONE  
+- print it by Python script and pygame; DONE  
+- do delaunay triangulation;            DONE  
+- manage movement;                      DONE  
+- do a victory cry;                     IN PROGRESS  
+- improving.                            TODO  
+
+
+## INDICATIONS FOR SWIG USING
+SWIG is used for linking python and C/C++.
+Triangulation is performed with C module _libdelaunator_, and Python have just to interface with it.
+
+Makefile automatized each step of compilation, and filename modifications.
+
+Basically:
+- swig read the libdelaunator.i, a file interface that specifiy wich interface Python will have;
+- swig generate C wrapper files (libdelaunator\_wrap.{c,h}) and a Python module libdelaunator.py;
+- gcc compile all, including wrapper files, in shared mode for have a finally libdelaunator.so;
+- libdelaunator.py is used by any Python code for interfacing with C module libdelaunator;
+
+NB: the final library libdelaunator.so must have a name that begin by an \_. 
+See second link after for comprehension.
+
+### Some links
+http://swig.org/tutorial.html
+http://stackoverflow.com/questions/10121957/swig-to-python-import-errordynamic-module-does-not-define-init-function
+

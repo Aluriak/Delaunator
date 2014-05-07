@@ -1,0 +1,10 @@
+*.so
+a.out
+*.o
+.*.swp
+*.cxx
+*.pyc
+*._wrap.*
+__pycache__/
+src/libdelaunator/libdelaunator_src/*.pyc
+src/libdelaunator/libdelaunator_src/*.py
