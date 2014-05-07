@@ -222,10 +222,6 @@ void Delaunator::moveVertex(Vertex* v, float vec_x, float vec_y) {
 // Modify Face 
 #if DELAUNAY_CONDITION
 // Apply Delaunay Condition
-        //IteratorVertexToNeighbourEdges it(v);
-        //for(; it != it.end(); it++) {
-                //this->flipOn((*it)->leftFace());
-        //}
         std::vector<Face*> nei_faces;
         Edge* edge = v->getEdge();
         do {

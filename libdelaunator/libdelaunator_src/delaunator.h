@@ -49,6 +49,7 @@ class Delaunator {
 		~Delaunator();
 	// PUBLIC METHODS
                 Vertex* addVertexAt(Coordinates);
+                Vertex* addVertexAt(float x, float y) { return this->addVertexAt(Coordinates(x, y)); }
                 Vertex* vertexAt(float, float, float) const;
                 Vertex* vertexAt(Coordinates c, float p) const { return this->vertexAt(c.x, c.y, p); }
                 void moveVertex(Vertex* v, float vec_x, float vec_y);
