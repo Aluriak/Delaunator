@@ -1,5 +1,6 @@
 # Delaunator
-Delaunay data structure in 2D space.
+2D Delaunay Triangulation in C++ with Python wrapper.  
+(or wathever you want, thanks to SWIG)  
 
 
 
@@ -34,10 +35,11 @@ Basically:
 - gcc compile all, including wrapper files, in shared mode for have a finally libdelaunator.so;
 - libdelaunator.py is used by any Python code for interfacing with C module libdelaunator;
 
-NB: the final library libdelaunator.so must have a name that begin by an \_. 
+NB: the final library libdelaunator.so must have a name that begin by an '\_'.   
 See second link after for comprehension.
 
 ### Some links
-http://swig.org/tutorial.html
-http://stackoverflow.com/questions/10121957/swig-to-python-import-errordynamic-module-does-not-define-init-function
+http://swig.org  
+http://swig.org/tutorial.html  
+http://stackoverflow.com/questions/10121957/swig-to-python-import-errordynamic-module-does-not-define-init-function  
 
