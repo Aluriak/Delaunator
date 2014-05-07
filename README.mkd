@@ -3,6 +3,7 @@
 (or wathever you want, thanks to SWIG)   
   
 __LICENSE:__ _GPL-2.0_; cf LICENSE.txt file.  
+__Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.81, python 3.2 and SWIG 2.0; i don't know for others platforms, but except for windows, i think portability is totally possible, maybe already done. 
 
 
 
@@ -39,7 +40,7 @@ Triangulation is performed with C module _libdelaunator_, and Python have just t
 Makefile automatized each step of compilation, and filename modifications.
 
 Basically:
-- swig read the libdelaunator.i, a file interface that specifiy wich interface Python will have;
+- swig read the libdelaunator.i, a file interface that specify wich interface Python will have;
 - swig generate C wrapper files (libdelaunator\_wrap.{c,h}) and a Python module libdelaunator.py;
 - gcc compile all, including wrapper files, in shared mode for have a finally libdelaunator.so;
 - libdelaunator.py is used by any Python code for interfacing with C module libdelaunator;
