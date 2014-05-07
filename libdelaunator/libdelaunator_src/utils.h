@@ -27,7 +27,7 @@
  * DEFINES
  */
 #define FILE_LOGS "logs"
-
+//extern unsigned short VERBOSE_LEVEL = 0; // greater it is, more logs there is.
 
 
 
@@ -37,8 +37,8 @@
 void swap(const void*, const void*, const long unsigned int); // universal invertion of a and b. They must use the same memory size. Use the XOR swap algorithm
 std::string strAfter(const std::string, const std::string); // return the string contains by mainStr after subStr
 std::string randstr(size_t size, char* caracs); // Return a rand string contain given caracs
-//void logs(short, const char* const, ...);
-void logs(const char* const, ...);
+//void flogs(short, const char* const, ...);
+//void ologs(short, const char* const, ...);
 
 // explicit prototypes
 #include "inlines.h"

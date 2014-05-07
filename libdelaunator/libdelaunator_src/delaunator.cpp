@@ -286,6 +286,9 @@ void Delaunator::DEBUG_tests() const {
 #endif
 
 
+
+
+
 /***************************************************
  * ITERATORS
  ***************************************************/
@@ -296,6 +299,7 @@ void Delaunator::DEBUG_tests() const {
 IteratorVertexToNeighbourVertices* Delaunator::getIteratorVertexToNeighbourVertices(Vertex* v) {
         return new IteratorVertexToNeighbourVertices(v);
 }
+
 
 
 

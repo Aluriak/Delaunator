@@ -70,14 +70,28 @@ std::string randstr(size_t size, char* caracs) {
  * LOGS
  */
 // Print given printf-like formated string in stderr.
-//void logs(short level, const char* str, ...) {
-void logs(const char* str, ...) {
-        //if(level < VERBOSE_LEVEL) {}
-        va_list args;
-        va_start(args, str);
-        vfprintf(stderr, str, args);
-        va_end(args);
-}
+//void flogs(short level, const char* str, ...) {
+        //if(level < VERBOSE_LEVEL) {
+                //va_list args;
+                //va_start(args, str);
+                //FILE* f = fopen(FILE_LOGS, "wa");
+                //if(f != NULL) {
+                        //vfprintf(f, str, args);
+                        //fclose(f);
+                //} else
+                        //vfprintf(stderr, str, args);
+
+                //va_end(args);
+        //}
+//}
+//void ologs(short level, const char* str, ...) {
+        //if(level < VERBOSE_LEVEL) {
+                //va_list args;
+                //va_start(args, str);
+                //vfprintf(stderr, str, args);
+                //va_end(args);
+        //}
+//}
 
 
 

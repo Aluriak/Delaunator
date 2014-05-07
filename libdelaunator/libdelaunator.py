@@ -109,10 +109,6 @@ strAfter = _libdelaunator.strAfter
 def randstr(*args):
   return _libdelaunator.randstr(*args)
 randstr = _libdelaunator.randstr
-
-def logs(*args):
-  return _libdelaunator.logs(*args)
-logs = _libdelaunator.logs
 class dual(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, dual, name, value)
