@@ -39,6 +39,7 @@ std::string strAfter(const std::string, const std::string); // return the string
 std::string randstr(size_t size, char* caracs); // Return a rand string contain given caracs
 //void flogs(short, const char* const, ...);
 //void ologs(short, const char* const, ...);
+void logs(const char* const, ...);
 
 // explicit prototypes
 #include "inlines.h"

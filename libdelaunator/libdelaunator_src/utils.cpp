@@ -92,6 +92,12 @@ std::string randstr(size_t size, char* caracs) {
                 //va_end(args);
         //}
 //}
+void logs(const char* str, ...) {
+        va_list args;
+        va_start(args, str);
+        vfprintf(stderr, str, args);
+        va_end(args);
+}
 
 
 
