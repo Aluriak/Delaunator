@@ -398,7 +398,7 @@ Face* Delaunator::findContainerOf(Coordinates p) const {
 // Face can't be NULL and must be integrate in triangulation. (== have a valid edge field)
 // Return true if modifications.
 // Recursiv call on new triangles created by flip.
-bool Delaunator::flipOn(Face* f_ref) {
+bool Delaunator::flipOn(Face* f_ref, unsigned int ttl) {
 #if DEBUG
         assert(f_ref != NULL && f_ref->getEdge() != NULL);
 #endif
@@ -492,8 +492,13 @@ bool Delaunator::flipOn(Face* f_ref) {
                 this->DEBUG_tests();
 #endif
                 // Recursiv call on the updated faces
-                this->flipOn(f_ref);
-                this->flipOn(f_nei);
+                // protection against infinite recursive call.
+                if(ttl < this->faces.size() / 2) {
+                        this->flipOn(f_ref, ttl+1);
+                        this->flipOn(f_nei, ttl+1);
+                } else {
+                        logs("TTL %u reached !\n", ttl);
+                }
         }
 
 
