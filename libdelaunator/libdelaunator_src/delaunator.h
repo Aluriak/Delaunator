@@ -51,9 +51,9 @@ class Delaunator {
                 Vertex* addVertexAt(Coordinates);
                 Vertex* addVertexAt(float x, float y) { return this->addVertexAt(Coordinates(x, y)); }
                 Vertex* vertexAt(float, float, float) const;
-                Vertex* vertexAt(Coordinates c, float p) const { return this->vertexAt(c.x, c.y, p); }
+                Vertex* vertexAt(Coordinates c, float p) const { return this->vertexAt(c.x(), c.y(), p); }
                 void moveVertex(Vertex* v, float vec_x, float vec_y);
-                void moveVertex(Vertex* v, Coordinates c) { this->moveVertex(v, c.x, c.y); }
+                void moveVertex(Vertex* v, Coordinates c) { this->moveVertex(v, c.x(), c.y()); }
                 bool collideAt(Coordinates) const;
 #if DEBUG // some tests with assertions
                 void DEBUG_tests() const;

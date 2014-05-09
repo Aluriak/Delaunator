@@ -200,7 +200,6 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
 
 
 
-
 /*
  * MOVE VERTEX
  */
@@ -209,12 +208,14 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
 // Vertex can't pass over the mesh bounds.
 void Delaunator::moveVertex(Vertex* v, float vec_x, float vec_y) {
 // Move the vertex
-        v->x += vec_x;
-        v->y += vec_y;
-        if(v->x < this->xmin)  v->x = this->xmin;
-        if(v->x > this->xmax)  v->x = this->xmax;
-        if(v->y < this->ymin)  v->y = this->ymin;
-        if(v->y > this->ymax)  v->y = this->ymax;
+        //v->x() += vec_x;
+        //v->y() += vec_y;
+        v->setX(v->x() + vec_x);
+        v->setY(v->y() + vec_y);
+        if(v->x() < this->xmin)  v->setX(this->xmin);
+        if(v->x() > this->xmax)  v->setX(this->xmax);
+        if(v->y() < this->ymin)  v->setY(this->ymin);
+        if(v->y() > this->ymax)  v->setY(this->ymax);
 
 // Detect if outside the face
         
@@ -251,7 +252,7 @@ Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
         Vertex *target = NULL, *current = NULL;
         for(IteratorOnAllVertices_read it = this->allVertices_read(); target == NULL && it != it.end(); it++) {
                 current = *it;
-                if(fabs(x-current->x) < (precision+EPSILON) && fabs(y-current->y) < (precision+EPSILON))
+                if(fabs(x-current->x()) < (precision+EPSILON) && fabs(y-current->y()) < (precision+EPSILON))
                         target = current;
         }
         //if(target != NULL) {
@@ -269,7 +270,7 @@ Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
  */
 // Return true if given coordinates are in-limit of this.
 bool Delaunator::collideAt(Coordinates p) const {
-        return !(p.x < this->xmin || this->xmax < p.x || p.y < this->ymin || this->ymax < p.y);
+        return !(p.x() < this->xmin || this->xmax < p.x() || p.y() < this->ymin || this->ymax < p.y());
 }
 
 
@@ -350,7 +351,7 @@ Face* Delaunator::findContainerOf(Coordinates p) const {
         unsigned int iter_count = 1;
 #endif
         while(container == NULL) {
-                //fprintf(stderr,"Move %i on edge %i for coords (%f;%f):\n", iter_count, edge->getID(), p.x, p.y);
+                //fprintf(stderr,"Move %i on edge %i for coords (%f;%f):\n", iter_count, edge->getID(), p.x(), p.y());
                 if(edge->coordOnTheStrictRight(p)) {
                         //fprintf(stderr,"\t-on the right of edge %i, ", edge->getID());
                         // there is probably a better way
@@ -493,7 +494,7 @@ bool Delaunator::flipOn(Face* f_ref, unsigned int ttl) {
 #endif
                 // Recursiv call on the updated faces
                 // protection against infinite recursive call.
-                if(ttl < this->faces.size() / 2) {
+                if(ttl < this->faces.size()/2) {
                         this->flipOn(f_ref, ttl+1);
                         this->flipOn(f_nei, ttl+1);
                 } else {
