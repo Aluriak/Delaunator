@@ -21,6 +21,18 @@ static int IteratorOnAllEdges_myErr = 0;
 %include "commons.h"
 
 %include "vertex.h"
+%extend Coordinates {
+        /* for have x and y as property in pythons modules */
+        %pythoncode %{
+                __swig_getmethods__["x"] = x
+                __swig_setmethods__["x"] = setX
+                __swig_getmethods__["y"] = y
+                __swig_setmethods__["y"] = setY
+                if _newclass: 
+                        x = property(x, x)
+                        y = property(y, y)
+        %}
+};
 
 %include "edge.h"
 
