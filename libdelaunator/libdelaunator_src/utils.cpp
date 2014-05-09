@@ -102,3 +102,14 @@ void logs(const char* str, ...) {
 
 
 
+
+/*
+ * ROUND FLOAT
+ */
+// Return float value, equal to given float value rounding about precision.
+float round_float(const float f, const float precision) {
+        unsigned int nb_digit = 1./precision - 1.;
+        return ((float)((int)(f * nb_digit))) / (float)nb_digit;
+}
+
+

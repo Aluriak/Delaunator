@@ -40,6 +40,7 @@ std::string randstr(size_t size, char* caracs); // Return a rand string contain 
 //void flogs(short, const char* const, ...);
 //void ologs(short, const char* const, ...);
 void logs(const char* const, ...);
+float round_float(const float, const float);
 
 // explicit prototypes
 #include "inlines.h"
