@@ -73,10 +73,10 @@ void Vertex::setEdge(Edge* e) {
  ***************************************************/
 #if !SWIG
 std::ostream& operator<<(std::ostream& flux, Coordinates const &c) {
-        return flux << "(" << c.x << ";" << c.y << ")";
+        return flux << "(" << c.x() << ";" << c.y() << ")";
 }
 std::ostream& operator<<(std::ostream& flux, Vertex const &c) {
-        return flux << "(" << c.x << ";" << c.y 
+        return flux << "(" << c.x() << ";" << c.y() 
                 << (c.getEdge() != NULL ? ";linked)" : ";free)");
 }
 #endif

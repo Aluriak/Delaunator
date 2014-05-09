@@ -30,20 +30,41 @@ class Edge;
  * VERTEX CLASS DEFINITION
  */
 struct Coordinates {
-		Coordinates(const float x = 0., const float y = 0.) : x(x), y(y) {}
+        public:
+        // CONSTRUCTOR
+		Coordinates(const float x = 0., const float y = 0.) {
+                        this->setCoord(x, y);
+                }
 	// PUBLIC METHODS
                 float squareDistanceTo(const Coordinates& othr) {
-                        return (this->x - othr.x)*(this->x - othr.x)+(this->y - othr.y)*(this->y - othr.y);
+                        return (this->_x - othr._x)*(this->_x - othr._x)+(this->_y - othr._y)*(this->_y - othr._y);
                 }
                 float distanceTo(const Coordinates& othr) {
-                        return sqrt((this->x - othr.x)*(this->x - othr.x)+(this->y - othr.y)*(this->y - othr.y));
+                        return sqrt(
+                                (this->_x - othr._x)*(this->_x - othr._x)+(this->_y - othr._y)*(this->_y - othr._y)
+                                );
                 }
+        // ACCESSORS
+                float x() const { return this->_x; }
+                float y() const { return this->_y; }
+                void setX(float x) { this->_x = round_float(x, EPSILON); }
+                void setY(float y) { this->_y = round_float(y, EPSILON); }
+                void setCoord(float x, float y) 
+                        { this->_x = round_float(x, EPSILON*10.); this->_y = round_float(y, EPSILON*10.); }
         // OPERATORS
                 bool operator==(const Coordinates& othr) {
-                        return fabs(othr.x - this->x) < EPSILON && fabs(othr.y - this->y) < EPSILON;
+                        return fabs(othr._x - this->_x) < EPSILON && fabs(othr._y - this->_y) < EPSILON;
                 }
+                Coordinates operator+(const Coordinates& c) {
+                        Coordinates r(this->_x + c._x, this->_y + c._y);
+                        return r;
+                }
+                Coordinates operator+=(const Coordinates& c) {
+                        return *this + c;
+                }
+        private:
 	// ATTRIBUTES
-                float x, y;
+                float _x, _y;
 };
 
 struct Vertex : public Coordinates {
