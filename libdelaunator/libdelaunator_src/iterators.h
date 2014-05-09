@@ -35,8 +35,8 @@
 class IteratorOnAllVertices {
 	public:
 	// CONSTRUCTOR
-		IteratorOnAllVertices(const std::vector<Vertex*>* v) : vertices(v) {
-                        this->it = this->vertices->begin();
+		IteratorOnAllVertices(std::vector<Vertex*>* v) : vertices(v) {
+                        this->it = this->vertices->begin()+4;
                 }
 	// PUBLIC METHODS
                 IteratorOnAllVertices& next() { 
@@ -47,7 +47,7 @@ class IteratorOnAllVertices {
                 bool operator!=(const IteratorOnAllVertices& othr) const { 
                         return this->it != othr.it;
                 }
-                bool operator!=(const std::vector<Vertex*>::const_iterator& ot) const{ 
+                bool operator!=(const std::vector<Vertex*>::iterator& ot) const{ 
                         return this->it != ot;
                 }
                 IteratorOnAllVertices& operator++(int) { return this->next(); }
@@ -55,12 +55,12 @@ class IteratorOnAllVertices {
                         return *(this->it);
                 }
 	// ACCESSORS
-                std::vector<Vertex*>::const_iterator begin()  const { return this->vertices->begin(); }
-                std::vector<Vertex*>::const_iterator end()    const { return this->vertices->end(); }
-                const std::vector<Vertex*>* getVertices()                 { return this->vertices; }
+                std::vector<Vertex*>::iterator begin()  const { return this->vertices->begin(); }
+                std::vector<Vertex*>::iterator end()    const { return this->vertices->end(); }
+                std::vector<Vertex*>* getVertices()     const { return this->vertices; }
         protected:
 	// ATTRIBUTES
-                const std::vector<Vertex*>* vertices;
+                std::vector<Vertex*>* vertices;
                 std::vector<Vertex*>::const_iterator it;
 	// PRIVATE METHODS
 };
@@ -69,6 +69,7 @@ class IteratorOnAllVertices_read {
 	// CONSTRUCTOR
 		IteratorOnAllVertices_read(const std::vector<Vertex*>* const v) : vertices(v) {
                         this->it = this->vertices->begin();
+                        this->next(); this->next(); this->next(); this->next();
                 }
 	// PUBLIC METHODS
                 IteratorOnAllVertices_read& next() { 
