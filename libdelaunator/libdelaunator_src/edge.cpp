@@ -35,11 +35,11 @@ float Edge::distanceTo(Coordinates c) {
         if(A == B) 
                 d = c.distanceTo(A);
         else {
-                D.x = B.x - A.x;
-                D.y = B.y - A.y;
-                T.x = c.x - A.x;
-                T.y = c.y - A.y;
-                d = D.x*T.y - D.y*T.x;
+                D.setX(B.x() - A.x());
+                D.setY(B.y() - A.y());
+                T.setX(c.x() - A.x());
+                T.setY(c.y() - A.y());
+                d = D.x()*T.y() - D.y()*T.x();
         }
 
 	// Around d if close to zero
@@ -81,8 +81,8 @@ bool Edge::coordOnTheLeft(Coordinates c)        { return this->distanceTo(c) <= 
  ***************************************************/
 #if !SWIG
 std::ostream& operator<<(std::ostream& flux, Edge const &c) {
-        flux << "(" << c.getID() << ";" << c.originVertex()->x << ";" << c.originVertex()->y << "/";
-        flux << c.destinVertex()->x << ";" << c.destinVertex()->y << ")";
+        flux << "(" << c.getID() << ";" << c.originVertex()->x() << ";" << c.originVertex()->y() << "/";
+        flux << c.destinVertex()->x() << ";" << c.destinVertex()->y() << ")";
         return flux;
 }
 #endif
