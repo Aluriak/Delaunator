@@ -92,11 +92,7 @@ class Delinterface(Thread):
                     elif event.key == pygame.K_t:
                         self.print_triangles = not self.print_triangles
                     elif event.key == pygame.K_i:
-                        x,y = pygame.mouse.get_pos()
-                        v = Vertex(x,y)
-                        t = DT_getContainerOfPoint(self.dt, p)
-                        TRI_print(t)
-                        Point_free(p)
+                        self.moveAllVertices()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.dragged_point = self.getPointAt(*pygame.mouse.get_pos())
                     if self.dragged_point is not None:
@@ -203,6 +199,14 @@ class Delinterface(Thread):
         """Add given values to (x;y) of last added point"""
         if p is not None:
             self.dt.moveVertex(p, x, y)
+
+
+    def moveAllVertices(self):
+        """Move all vertices by a small move"""
+        for v in self.dt.allVertices():
+            mx = choice([-0.01,0.01])
+            my = choice([-0.01,0.01])
+            self.dt.moveVertex(v, mx, my)
 
     def addPointToDT(self, x = None, y = None):
         """Add a random point in DT"""
