@@ -65,6 +65,7 @@ class Delaunator {
                 float getYmin() const { return this->ymin; }
                 float getYmax() const { return this->ymax; }
                 unsigned int getVerticeCount() const { return this->vertices.size(); }
+                float epsilon() const { return EPSILON; }
         // ITERATORS
                 IteratorVertexToNeighbourVertices* getNeighbors(Vertex*);
                 IteratorOnAllEdges allEdges()           { return IteratorOnAllEdges(&this->edges); }
