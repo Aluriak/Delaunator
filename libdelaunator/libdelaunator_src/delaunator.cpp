@@ -308,7 +308,7 @@ void Delaunator::DEBUG_tests() const {
  * VERTEX TO NEIGHBOUR VERTICES
  */
 // Infinite iteration on all neighbour vertices of a given Vertex.
-IteratorVertexToNeighbourVertices* Delaunator::getIteratorVertexToNeighbourVertices(Vertex* v) {
+IteratorVertexToNeighbourVertices* Delaunator::getNeighbors(Vertex* v) {
         return new IteratorVertexToNeighbourVertices(v);
 }
 
