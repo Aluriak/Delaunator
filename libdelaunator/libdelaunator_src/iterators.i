@@ -26,11 +26,11 @@ static int Iterator_err = 0;
 
 %extend IteratorOnAllVertices {
         Vertex* __getitem__(size_t i) {
-                if (i >= $self->getVertices()->size()) {
+                if (i >= $self->getVertices()->size()-4) {
                         Iterator_err = 1;
                         return NULL;
                 }
-                return (*$self->getVertices())[i];
+                return (*$self->getVertices())[i+4];
         }
 }
 
