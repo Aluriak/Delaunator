@@ -25,6 +25,8 @@ py:
 	# pythonic python !
 	$(PYTHON_CC) $(NAME_PY)
 
+elf:
+	cd $(PATH_LIB) && $(MAKE) elf
 
 
 
