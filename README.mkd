@@ -22,6 +22,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [ ] do benchmarks between DAG and current algo;  
 - [ ] implements other primitives for improve accessibility and usability;  
 - [ ] vertex deleting;  
+- [ ] upload packaged lib on pypi;
 
 
 ## MAYBE-A-DAY DO LIST
@@ -34,7 +35,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 
 ## INDICATIONS FOR SWIG USING
 SWIG is used for linking python and C/C++.
-Triangulation is performed with C module _libdelaunator_, and Python have just to interface with it.
+Triangulation is performed with C/C++ module _libdelaunator_, and Python have just to interface with it.
 
 Makefile automatized each step of compilation, and filename modifications.
 
