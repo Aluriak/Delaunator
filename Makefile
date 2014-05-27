@@ -1,11 +1,11 @@
 # COMPILATION
 PYTHON_CC=python3.2
 # PATHS
-PATH_LIB=libdelaunator/
+PATH_LIB=delaunator/
 PATH_PY=pydelaunator/
-PATH_PY_LIB=$(PATH_PY)libdelaunator/
+PATH_PY_LIB=$(PATH_PY)delaunator/
 # NAMES
-NAME_LIBRARY=libdelaunator
+NAME_LIBRARY=delaunator
 NAME_LIB=$(PATH_LIB)_$(NAME_LIBRARY).so
 NAME_MDL=$(PATH_LIB)$(NAME_LIBRARY).py
 NAME_PY=$(PATH_PY)main.py
