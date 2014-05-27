@@ -6,5 +6,4 @@ a.out
 *.pyc
 *._wrap.*
 __pycache__/
-libdelaunator/*.py
-pydelaunator/libdelaunator/libdelaunator.py
+delaunator/libdelaunator.py
