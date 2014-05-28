@@ -56,7 +56,7 @@ linking:
 	# delete objects
 	rm *.o
 	# bring here the py module
-	mv $(PATH_LIB_SRC)$(NAME_LIBRARY).py ./
+	- mv $(PATH_LIB_SRC)$(NAME_LIBRARY).py ./
 
 elf:
 	$(PATH_LIB)a.out
