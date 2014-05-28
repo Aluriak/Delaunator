@@ -25,6 +25,7 @@
  */
 #define MESH_MAX_POINT MAX_INT-1
 #define EPSILON 0.0001
+#define FOLLOW_SEARCH
 
 
 

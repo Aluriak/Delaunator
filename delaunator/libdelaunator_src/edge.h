@@ -38,11 +38,14 @@ class Edge {
 		Edge(Vertex* = NULL, Edge* = NULL, Edge* = NULL, Face* = NULL, bool = true);
 		~Edge();
 	// PUBLIC METHODS
-                float distanceTo(Coordinates);
-                bool coordOnTheStrictRight(Coordinates);
-                bool coordOnTheRight(Coordinates);
-                bool coordOnTheStrictLeft(Coordinates);
-                bool coordOnTheLeft(Coordinates);
+                float distanceTo(Coordinates c)       const { return sqrt(this->squareDistanceTo(c.x(), c.y())); }
+                float distanceTo(float x, float y)    const { return sqrt(this->squareDistanceTo(x, y)); }
+                float squareDistanceTo(Coordinates c) const { return this->squareDistanceTo(c.x(), c.y()); }
+                float squareDistanceTo(float x, float y) const;
+                bool coordOnTheStrictRight(Coordinates)  const;
+                bool coordOnTheRight(Coordinates)        const;
+                bool coordOnTheStrictLeft(Coordinates)   const;
+                bool coordOnTheLeft(Coordinates)         const;
 	// ACCESSORS
                 // getter
                 Vertex* originVertex()  const { return this->origin_vertex; }
@@ -71,6 +74,9 @@ class Edge {
                                 this->nextLeftEdge()->setLeftFace(f, ttl-1);
                 }
                 void setVisibility(bool v)      { this->visible = v; }
+#ifdef FOLLOW_SEARCH
+                bool passing;
+#endif
 	private:
 	// ATTRIBUTES
                 bool visible; // in a graphical representation

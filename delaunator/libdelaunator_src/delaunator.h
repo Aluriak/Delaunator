@@ -19,7 +19,7 @@
  * DEFINES
  */
 #define DELAUNAY_CONDITION 1
-//#define DEULAUNAY_FINDER_INITIAL_RANDOM 
+#define DEULAUNAY_FINDER_INITIAL_RANDOM 
 //#define DEULAUNAY_FINDER_INITIAL_FIRST  // default behavior 
 //#define DEULAUNAY_FINDER_INITIAL_MIDDLE 
 
@@ -66,8 +66,13 @@ class Delaunator {
                 float getYmax() const { return this->ymax; }
                 unsigned int getVerticeCount() const { return this->vertices.size(); }
                 float epsilon() const { return EPSILON; }
+#ifdef FOLLOW_SEARCH
+                bool opt_follow_search() const { return true; }
+#else
+                bool opt_follow_search() const { return false; }
+#endif
         // ITERATORS
-                IteratorVertexToNeighbourVertices* getNeighbors(Vertex*);
+                IteratorVertexToNeighbourVertices getNeighbors(Vertex*);
                 IteratorOnAllEdges allEdges()           { return IteratorOnAllEdges(&this->edges); }
                 IteratorOnAllEdges_read allEdges_read() const
                                                         { return IteratorOnAllEdges_read(&this->edges); }

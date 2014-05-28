@@ -47,10 +47,9 @@ struct Coordinates {
         // ACCESSORS
                 float x() const { return this->_x; }
                 float y() const { return this->_y; }
-                void setX(float x) { this->_x = round_float(x, EPSILON); }
-                void setY(float y) { this->_y = round_float(y, EPSILON); }
-                void setCoord(float x, float y) 
-                        { this->_x = round_float(x, EPSILON*10.); this->_y = round_float(y, EPSILON*10.); }
+                void setX(float x) { this->_x = round_float(x, EPSILON*10.); }
+                void setY(float y) { this->_y = round_float(y, EPSILON*10.); }
+                void setCoord(float x, float y) { this->setX(x); this->setY(y); }
         // OPERATORS
                 bool operator==(const Coordinates& othr) {
                         return fabs(othr._x - this->_x) < EPSILON && fabs(othr._y - this->_y) < EPSILON;

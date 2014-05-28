@@ -141,6 +141,11 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
         if(this->collideAt(p)) {
 
 // find container of vertex ( container>, >p )
+#ifdef FOLLOW_SEARCH
+        for(IteratorOnAllEdges it = this->allEdges(); it != it.end(); it++) {
+                (*it)->passing = false;
+        }
+#endif
         container = this->findContainerOf(p);
         if(container != NULL) {
         
@@ -149,6 +154,11 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
         Edge* p1_p2 = container->getEdge1();
         Edge* p2_p3 = container->getEdge2();
         Edge* p3_p1 = container->getEdge3();
+#if DEBUG
+        assert(p1_p2->leftFace() == container);
+        assert(p2_p3->leftFace() == container);
+        assert(p3_p1->leftFace() == container);
+#endif
         // Creat the new vertex
         this->vertices.push_back(new Vertex(p));
         Vertex* v0 = new_vertex = this->vertices.back();
@@ -157,30 +167,29 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
         Vertex* v3 = p3_p1->originVertex();
         // Creat new faces
         Face* f1 = container;
-        this->faces.push_back(new Face(NULL));
-        Face* f2 = this->faces.back();
-        this->faces.push_back(new Face(NULL));
-        Face* f3 = this->faces.back();
-        // Creat new edges
-        this->edges.push_back(new Edge(v0, NULL, p1_p2));
-        Edge* p0_p1 = this->edges.back();
-        this->edges.push_back(new Edge(v1, p0_p1, NULL)); // next left edge assigned few lines after
-        Edge* p1_p0 = this->edges.back();
-        this->edges.push_back(new Edge(v0, NULL, p2_p3));
-        Edge* p0_p2 = this->edges.back();
-        this->edges.push_back(new Edge(v2, p0_p2, p0_p1));
-        Edge* p2_p0 = this->edges.back();
-        this->edges.push_back(new Edge(v0, NULL, p3_p1));
-        Edge* p0_p3 = this->edges.back();
-        this->edges.push_back(new Edge(v3, p0_p3, p0_p2));
-        Edge* p3_p0 = this->edges.back();
+        Face* f2 = new Face(NULL);
+        Face* f3 = new Face(NULL);
+        this->faces.push_back(f2);
+        this->faces.push_back(f3);
+        // Creat new edges(originVertex, oppositeEdge, nextleftEdge)
+        Edge* p0_p1 = new Edge(v0, NULL,  p1_p2);
+        Edge* p0_p2 = new Edge(v0, NULL,  p2_p3); 
+        Edge* p2_p0 = new Edge(v2, p0_p2, p0_p1);
+        Edge* p0_p3 = new Edge(v0, NULL,  p3_p1);
+        Edge* p3_p0 = new Edge(v3, p0_p3, p0_p2);
+        Edge* p1_p0 = new Edge(v1, p0_p1, p0_p3); 
+        this->edges.push_back(p0_p1);
+        this->edges.push_back(p0_p2);
+        this->edges.push_back(p2_p0);
+        this->edges.push_back(p0_p3);
+        this->edges.push_back(p3_p0);
+        this->edges.push_back(p1_p0); 
         // Assign next left edges
         p1_p2->setNextLeftEdge(p2_p0);
         p2_p3->setNextLeftEdge(p3_p0);
         p3_p1->setNextLeftEdge(p1_p0);
-        p1_p0->setNextLeftEdge(p0_p3);
         // Assign faces
-        f1->setEdge(p2_p0); // p1_p2 is already set to f1. If we use setEdge(p0_p1), p2_p0 will never be updated.
+        f1->setEdge(p2_p0); 
         f2->setEdge(p3_p0);
         f3->setEdge(p1_p0);
 #if DEBUG
@@ -192,6 +201,7 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
         this->flipOn(f1);
         this->flipOn(f2);
         this->flipOn(f3);
+        logs("DONE\n");
 #endif
 // ending
         }}
@@ -293,6 +303,7 @@ void Delaunator::DEBUG_tests() const {
         for(IteratorOnAllVertices_read it = this->allVertices_read(); it != it.end(); it++) {
                 assert((*it)->getEdge() != NULL);
                 assert((*it)->getEdge()->originVertex() == (*it));
+                assert((*it)->getEdge()->leftFace()->collideAt(*(*it)));
         }
 }
 #endif
@@ -308,8 +319,8 @@ void Delaunator::DEBUG_tests() const {
  * VERTEX TO NEIGHBOUR VERTICES
  */
 // Infinite iteration on all neighbour vertices of a given Vertex.
-IteratorVertexToNeighbourVertices* Delaunator::getNeighbors(Vertex* v) {
-        return new IteratorVertexToNeighbourVertices(v);
+IteratorVertexToNeighbourVertices Delaunator::getNeighbors(Vertex* v) {
+        return IteratorVertexToNeighbourVertices(v);
 }
 
 
@@ -325,63 +336,81 @@ IteratorVertexToNeighbourVertices* Delaunator::getNeighbors(Vertex* v) {
 // Return address of Face of Delaunator that contains given coordinates.
 // Coordinates must be != NULL and contained in bounds of Delaunator.
 // Return NULL if error. If out of bounds, return the unvisible face that contain p.
-Face* Delaunator::findContainerOf(Coordinates p) const {
+Face* Delaunator::findContainerOf(Coordinates target) const {
 // initialization
         Face* container = NULL;
-        short counter = 0; // turn around a face == 3 times the good way is the nextLeftEdge().
-        Edge* edge = NULL;
+        Edge *edge_cur = NULL;
 
 #if DEBUG
-        assert(this->collideAt(p));
+        assert(this->collideAt(target));
 #endif
 
 // choose the initial Edge ( >edge> )
 #ifdef DEULAUNAY_FINDER_INITIAL_RANDOM 
-        edge = this->edges[randN(this->edges.size())];
+        edge_cur = this->edges[randN(this->edges.size())];
 #else
 #ifdef DEULAUNAY_FINDER_INITIAL_MIDDLE
-        edge = this->edges[this->edges.size() / 2];
+        edge_cur = this->edges[this->edges.size() / 2];
 #else
-        edge = this->edges[0];
+        edge_cur = this->edges[0];
 #endif
 #endif
 
 // while face not found, search face ( >edge>, container> , >counter> )
 #if DEBUG
-        unsigned int iter_count = 1;
+        unsigned int iter_count = 0;
 #endif
+        short counter_left = 0;
         while(container == NULL) {
-                //fprintf(stderr,"Move %i on edge %i for coords (%f;%f):\n", iter_count, edge->getID(), p.x(), p.y());
-                if(edge->coordOnTheStrictRight(p)) {
-                        //fprintf(stderr,"\t-on the right of edge %i, ", edge->getID());
-                        // there is probably a better way
-                        edge = edge->rotRightEdge();
-                        //while(!edge->leftFace()->isVisible()) edge = edge->rotRightEdge();
-                        //fprintf(stderr,"change to edge %i, set counter to 0;\n", edge->getID());
-                        counter = 0; // we don't turn around a face yet.
-                } else {
-#if DEBUG
-                        iter_count++;
-#endif
-                        // we found the way that drive on the left of the coordinates,
-                        // so better way is the previous one, lst_way.
-                        // if 
-                        // We jump to this way.
-                        edge = edge->nextLeftEdge();
-                        //while(!edge->leftFace()->isVisible()) edge = edge->rotRightEdge();
-                        if(++counter == 3) {
-                                // Face found !
-                                container = edge->leftFace();
+                Edge *edge_nxt = NULL;
+                logs("Edge %u: ", edge_cur->getID());
+
+                // if on the right of target
+                if(edge_cur->coordOnTheLeft(target)) {
+                        logs("On the left !  ");
+                        counter_left++; // the edge was the better way without rotation.
+                        // churn until be on the left of target, 
+                        do {
+                                edge_cur = edge_cur->rotLeftEdge(); 
+                                logs("plop\n");
+                        } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictLeft(target));
+                        if(edge_cur->coordOnTheStrictLeft(target)) {
+                                do { edge_cur = edge_cur->rotLeftEdge(); 
+                                        logs("plip\n");
+                                } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictLeft(target));
+                                counter_left = 0; // we are not currently running around the container.
                         }
-                        //fprintf(stderr,"\t-on the left, change to edge %u", edge->getID());
-                        //fprintf(stderr,", with counter at %i;\n", counter);
+                        // And then churn to right for get the better way.
+                        edge_nxt = edge_cur->rotRightEdge();
+                } else {
+                        logs("On the right ! ");
+                        counter_left = 0; // we are not currently running around the container.
+                        do { edge_cur = edge_cur->rotRightEdge(); 
+                        } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictRight(target));
+                        // And then churn to left for get the better way.
+                        edge_nxt = edge_cur;
                 }
+                        
 #if DEBUG
-                assert(iter_count < this->edges.size()*1 + 1); 
+                assert(edge_nxt != NULL); // there is always an edge that go on the right of the target
+                assert(edge_nxt->originVertex() == edge_cur->originVertex());
+#endif
+
+                // Jump to next edge
+                logs("%u->", edge_nxt->getID());
+                edge_cur->passing = true;
+                edge_cur = edge_nxt->nextLeftEdge();
+                logs("%u\n", edge_cur->getID());
+                if(counter_left >= 3)   container = edge_cur->leftFace();
+
+
+#if DEBUG
+                assert(iter_count++ < this->edges.size()*2+4);
 #endif
         }
-        //logs("FOUND IN %u MOVES.\n", iter_count);
-        //logs("FOUND IN %u MOVES; FACE FOUND: %u\n", iter_count, container-getID());
+#if DEBUG
+        assert(container->collideAt(target));
+#endif
 
 // ending
         return container;
@@ -491,6 +520,10 @@ bool Delaunator::flipOn(Face* f_ref, unsigned int ttl) {
                 assert(illegal_edge2->nextLeftEdge()->nextLeftEdge()->leftFace() == f_nei);
 
                 this->DEBUG_tests();
+#endif
+#ifdef FOLLOW_SEARCH
+                illegal_edge1->passing= false;
+                illegal_edge2->passing= false;
 #endif
                 // Recursiv call on the updated faces
                 // protection against infinite recursive call.

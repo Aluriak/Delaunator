@@ -221,7 +221,7 @@ class IteratorVertexToNeighbourVertices {
                         return this->getItem();
                 }
 	// ACCESSORS
-                Vertex* end()     const { return NULL; }
+                Edge* end()     const { return NULL; }
                 Vertex* getItem() const { return this->it->destinVertex(); }
 	protected:
 	// ATTRIBUTES
