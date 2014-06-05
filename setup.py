@@ -40,8 +40,8 @@ swig_extension = Extension(
     'delaunator.libdelaunator_src._libdelaunator',
     sources = [('delaunator/libdelaunator_src/'+_) for _ in os.listdir('delaunator/libdelaunator_src/') if os.path.splitext(_)[1] == '.cpp'] + 
                 ['delaunator/libdelaunator_src/libdelaunator.i'],
-    swig_opts = ['-modern', '-c++'],
-    #swig_opts = ['-c++'],
+    #swig_opts = ['-modern', '-c++'],
+    swig_opts = ['-c++'],
     define_macros = defines,
     optional = False,
     extra_compile_args = [
