@@ -23,7 +23,7 @@ NAME_LIB=$(NAME_LIBRARY).so
 #########################
 ifeq ($(OPTMS), yes)
 	OPT_OPTIMIZATION=-O2 -flto
-	SWIG_OPT=-O -Wall
+	SWIG_OPT=-O -Wall 
 endif
 ifeq ($(DEBUG), yes)
 	OPT_DEB=-D DEBUG
@@ -56,7 +56,7 @@ linking:
 	# delete objects
 	rm *.o
 	# bring here the py module
-	- mv $(PATH_LIB_SRC)$(NAME_LIBRARY).py ./
+	- mv $(PATH_LIB_SRC)$(NAME_LIBRARY).py $(PATH_LIB)
 
 elf:
 	$(PATH_LIB)a.out
@@ -96,10 +96,13 @@ utils.o:
 #########################
 clean: clear
 clear: 
+	# delete library and executable
 	- rm $(PATH_LIB)$(NAME_LIB)
 	- rm $(PATH_LIB)$(NAME_ELF)
-	- rm -r *.o *.py *.pyc *.so __pycache__/
-	- rm -r $(PATH_LIB)*.o $(PATH_LIB)*_wrap.cxx $(PATH_LIB)*.py $(PATH_LIB)*.pyc $(PATH_LIB)*.so $(PATH_LIB)__pycache__/
+	# delete python intermediate files
+	- rm -r $(PATH_LIB)*.pyc $(PATH_LIB)__pycache__/
+	# delete objects files and swig generated files
+	- rm -r $(PATH_LIB)*.o $(PATH_LIB_SRC)*_wrap.cxx $(PATH_LIB)$(NAME_LIBRARY).py 
 
 
 clean:
