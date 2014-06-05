@@ -5,6 +5,7 @@ a.out
 *.cxx
 *.pyc
 *._wrap.*
+setup.cfg
 bin/
 build/
 delaunator.egg-info/
