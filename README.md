@@ -33,7 +33,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 
 
 
-## Example of use
+## EXAMPLE OF USE
 See github repo, pydelaunator repertory, for built-in example.
 
     from delaunator import Delaunator
