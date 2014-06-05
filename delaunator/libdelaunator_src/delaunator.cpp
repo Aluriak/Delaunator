@@ -363,49 +363,52 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
         short counter_left = 0;
         while(container == NULL) {
                 Edge *edge_nxt = NULL;
-                logs("Edge %u: ", edge_cur->getID());
 
                 // if on the right of target
                 if(edge_cur->coordOnTheLeft(target)) {
-                        logs("On the left !  ");
                         counter_left++; // the edge was the better way without rotation.
                         // churn until be on the left of target, 
+                        logs("\tEntrée while\n");
                         do {
                                 edge_cur = edge_cur->rotLeftEdge(); 
-                                logs("plop\n");
                         } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictLeft(target));
+                        logs("\tSortie while\n");
                         if(edge_cur->coordOnTheStrictLeft(target)) {
-                                do { edge_cur = edge_cur->rotLeftEdge(); 
-                                        logs("plip\n");
+                                logs("\tTarget on the left\n");
+                                logs("\t\tEntrée while\n");
+                                do { 
+                                        edge_cur = edge_cur->rotLeftEdge(); 
+                                        logs("\t\t\tRotation Left Edge\n");
                                 } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictLeft(target));
+                                logs("\t\tSortie while\n");
                                 counter_left = 0; // we are not currently running around the container.
                         }
                         // And then churn to right for get the better way.
                         edge_nxt = edge_cur->rotRightEdge();
                 } else {
-                        logs("On the right ! ");
                         counter_left = 0; // we are not currently running around the container.
+                        logs("\tEntrée while\n");
                         do { edge_cur = edge_cur->rotRightEdge(); 
+                                logs("\t\tRotation Right Edge\n");
                         } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictRight(target));
+                        logs("\tSortie while\n");
                         // And then churn to left for get the better way.
                         edge_nxt = edge_cur;
                 }
-                        
 #if DEBUG
                 assert(edge_nxt != NULL); // there is always an edge that go on the right of the target
                 assert(edge_nxt->originVertex() == edge_cur->originVertex());
 #endif
 
                 // Jump to next edge
-                logs("%u->", edge_nxt->getID());
                 edge_cur->passing = true;
                 edge_cur = edge_nxt->nextLeftEdge();
-                logs("%u\n", edge_cur->getID());
+                logs("Jumping\n");
                 if(counter_left >= 3)   container = edge_cur->leftFace();
 
 
 #if DEBUG
-                assert(iter_count++ < this->edges.size()*2+4);
+                assert((iter_count++) < (this->edges.size()*2+4));
 #endif
         }
 #if DEBUG
