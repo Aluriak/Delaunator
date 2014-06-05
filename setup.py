@@ -57,7 +57,7 @@ setup(
     name = __name__,
     version = __version__,
     ext_modules = [swig_extension],
-    py_modules = ['delaunator', 'delaunator.libdelaunator_src', 'delaunator.libdelaunator_src._libdelaunator'],
+    py_modules = ['info', 'delaunator', 'delaunator.libdelaunator_src', 'delaunator.libdelaunator_src._libdelaunator'],
     packages = find_packages(exclude=['pydelaunator/', 't/']), 
     include_package_data = True,
 
