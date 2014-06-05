@@ -201,7 +201,6 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
         this->flipOn(f1);
         this->flipOn(f2);
         this->flipOn(f3);
-        logs("DONE\n");
 #endif
 // ending
         }}
@@ -368,30 +367,21 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
                 if(edge_cur->coordOnTheLeft(target)) {
                         counter_left++; // the edge was the better way without rotation.
                         // churn until be on the left of target, 
-                        logs("\tEntrée while\n");
                         do {
                                 edge_cur = edge_cur->rotLeftEdge(); 
                         } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictLeft(target));
-                        logs("\tSortie while\n");
                         if(edge_cur->coordOnTheStrictLeft(target)) {
-                                logs("\tTarget on the left\n");
-                                logs("\t\tEntrée while\n");
                                 do { 
                                         edge_cur = edge_cur->rotLeftEdge(); 
-                                        logs("\t\t\tRotation Left Edge\n");
                                 } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictLeft(target));
-                                logs("\t\tSortie while\n");
                                 counter_left = 0; // we are not currently running around the container.
                         }
                         // And then churn to right for get the better way.
                         edge_nxt = edge_cur->rotRightEdge();
                 } else {
                         counter_left = 0; // we are not currently running around the container.
-                        logs("\tEntrée while\n");
                         do { edge_cur = edge_cur->rotRightEdge(); 
-                                logs("\t\tRotation Right Edge\n");
                         } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictRight(target));
-                        logs("\tSortie while\n");
                         // And then churn to left for get the better way.
                         edge_nxt = edge_cur;
                 }
@@ -403,7 +393,6 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
                 // Jump to next edge
                 edge_cur->passing = true;
                 edge_cur = edge_nxt->nextLeftEdge();
-                logs("Jumping\n");
                 if(counter_left >= 3)   container = edge_cur->leftFace();
 
 
