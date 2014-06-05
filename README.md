@@ -6,6 +6,11 @@ __LICENSE:__ _GPL-2.0_; cf LICENSE.txt file.
 __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.81, python 3.2 and SWIG 2.0; i don't know for others platforms, but except for windows, i think portability is totally possible, maybe already done. 
 
 
+## INSTALLATION
+On debian, SWIG is named *swig2.0*, and that is problematic, because setuptools use *swig*.
+So, you can say to setuptools to use swig2.0 instead, with command *python3 setup.py setopt --command=build_ext --option=swig --set-value=swig2.0*.
+Another way to solve that is to creat an alias in /usr/bin with *ln -s /usr/bin/swig2.0 /usr/bin/swig*.
+
 
 
 
