@@ -12,6 +12,5 @@ delaunator.egg-info/
 dist/
 include/
 lib/
-pydelaunator/
 t/
 delaunator/libdelaunator.py
