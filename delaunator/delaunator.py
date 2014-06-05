@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 #########################
-#       DELAUNATOR.PY   #
+#    DELAUNATOR.PY      #
 #########################
 
 
 #########################
 # IMPORTS               #
 #########################
-from libdelaunator import *
+from delaunator.libdelaunator_src import *
 
-__version__ = "0.0.1"
-__name__ = "delaunator"
 
 
 
