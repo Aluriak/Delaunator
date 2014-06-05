@@ -7,3 +7,4 @@ a.out
 *._wrap.*
 __pycache__/
 delaunator/libdelaunator.py
+setup.cfg

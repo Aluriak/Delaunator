@@ -1,0 +1,2 @@
+include Makefile *.md
+recursive-include delaunator/libdelaunator_src *.h *.cpp *.i
