@@ -72,6 +72,7 @@ Contact maintainer by mail for help if necessary.
 
 ### Some links
 https://github.com/Aluriak/Delaunator
+https://pypi.python.org/pypi/delaunator
 
 http://swig.org    
 http://swig.org/tutorial.html  
