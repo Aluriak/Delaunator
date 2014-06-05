@@ -71,10 +71,15 @@ Contact maintainer by mail for help if necessary.
 
 
 ### Some links
+https://github.com/Aluriak/Delaunator
+
 http://swig.org    
 http://swig.org/tutorial.html  
+
 http://totologic.blogspot.fr/2013/11/core-quad-edge-implementation-explained.html
+
 http://stackoverflow.com/questions/10121957/swig-to-python-import-errordynamic-module-does-not-define-init-function  
+
 http://sametmax.com/creer-un-setup-py-et-mettre-sa-bibliotheque-python-en-ligne-sur-pypi/  
 https://docs.python.org/3.2/distutils/setupscript.html#extension-source-files  
 https://pythonhosted.org/setuptools/setuptools.html  
