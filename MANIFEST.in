@@ -1,3 +1,6 @@
-include Makefile *.md
+include *.md
+exclude *.cfg Makefile
 recursive-include delaunator/libdelaunator_src *.h *.cpp *.i
 recursive-exclude delaunator/libdelaunator_src *_wrap.*
+recursive-exclude pydelaunator *
+recursive-exclude t *
