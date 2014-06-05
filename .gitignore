@@ -5,6 +5,11 @@ a.out
 *.cxx
 *.pyc
 *._wrap.*
-__pycache__/
-delaunator/libdelaunator.py
-setup.cfg
+bin/
+build/
+delaunator.egg-info/
+dist/
+include/
+lib/
+pydelaunator/
+t/
