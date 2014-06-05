@@ -1,9 +1,11 @@
 all: clear
 	python3.2 setup.py install
 
-source:
+src:
 	source bin/activate
 
+upload: clear
+	python3.2 setup.py sdist upload
 
 clear:
 	- rm -r delaunator/libdelaunator_src/libdelaunator_wrap.cpp 
