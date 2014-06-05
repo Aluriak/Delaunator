@@ -1,2 +1,2 @@
-delaunator/libdelaunator_src/libdelaunator.py
-delaunator/libdelaunator_src/libdelaunator_wrap.cpp
+libdelaunator.py
+libdelaunator_wrap.cpp
