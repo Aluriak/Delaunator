@@ -1,2 +1,3 @@
 include Makefile *.md
 recursive-include delaunator/libdelaunator_src *.h *.cpp *.i
+recursive-exclude delaunator/libdelaunator_src *_wrap.*
