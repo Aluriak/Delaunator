@@ -61,7 +61,7 @@ setup(
     packages = find_packages(exclude=['pydelaunator/', 't/']), 
     package_data = {
         __name__ : ['README.md', 'LICENSE.txt']
-    }
+    },
     include_package_data = True,
 
     author = "aluriak",
