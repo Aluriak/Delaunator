@@ -11,12 +11,19 @@ from setuptools import setup, find_packages, Extension, distutils
 from info import __version__, __name__
 import os, re
 
-#d = distutils.sysconfig.get_config_vars()
-#for k, v in d.items():
-    #if str(v).find('-Wstrict-prototypes') != -1:
+
+
+# Delete unwanted flags for C compilation
+d = distutils.sysconfig.get_config_vars()
+for k, v in d.items():
+    if str(v).find('-Wstrict-prototypes') != -1:
         #v = distutils.sysconfig.get_config_vars()[k] = str(v).replace('-Wstrict-prototypes', '')
-    #if str(v).find('-DNDEBUG') != -1:
+        v = d[k] = str(v).replace('-Wstrict-prototypes', '')
+    if str(v).find('-DNDEBUG') != -1:
         #v = distutils.sysconfig.get_config_vars()[k] = str(v).replace('-DNDEBUG', '')
+        v = d[k] = str(v).replace('-DNDEBUG', '')
+
+
 
 #########################
 # EXTENSIONS            #
