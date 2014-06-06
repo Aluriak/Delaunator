@@ -2,7 +2,11 @@ all: clear
 	python3.2 setup.py install
 
 src:
+	virtualenv ./ --system-site-packages
 	source bin/activate
+
+deac:
+	deactivate
 
 upload: clear
 	python3.2 setup.py sdist upload
