@@ -15,6 +15,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] manage movement;  
 - [x] do a victory cry;  
 - [x] upload packaged lib on pypi;  
+- [x] doxygen integration;
 - [ ] manage big/precise moves;  
 - [ ] use threads;  
 - [ ] find a better way than TTL limit for fix infinite recursion problem;  
@@ -66,6 +67,21 @@ Some problems can appear :
 
 Contact maintainer by mail for help if necessary.
 
+
+
+
+
+
+## DOCUMENTATION GENERATION
+Generate the documentation require Doxygen (or something that works like it) and can be performed with a simple
+
+    make gendoc
+
+or 
+
+    doxygen Doxyfile
+
+HTML and Latex documentations are generated in doc repertory.  
 
 
 
