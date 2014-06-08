@@ -14,3 +14,4 @@ include/
 lib/
 t/
 delaunator/libdelaunator.py
+doc/
