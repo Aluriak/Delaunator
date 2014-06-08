@@ -277,7 +277,7 @@ Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
 
 /**
  * Remove a Vertex from the triangulation.
- * iterators will be invalidated, and vertex will be free.
+ * Iterators will be invalidated, and vertex will be free.
  * @param v targeted Vertex
  * 
  */
@@ -299,7 +299,7 @@ void Delaunator::delVertex(Vertex* v) {
 
 #if DEBUG // some tests with assertions
 /*
- * DEBUG TESTS
+ * DEBUG TESTS.
  */
 void Delaunator::DEBUG_tests() const {
         for(IteratorOnAllEdges_read it = this->allEdges_read(); it != it.end(); it++) {
@@ -328,7 +328,7 @@ void Delaunator::DEBUG_tests() const {
  ***************************************************/
 /**
  * @param v tested Vertex 
- * @return true if tested Vertex is referenced by triangulation, else false.
+ * @return true iff tested Vertex is referenced by triangulation
  */
 bool Delaunator::haveVertex(Vertex* v) const {
         bool have = false;
@@ -341,8 +341,8 @@ bool Delaunator::haveVertex(Vertex* v) const {
 
 
 /**
- * @param c Coordinates of tested point.
- * @return true if point is in-limit of this.
+ * @param c Coordinates of tested point
+ * @return true if point is in-limit of this
  */
 bool Delaunator::collideAt(Coordinates c) const {
         return !(c.x() < this->xmin || this->xmax < c.x() || c.y() < this->ymin || this->ymax < c.y());
@@ -457,12 +457,14 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
  * Operate Delaunay Flip Algorithm on Face if necessary.
  * Recursiv call on new triangles created by flip.
  * @param f_ref a reference to a Face that can't be NULL and must be integrated in triangulation
- * @param ttl time-to-live, or limit of recursiv call operable
+ * @param ttl time-to-live, or number of recursiv call operated
  * @return true if modifications operate on tiangulation
  */
-bool Delaunator::flipOn(Face* f_ref, unsigned int ttl) {
 #if DEBUG
+bool Delaunator::flipOn(Face* f_ref, unsigned int ttl) {
         assert(f_ref != NULL && f_ref->getEdge() != NULL);
+#else 
+bool Delaunator::flipOn(Face* f_ref) {
 #endif
 // INITIALIZATION
         bool flip_done = true; // we are optimist.
@@ -558,6 +560,7 @@ bool Delaunator::flipOn(Face* f_ref, unsigned int ttl) {
                 illegal_edge2->passing= false;
 #endif
                 // Recursiv call on the updated faces
+#if DEBUG
                 // protection against infinite recursive call.
                 if(ttl < this->faces.size()/2) {
                         this->flipOn(f_ref, ttl+1);
@@ -565,6 +568,10 @@ bool Delaunator::flipOn(Face* f_ref, unsigned int ttl) {
                 } else {
                         logs("TTL %u reached !\n", ttl);
                 }
+#else
+                this->flipOn(f_ref);
+                this->flipOn(f_nei);
+#endif
         }
 
 

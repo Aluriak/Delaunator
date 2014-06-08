@@ -99,7 +99,11 @@ class Delaunator {
                 std::vector<Face*> faces;
 	// PRIVATE METHODS
                 Face* findContainerOf(Coordinates) const;
+#if DEBUG
                 bool flipOn(Face*, unsigned int ttl = 0);
+#else
+                bool flipOn(Face*);
+#endif
 };
 
 
