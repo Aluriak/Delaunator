@@ -1,0 +1,21 @@
+# Doxyfile 1.8.1.2
+#---------------------------------------------------------------------------
+# Project related configuration options
+#---------------------------------------------------------------------------
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = "Delaunator"
+PROJECT_BRIEF          = "2D Delaunay Triangulation in C++ with Python wrapper."
+CREATE_SUBDIRS         = NO
+OUTPUT_LANGUAGE        = English
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+TAB_SIZE               = 8
+MARKDOWN_SUPPORT       = YES
+BUILTIN_STL_SUPPORT    = NO
+
+# I/O
+INPUT                  = delaunator/libdelaunator_src
+FILE_PATTERNS          = *.cpp *.h
+RECURSIVE              = YES
+OUTPUT_DIRECTORY       = doc/
+#EXCLUDE_PATTERNS       = *_wrap.*
