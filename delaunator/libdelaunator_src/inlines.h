@@ -6,10 +6,9 @@
 /******************************************************************
  * CONVERTION METHODS
  ******************************************************************/
-/*
- * STR 2 INT
+/**
+ * @return int equivalent to given string
  */
-// Return int equivalent to given string
 inline int str2int(std::string str) {
         std::stringstream ss(str);
         int n;
@@ -19,10 +18,9 @@ inline int str2int(std::string str) {
 
 
 
-/*
- * STR 2 UNSIGNED INT
+/**
+ * @return unsigned int equivalent to given string
  */
-// Return unsigned int equivalent to given string
 inline unsigned int str2uint(std::string str) {
         std::stringstream ss(str);
         unsigned int n;
@@ -32,12 +30,10 @@ inline unsigned int str2uint(std::string str) {
 
 
 
-/*
- * STR 2 VEC UINT
+/**
+ * @param line string of unsigned int separated by ':' character
+ * @return a vector of unsigned int where values are write in given string
  */
-// Return a vector of unsigned int where values are write in given string
-// format :
-// val:val:[val:,...]
 inline std::vector<unsigned int> str2vec_uint(std::string line) {
 // INITIALIZING
         std::vector<unsigned int> values;
@@ -54,12 +50,10 @@ inline std::vector<unsigned int> str2vec_uint(std::string line) {
 }
 
 
-/*
- * VEC UINT 2 STR
+/**
+ * @param vec vector of unsigned int
+ * @return string equivalent of given vector. format : val:val:[val:,...]
  */
-// Return str equivalent of given vector<unsigned int>
-// format :
-// val:val:[val:,...]
 inline std::string vec_uint2str(std::vector<unsigned int> vec) {
         std::string line = "";
         for(auto v : vec)       line += std::to_string(v) + ":";
@@ -73,20 +67,20 @@ inline std::string vec_uint2str(std::vector<unsigned int> vec) {
 /******************************************************************
  * TIME METHODS
  ******************************************************************/
-/*
- * GIVE TIME SINCE
+/**
+ * @param evaluated clock 
+ * @return seconds passes since given clock
  */
-// return seconds passes since given clock_t
 inline float timeSince(const clock_t t) {
 	return ((float)(clock()-t) / CLOCKS_PER_SEC);
 }
 
 
 
-/*
- * WAITING FOR
+/**
+ * @param milliseconds is time of waiting.
+ * stop the program for given milliseconds
  */
-// stop the program for given milliseconds
 inline void waitFor(const int milliseconds) {
 #ifdef __GNUC__
 	sleep((float)milliseconds / 1000.);
@@ -102,10 +96,10 @@ inline void waitFor(const int milliseconds) {
 /******************************************************************
  * LOGS MANAGEMENT METHODS
  ******************************************************************/
-/*
- * CLOGS
+/**
+ * add log to FILE_LOGS
+ * @param log string to add to logs
  */
-// add log to FILE_LOGS
 inline void clogs(const std::string log) {
 	std::ofstream fl(FILE_LOGS, std::ios::app);
 	if(fl != NULL) {
@@ -115,6 +109,12 @@ inline void clogs(const std::string log) {
 		std::cerr << "ERROR: FILE_LOGS can't opened !" << std::endl;
 }
 // modify clogs
+/**
+ * Modify behaviour of clogs, or apply an operation to existing data.
+ * @param order an int that defined a behaviour/an order.
+ * orders can be : 
+ *      0 for erase all the log file content
+ */
 inline void clogs(const int order) {
 	if(order == 0) { // ERASE ALL THE FILE CONTENT
 		std::ofstream fl(FILE_LOGS);
@@ -131,21 +131,21 @@ inline void clogs(const int order) {
 /******************************************************************
  * RANDOM METHODS
  ******************************************************************/
-/*
- * RAND N
+/**
+ * @param N the excluded bound 
+ * @return random number between 0 included and N exluded.
  */
-// return random number between 0 included and N-1 included.
 inline int randN(const int N) {
-    return (int) (rand() / (double)RAND_MAX * (N));
+        return (int) (rand() / (double)RAND_MAX * (N));
 }
 
 
 
-/*
- * A CHANCE ON
+/**
+ * @param n a positive integer
+ * @return true one time on n
  */
-// return true one time on given integer
-inline bool aChanceOn(const int n) {
+inline bool aChanceOn(const unsigned int n) {
         return (randN(n) == 0); // true one time on n
 }
 
@@ -159,38 +159,37 @@ inline bool aChanceOn(const int n) {
  ******************************************************************/
 
 
-/*
- * TERM COLOR
+/**
+ * Modify color of text and background in terminal.
+ * Colors :   
+ *      0 black   
+ *      1 red  
+ *      2 green  
+ *      3 orange  
+ *      4 blue  
+ *      5 magenta  
+ *      6 cyan  
+ *      7 white  
+ *  @param textc a color that will be used for letters
+ *  @param backc a color that will be used for background
  */
-// modify color of text and background in terminal
-// colors : 
-//      0 black 
-//      1 red
-//      2 green
-//      3 orange
-//      4 blue
-//      5 magenta
-//      6 cyan
-//      7 white
 enum termcolor { BLACK=0, RED=1, GREEN=2, ORANGE=3, BLUE=4, MAGENTA=5, CYAN=6, WHITE=7 };
 inline void term_color(const int textc = 7, const int backc = 0) {
 	std::cout << "\033[" << textc+30 << ";" << backc+40 << "m";
 }
 
 
-/*
- * TERM RESET
+/**
+ * Reset term colors.
  */
-// reset term
 inline void term_reset() {
 	std::cout << "\033[0m";
 }
 
 
-/*
- * TERM CLEAR
+/**
+ * Clear term.
  */
-// clear term
 inline void term_clear() {
 	std::cout << "\033[H\033[2J";
 }
