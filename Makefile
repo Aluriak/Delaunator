@@ -3,7 +3,6 @@ all: clear
 
 src:
 	virtualenv ./ --system-site-packages
-	source bin/activate
 
 deac:
 	- deactivate
