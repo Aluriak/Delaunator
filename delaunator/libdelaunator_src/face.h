@@ -8,6 +8,7 @@
  */
 // LOCAL MODULES
 #include "commons.h"
+#include "geometry.h"
 #include "vertex.h"
 #include "edge.h"
 
