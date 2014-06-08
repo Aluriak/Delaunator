@@ -45,25 +45,12 @@ Edge::~Edge() {
  * @param y y coordinate of target 
  * Return square of distance between the edge and given coordinates.
  */
-float Edge::squareDistanceTo(float x, float y) const {
-        // Algorithm found on http://totologic.blogspot.fr/2014/01/accurate-point-in-triangle-test.html
-        float x1 = this->origin_vertex->x(), y1 = this->origin_vertex->y();
-        float x2 = this->destinVertex()->x(), y2 = this->destinVertex()->y();
-
-        float p1_p2_square_dist = (x2-x1) * (x2-x1) + (y2-y1) * (y2-y1);
-        float dotProduct = ((x-x1) * (x2-x1) + (y-y1) * (y2-y1)) / p1_p2_square_dist;
-        float distance = 0.;
-
-        if(dotProduct < 0)
-                distance = (x-x1) * (x-x1) + (y-y1) * (y-y1);
-        else if(dotProduct <= 1) {
-                float p_p1_square_dist = (x1-x) * (x1-x) + (y1-y) * (y1-y);
-                distance = p_p1_square_dist - dotProduct * dotProduct * p1_p2_square_dist;
-        }
-        else
-                distance = (x-x2) * (x-x2) + (y-y2) * (y-y2);
-
-        return distance;
+float Edge::squareDistanceTo(float px, float py) const {
+        return geometry::distanceBetweenPointAndSegment(
+                        this->origin_vertex->x(), this->origin_vertex->y(), 
+                        this->destinVertex()->x(), this->destinVertex()->y(), 
+                        px, py
+        );
 }
 
 
