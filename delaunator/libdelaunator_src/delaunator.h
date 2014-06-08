@@ -37,8 +37,11 @@
 
 
 
-/*
- * DELAUNAY CLASS DEFINITION
+/**
+ * Delaunay class definition.  
+ * Main object manipulated by user/wrapper.  
+ * Provide iterators, access to Vertices, Faces, Edges,...  
+ * Have all methods for add, delete and move Vertices.
  */
 class Delaunator {
 	public:
