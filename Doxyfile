@@ -18,4 +18,4 @@ INPUT                  = delaunator/libdelaunator_src
 FILE_PATTERNS          = *.cpp *.h
 RECURSIVE              = YES
 OUTPUT_DIRECTORY       = doc/
-#EXCLUDE_PATTERNS       = *_wrap.*
+EXCLUDE_PATTERNS       = *_wrap.*
