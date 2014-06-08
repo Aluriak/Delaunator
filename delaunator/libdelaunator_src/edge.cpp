@@ -6,6 +6,16 @@ unsigned int Edge::last_id = 1;
 /***************************************************
  * CONSTRUCTOR
  ***************************************************/
+/**
+ * Given references to other objects, if not NULL, will be
+ * modified as possible. (calls to accessors setEdge)
+ * @param orgn origin Vertex of this Edge
+ * @param oppst opposite Edge
+ * @param nxt_left next left Edge
+ * @param Face delimited by this Edge
+ * @param visible necessary for quad-edge representation, and be only set to true if user know exactly what he do
+ * @return a new and well initialized Edge
+ */
 Edge::Edge(Vertex* orgn, Edge* oppst, Edge* nxt_lft, Face* fc, bool visible) :
         visible(visible), origin_vertex(orgn), opposite_edge(oppst), next_left_edge(nxt_lft), left_face(fc) {
 
@@ -19,17 +29,22 @@ Edge::Edge(Vertex* orgn, Edge* oppst, Edge* nxt_lft, Face* fc, bool visible) :
 #endif
 }
 
+/**
+ * Frees.
+ */
 Edge::~Edge() {
+        // nothing to frees
 }
 
 
 /***************************************************
  * PUBLIC METHODS
  ***************************************************/
-/*
- * SQUARE DISTANCE TO
+/**
+ * @param x x coordinate of target 
+ * @param y y coordinate of target 
+ * Return square of distance between the edge and given coordinates.
  */
-// Return square of distance between the edge and given coordinates.
 float Edge::squareDistanceTo(float x, float y) const {
         // Algorithm found on http://totologic.blogspot.fr/2014/01/accurate-point-in-triangle-test.html
         float x1 = this->origin_vertex->x(), y1 = this->origin_vertex->y();
@@ -54,7 +69,8 @@ float Edge::squareDistanceTo(float x, float y) const {
 
 
 /*
- * COORDINATES ON THE [STRICT] RIGHT/LEFT
+ * Inline function used by next Predicats.
+ * Return dot product of given edge and point defined by given coordinates.
  */
 inline float dot_product(const Edge* const edge, const Coordinates c) {
          return (edge->destinVertex()->y() - edge->originVertex()->y())
@@ -62,11 +78,25 @@ inline float dot_product(const Edge* const edge, const Coordinates c) {
                 +  (-edge->destinVertex()->x() + edge->originVertex()->x())
                  * (c.y() - edge->originVertex()->y());
 }
-// Return true if given coordinates are on the right of this Edge.
-// If strict, coords can't be on the Edge or ahead.
+/**
+ * @param c evaluated Coordinates
+ * @return true if given coordinates are on the right of this Edge, but not on the Edge itself aligned with.
+ */
 bool Edge::coordOnTheStrictRight(Coordinates c) const { return dot_product(this, c) <  0.; }
+/**
+ * @param c evaluated Coordinates
+ * @return true if given coordinates are on the right of this Edge.
+ */
 bool Edge::coordOnTheRight(Coordinates c)       const { return dot_product(this, c) <= 0.; }
+/**
+ * @param c evaluated Coordinates
+ * @return true if given coordinates are on the left of this Edge, but not on the Edge itself aligned with.
+ */
 bool Edge::coordOnTheStrictLeft(Coordinates c)  const { return dot_product(this, c) >  0.; }
+/**
+ * @param c evaluated Coordinates
+ * @return true if given coordinates are on the left of this Edge.
+ */
 bool Edge::coordOnTheLeft(Coordinates c)        const { return dot_product(this, c) >= 0.; }
 
 

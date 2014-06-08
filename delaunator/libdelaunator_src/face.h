@@ -26,8 +26,9 @@ class Edge;
 
 
 
-/*
- * FACE CLASS CLASS
+/**
+ * Face object defined a geometric triangle, with 3 Vertex, 3 Edges, and a geometric centroid.
+ * Each Face have a unique ID.
  */
 class Face {
 	public:

@@ -51,7 +51,7 @@ class Delaunator {
                 Vertex* vertexAt(Coordinates c, float p) const { return this->vertexAt(c.x(), c.y(), p); }
                 void moveVertex(Vertex* v, float vec_x, float vec_y);
                 void moveVertex(Vertex* v, Coordinates c) { this->moveVertex(v, c.x(), c.y()); }
-                bool collideAt(Coordinates) const;
+                void delVertex(Vertex* v);
 #if DEBUG // some tests with assertions
                 void DEBUG_tests() const;
 #endif
@@ -63,11 +63,19 @@ class Delaunator {
                 float getYmax() const { return this->ymax; }
                 unsigned int getVerticeCount() const { return this->vertices.size(); }
                 float epsilon() const { return EPSILON; }
+
+        // PREDICATS
+                bool haveVertex(Vertex*) const;
+                bool collideAt(Coordinates) const;
 #ifdef FOLLOW_SEARCH
                 bool opt_follow_search() const { return true; }
+                bool opt_isdebug()       const { return true; }
 #else
                 bool opt_follow_search() const { return false; }
+                bool opt_isdebug()       const { return false; }
 #endif
+
+
         // ITERATORS
                 IteratorVertexToNeighbourVertices getNeighbors(Vertex*);
                 IteratorOnAllEdges allEdges()           { return IteratorOnAllEdges(&this->edges); }
@@ -79,7 +87,6 @@ class Delaunator {
                 IteratorOnAllVertices allVertices()     { return IteratorOnAllVertices(&this->vertices); }
                 IteratorOnAllVertices_read allVertices_read() const 
                                                         { return IteratorOnAllVertices_read(&this->vertices); }
-	// ACCESSORS
 	private:
 	// ATTRIBUTES
                 float xmin, xmax, ymin, ymax;

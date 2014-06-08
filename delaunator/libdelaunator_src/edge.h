@@ -29,8 +29,8 @@ class Face;
 
 
 
-/*
- * EDGE CLASS DEFINITION
+/**
+ * Edge is the main object of quad-edge representation. 
  */
 class Edge {
 	public:
@@ -38,8 +38,21 @@ class Edge {
 		Edge(Vertex* = NULL, Edge* = NULL, Edge* = NULL, Face* = NULL, bool = true);
 		~Edge();
 	// PUBLIC METHODS
+                /**
+                 * @param c target Coordinates
+                 * @return shorter distance between this Edge and the target
+                 */
                 float distanceTo(Coordinates c)       const { return sqrt(this->squareDistanceTo(c.x(), c.y())); }
+                /**
+                 * @param x x coordinate of target 
+                 * @param y y coordinate of target 
+                 * @return shorter distance between this Edge and the target
+                 */
                 float distanceTo(float x, float y)    const { return sqrt(this->squareDistanceTo(x, y)); }
+                /**
+                 * @param c target Coordinates
+                 * @return square of shorter distance between this Edge and the target
+                 */
                 float squareDistanceTo(Coordinates c) const { return this->squareDistanceTo(c.x(), c.y()); }
                 float squareDistanceTo(float x, float y) const;
                 bool coordOnTheStrictRight(Coordinates)  const;

@@ -26,8 +26,8 @@ class Edge;
 
 
 
-/*
- * VERTEX CLASS DEFINITION
+/**
+ * Coordinates are composed by two float values, x and y.
  */
 struct Coordinates {
         public:
@@ -66,6 +66,10 @@ struct Coordinates {
                 float _x, _y;
 };
 
+
+/**
+ * Vertex are Coordinates with a unique ID and that is linked to an Edge.
+ */
 struct Vertex : public Coordinates {
         public:
         // CONSTRUCTOR

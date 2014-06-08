@@ -7,11 +7,24 @@ unsigned int Vertex::last_id = 1;
 /***************************************************
  * CONSTRUCTOR
  ***************************************************/
+/**
+ * Creat a new Vertex.
+ * @param x coordinate
+ * @param y coordinate
+ * @param edge reference to an Edge that have this new Vertex for origin
+ * @return a new and well initialized Vertex
+ */
 Vertex::Vertex(const float x, const float y, Edge* edge) : Coordinates(x,y), edge(edge) {
         this->id = this->last_id++;
         if(this->edge != NULL)  this->edge->setOriginVertex(this);
 }
 
+/**
+ * Creat a new Vertex.
+ * @param c Coordinates that defined position of new Vertex
+ * @param edge reference to an Edge that have this new Vertex for origin
+ * @return a new and well initialized Vertex
+ */
 Vertex::Vertex(const Coordinates c, Edge* edge) : Coordinates(c), edge(edge) {
         this->id = this->last_id++;
 }
@@ -23,7 +36,7 @@ Vertex::Vertex(const Coordinates c, Edge* edge) : Coordinates(c), edge(edge) {
  * PUBLIC METHODS
  ***************************************************/
 /*
- * NEIGHBOUR COUNT
+ * @return number of neighbour directly connected by an edge
  */
 unsigned int Vertex::neighbourCount() const {
         unsigned int counter = 0;
@@ -42,6 +55,10 @@ unsigned int Vertex::neighbourCount() const {
 /***************************************************
  * OPERATORS
  ***************************************************/
+/**
+ * @param othr other Vertex that equality is tested
+ * @return true iff given vertex have the same coordinates of this
+ */
 bool Vertex::operator==(const Vertex& othr) {
         return Coordinates::operator==(othr) && this->edge == othr.edge;
 }
@@ -52,15 +69,16 @@ bool Vertex::operator==(const Vertex& othr) {
 /***************************************************
  * ACCESSORS
  ***************************************************/
+/**
+ * @return an Edge that had this Vertex for origin
+ */
+Edge* Vertex::getEdge() const { return this->edge; }
+/**
+ * @param e the reference to an Edge, the new Edge that have this Vertex for origin
+ */
+void Vertex::setEdge(Edge* e) { this->edge = e; }
 
-Edge* Vertex::getEdge() const {
-        //if(this->edge != NULL) logs("Get for %u\n", this->edge->getID()); 
-        return this->edge; 
-}
-void Vertex::setEdge(Edge* e) {
-        //if(this->edge != NULL && e != NULL) logs("Set for %u over %u\n", e->getID(), this->edge->getID()); 
-        this->edge = e; 
-}
+
 
 /***************************************************
  * PRIVATE METHODS

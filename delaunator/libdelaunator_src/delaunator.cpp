@@ -5,6 +5,9 @@
 /***************************************************
  * CONSTRUCTOR
  ***************************************************/
+/**
+ * Wait for limits of triangulation in axis x and y.
+ */
 Delaunator::Delaunator(const float xmin, const float xmax, 
                 const float ymin, const float ymax) : xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax) {
 // Creation of primitive mesh, with four points.
@@ -107,6 +110,9 @@ Delaunator::Delaunator(const float xmin, const float xmax,
 
 
 
+/**
+ * Frees all Faces, Vertices and Edges.
+ */
 Delaunator::~Delaunator() {
         // free's !
         for(Face* it : this->faces) {
@@ -128,12 +134,10 @@ Delaunator::~Delaunator() {
 /***************************************************
  * PUBLIC METHODS
  ***************************************************/
-
-/*
- * ADD VERTEX
+/**
+ * Add a new vertex to Mesh at given coordinates.
+ * Return address of that point in Mesh, or NULL if not found or out of bounds.
  */
-// Add a new vertex to Mesh at given coordinates.
-// Return address of that point in Mesh, or NULL if not found or out of bounds.
 Vertex* Delaunator::addVertexAt(Coordinates p) {
 // initialization
         Face* container = NULL; // container of p
@@ -209,12 +213,11 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
 
 
 
-/*
- * MOVE VERTEX
+/**
+ * Move given vertex by given vector values.
+ * Modify the mesh in consequence.
+ * Vertex can't pass over the mesh bounds.
  */
-// Move given vertex by given vector values.
-// Modify the mesh in consequence.
-// Vertex can't pass over the mesh bounds.
 void Delaunator::moveVertex(Vertex* v, float vec_x, float vec_y) {
 // Move the vertex
         //v->x() += vec_x;
@@ -252,11 +255,10 @@ void Delaunator::moveVertex(Vertex* v, float vec_x, float vec_y) {
 
 
 
-/*
- * VERTEX AT
+/**
+ * Return vertex found at given coords, around precision.
+ * Return NULL if no vertex found.
  */
-// Return vertex found at given coords, around precision.
-// Return NULL if no vertex found.
 Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
         Vertex *target = NULL, *current = NULL;
         for(IteratorOnAllVertices_read it = this->allVertices_read(); target == NULL && it != it.end(); it++) {
@@ -273,13 +275,23 @@ Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
 
 
 
-
-/*
- * COLLIDE AT
+/**
+ * Remove a Vertex from the triangulation.
+ * iterators will be invalidated, and vertex will be free.
+ * @param v targeted Vertex
+ * 
  */
-// Return true if given coordinates are in-limit of this.
-bool Delaunator::collideAt(Coordinates p) const {
-        return !(p.x() < this->xmin || this->xmax < p.x() || p.y() < this->ymin || this->ymax < p.y());
+void Delaunator::delVertex(Vertex* v) {
+// INIT
+#if DEBUG
+        assert(v != NULL);
+        assert(this->haveVertex(v));
+#endif
+        int nb_neighbor = 0;
+// TREAT
+        
+// END
+        delete v;
 }
 
 
@@ -312,12 +324,42 @@ void Delaunator::DEBUG_tests() const {
 
 
 /***************************************************
+ * PREDICATS
+ ***************************************************/
+/**
+ * @param v tested Vertex 
+ * @return true if tested Vertex is referenced by triangulation, else false.
+ */
+bool Delaunator::haveVertex(Vertex* v) const {
+        bool have = false;
+        for(unsigned int i = this->vertices.size(); i >= 0 && not have; i--) 
+                have = (this->vertices[i] == v);
+        return have;
+}
+
+
+
+
+/**
+ * @param c Coordinates of tested point.
+ * @return true if point is in-limit of this.
+ */
+bool Delaunator::collideAt(Coordinates c) const {
+        return !(c.x() < this->xmin || this->xmax < c.x() || c.y() < this->ymin || this->ymax < c.y());
+}
+
+
+
+
+
+/***************************************************
  * ITERATORS
  ***************************************************/
-/*
- * VERTEX TO NEIGHBOUR VERTICES
+/**
+ * Infinite iteration on all neighbour vertices of a given Vertex.
+ * @param v the targeted Vertex
+ * @return an IteratorVertexToNeighbourVertices that iter on neighbors of target
  */
-// Infinite iteration on all neighbour vertices of a given Vertex.
 IteratorVertexToNeighbourVertices Delaunator::getNeighbors(Vertex* v) {
         return IteratorVertexToNeighbourVertices(v);
 }
@@ -329,12 +371,10 @@ IteratorVertexToNeighbourVertices Delaunator::getNeighbors(Vertex* v) {
 /***************************************************
  * PRIVATE METHODS
  ***************************************************/
-/*
- * FIND CONTAINER OF COORDINATES
+/**
+ * @param target Coordinates that must be different of NULL.
+ * @return address of Face of Delaunator that contains given coordinates, or NULL if error. If out of bounds, return the unvisible face that contain p
  */
-// Return address of Face of Delaunator that contains given coordinates.
-// Coordinates must be != NULL and contained in bounds of Delaunator.
-// Return NULL if error. If out of bounds, return the unvisible face that contain p.
 Face* Delaunator::findContainerOf(Coordinates target) const {
 // initialization
         Face* container = NULL;
@@ -413,13 +453,13 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
 
 
 
-/*
- * FLIP ON
+/**
+ * Operate Delaunay Flip Algorithm on Face if necessary.
+ * Recursiv call on new triangles created by flip.
+ * @param f_ref a reference to a Face that can't be NULL and must be integrated in triangulation
+ * @param ttl time-to-live, or limit of recursiv call operable
+ * @return true if modifications operate on tiangulation
  */
-// Operate Delaunay Flip Algorithm on Face if necessary.
-// Face can't be NULL and must be integrate in triangulation. (== have a valid edge field)
-// Return true if modifications.
-// Recursiv call on new triangles created by flip.
 bool Delaunator::flipOn(Face* f_ref, unsigned int ttl) {
 #if DEBUG
         assert(f_ref != NULL && f_ref->getEdge() != NULL);
