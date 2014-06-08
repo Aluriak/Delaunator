@@ -16,12 +16,14 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] do a victory cry;  
 - [x] upload packaged lib on pypi;  
 - [x] doxygen integration;
+- [x] find a better way than TTL limit for fix infinite recursion problem;  (find: better management of computing precision)  
+- [ ] vertex deleting;  
 - [ ] manage big/precise moves;  
 - [ ] use threads;  
-- [x] find a better way than TTL limit for fix infinite recursion problem;  
+- [ ] implement iterator on the N nearest neighbors of a vertex;  
+- [ ] implement iterator on the N nearest neighbors of a vertex that respect a predicat;  
 - [ ] implements DAG version of coordinates' container finding;  
 - [ ] do benchmarks between DAG and current vertex finder;  
-- [ ] vertex deleting;  
 
 
 ## MAYBE-A-DAY DO LIST
