@@ -5,7 +5,6 @@ src:
 	virtualenv ./ --system-site-packages
 
 deac:
-	- deactivate
 	- rm -r lib include bin
 
 upload: clear
