@@ -17,7 +17,6 @@ gendoc:
 
 clear:
 	- rm -r delaunator/libdelaunator_src/libdelaunator_wrap.cpp 
-	- rm -r delaunator/libdelaunator_src/libdelaunator.py 
 	- rm -r dist build delaunator.egg-info 
 	- rm -r __pycache__/ *.pyc 
 
