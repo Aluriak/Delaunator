@@ -104,57 +104,12 @@ bool Face::collideAt(Coordinates c) {
  * @return true if given Coordinates are in circumcircle of this Face
  */
 bool Face::circumcircleContainCoords(Coordinates p0) const {
-        Coordinates p1 = *(this->getP1());
-        Coordinates p2 = *(this->getP2());
-        Coordinates p3 = *(this->getP3());
-
-        // Algorithm found here: https://en.wikipedia.org/wiki/Delaunay_triangulation#Algorithms
-        // matrix:
-        // A B C        0 1 2
-        // D E F        3 4 5
-        // G H I        6 7 8
-        // Translate in:
-        // p1.x() - p0.x()      p1.y() - p0.y()     (p1.x()*p1.x()-p0.x()*p0.x()) + (p1.y()*p1.y()-p0.y()*p0.y())
-        // p2.x() - p0.x()      p2.y() - p0.y()     (p2.x()*p2.x()-p0.x()*p0.x()) + (p2.y()*p2.y()-p0.y()*p0.y())
-        // p3.x() - p0.x()      p3.y() - p0.y()     (p3.x()*p3.x()-p0.x()*p0.x()) + (p3.y()*p3.y()-p0.y()*p0.y())
-        // If determinant of this matrix is < 0, p is in circumcircle of t
-        // determinant: AEI + BFG + CDH - AFH - BDI - CEG
-        //float val[9] = {
-              //p1.x() - p0.x(),   p1.y() - p0.y(),   (p1.x()*p1.x()-p0.x()*p0.x()) + (p1.y()*p1.y()-p0.y()*p0.y()),
-              //p2.x() - p0.x(),   p2.y() - p0.y(),   (p2.x()*p2.x()-p0.x()*p0.x()) + (p2.y()*p2.y()-p0.y()*p0.y()),
-              //p3.x() - p0.x(),   p3.y() - p0.y(),   (p3.x()*p3.x()-p0.x()*p0.x()) + (p3.y()*p3.y()-p0.y()*p0.y())
-        //};
-        //for(float v : val) 
-                 //v = round_float(v, EPSILON*10.);
-
-
-        //float d = (    val[0] * val[4] * val[8] // AEI
-                     //+ val[1] * val[5] * val[6] // BFG
-                     //+ val[2] * val[3] * val[7] // CDH
-                     //- val[0] * val[5] * val[7] // AFH
-                     //- val[1] * val[3] * val[8] // BDI
-                     //- val[2] * val[4] * val[6] // CEG
-                  //);
-        float d = (    
-        // AEI
-          (p1.x()-p0.x()) * (p2.y()-p0.y()) * ((p3.x()*p3.x()-p0.x()*p0.x()) + (p3.y()*p3.y()-p0.y()*p0.y())) 
-        // BFG
-        + (p1.y()-p0.y()) * ((p2.x()*p2.x()-p0.x()*p0.x()) + (p2.y()*p2.y()-p0.y()*p0.y())) * (p3.x()-p0.x()) 
-        // CDH
-        + ((p1.x()*p1.x()-p0.x()*p0.x()) + (p1.y()*p1.y()-p0.y()*p0.y())) * (p2.x()-p0.x()) * (p3.y()-p0.y()) 
-        // AFH
-        - (p1.x()-p0.x()) * ((p2.x()*p2.x()-p0.x()*p0.x()) + (p2.y()*p2.y()-p0.y()*p0.y())) * (p3.y()-p0.y()) 
-        // BDI
-        - (p1.y()-p0.y()) * (p2.x()-p0.x()) * ((p3.x()*p3.x()-p0.x()*p0.x()) + (p3.y()*p3.y()-p0.y()*p0.y())) 
-        // CEG
-        - ((p1.x()*p1.x()-p0.x()*p0.x()) + (p1.y()*p1.y()-p0.y()*p0.y())) * (p2.y()-p0.y()) * (p3.x()-p0.x()) 
+        return geometry::pointInCircumcircleOf(
+                        *(this->getP1()), 
+                        *(this->getP2()), 
+                        *(this->getP3()), 
+                        p0
         );
-
-#if DEBUG
-        assert(fabs(d) > -1); // According to Murphy's law, it will happens.
-#endif
-        return d < (-2. * EPSILON); // must be certain that p0 is NOT ON circumcircle.
-
 }
 
 
