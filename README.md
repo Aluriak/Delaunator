@@ -18,7 +18,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] doxygen integration;
 - [ ] manage big/precise moves;  
 - [ ] use threads;  
-- [ ] find a better way than TTL limit for fix infinite recursion problem;  
+- [x] find a better way than TTL limit for fix infinite recursion problem;  
 - [ ] implements DAG version of coordinates' container finding;  
 - [ ] do benchmarks between DAG and current vertex finder;  
 - [ ] vertex deleting;  
