@@ -107,6 +107,37 @@ class Delaunator {
                 bool applyDelaunayCondition(Face*);
 #endif
                 void operateFlip(Edge*);
+                // Methods for manipulate lists of components
+                inline void removeVertexFromVertices(Vertex* v) {
+                        for(std::vector<Vertex*>::iterator it = this->vertices.begin(); 
+                                        it != this->vertices.end(); it++) {
+                                if((*it) == v) {
+                                        this->vertices.erase(it);
+                                        delete v;
+                                        it = this->vertices.end()-1;
+                                }
+                        }
+                }
+                inline void removeEdgeFromEdges(Edge* e) {
+                        for(std::vector<Edge*>::iterator it = this->edges.begin(); 
+                                        it != this->edges.end(); it++) {
+                                if((*it) == e) {
+                                        this->edges.erase(it);
+                                        delete e;
+                                        it = this->edges.end()-1;
+                                }
+                        }
+                }
+                inline void removeFaceFromFaces(Face* f) {
+                        for(std::vector<Face*>::iterator it = this->faces.begin(); 
+                                        it != this->faces.end(); it++) {
+                                if((*it) == f) {
+                                        this->faces.erase(it);
+                                        delete f;
+                                        it = this->faces.end()-1;
+                                }
+                        }
+                }
 };
 
 
