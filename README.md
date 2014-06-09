@@ -17,8 +17,9 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] upload packaged lib on pypi;  
 - [x] doxygen integration;
 - [x] find a better way than TTL limit for fix infinite recursion problem;  (find: better management of computing precision)  
-- [ ] vertex deleting;  
+- [x] vertex deleting;  
 - [ ] manage big/precise moves;  
+- [ ] optimize Vertex, Edge and Face containing;
 - [ ] use threads;  
 - [ ] implement iterator on the N nearest neighbors of a vertex;  
 - [ ] implement iterator on the N nearest neighbors of a vertex that respect a predicat;  
@@ -44,7 +45,11 @@ See github repo, pydelaunator repertory, for built-in example.
     dt = Delaunator(600, 600)
     vtx = dt.addVertexAt(342, 23)
 
+    for i in range(100):
+        dt.addVertexAt(randint(0,600), randint(0,600))
+
     dt.moveVertex(vtx, .5, -31)
+    dt.delVertex(vtx)
     
     # print all neighbour vertices
     print([_ for _ in dt.getNeighbors(vtx)]])
