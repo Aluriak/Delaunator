@@ -60,16 +60,18 @@ class Delaunator {
                 void DEBUG_tests() const;
 #endif
 	// ACCESSORS
-                std::vector<Edge*> getEdges() const { return this->edges; }
+                unsigned int getIndexOf(Vertex*) const;
+                std::vector<Edge*> getEdges()  const { return this->edges; }
+                unsigned int getVerticeCount() const { return this->vertices.size(); }
                 float getXmin() const { return this->xmin; }
                 float getXmax() const { return this->xmax; }
                 float getYmin() const { return this->ymin; }
                 float getYmax() const { return this->ymax; }
-                unsigned int getVerticeCount() const { return this->vertices.size(); }
                 float epsilon() const { return EPSILON; }
 
         // PREDICATS
                 bool haveVertex(Vertex*) const;
+                bool isCornerVertex(Vertex*) const;
                 bool collideAt(Coordinates) const;
 #ifdef FOLLOW_SEARCH
                 bool opt_follow_search() const { return true; }

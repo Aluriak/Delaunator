@@ -279,18 +279,19 @@ Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
  * Remove a Vertex from the triangulation.
  * Iterators will be invalidated, and vertex will be free.
  * @param v targeted Vertex
- * 
  */
 void Delaunator::delVertex(Vertex* v) {
 // INIT
 #if DEBUG
         assert(v != NULL);
         assert(this->haveVertex(v));
+        assert(!this->isCornerVertex(v));
 #endif
         int nb_neighbor = 0;
 // TREAT
         
 // END
+        this->vertices.remove(v);
         delete v;
 }
 
@@ -323,6 +324,36 @@ void Delaunator::DEBUG_tests() const {
 
 
 
+
+
+
+
+/***************************************************
+ * ACCESSORS
+ ***************************************************/
+/**
+ * Return index of a Vertex in Delaunator container.
+ * @param v Vertex that will be found
+ * @return an unsigned int that is the index of the Vertex for this Deulaunator, or equal to number of Vertice if not found
+ */
+unsigned int Delaunator::getIndexOf(Vertex* v) const {
+        unsigned int index = this->vertices.size();
+        for(unsigned int i = this->vertices.size() - 1; i >= 0 
+                        && index == this->vertices.size(); i--) 
+                if(this->vertices[i] == v)
+                        index = i;
+        return index;
+}
+
+
+
+
+
+
+
+
+
+
 /***************************************************
  * PREDICATS
  ***************************************************/
@@ -332,9 +363,20 @@ void Delaunator::DEBUG_tests() const {
  */
 bool Delaunator::haveVertex(Vertex* v) const {
         bool have = false;
-        for(unsigned int i = this->vertices.size(); i >= 0 && not have; i--) 
+        for(unsigned int i = this->vertices.size() - 1; i >= 0 && not have; i--) 
                 have = (this->vertices[i] == v);
         return have;
+}
+
+
+
+
+/**
+ * @param v tested Vertex 
+ * @return true iff tested Vertex is referenced by triangulation and is one of the four corner vertice
+ */
+bool Delaunator::isCornerVertex(Vertex* v) const {
+        return this->getIndexOf(v) < 4;
 }
 
 
