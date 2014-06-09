@@ -49,10 +49,11 @@ See github repo, pydelaunator repertory, for built-in example.
         dt.addVertexAt(randint(0,600), randint(0,600))
 
     dt.moveVertex(vtx, .5, -31)
-    dt.delVertex(vtx)
     
     # print all neighbour vertices
     print([_ for _ in dt.getNeighbors(vtx)]])
+
+    dt.delVertex(vtx)
 
 API will be improved with time and ideas.
 
