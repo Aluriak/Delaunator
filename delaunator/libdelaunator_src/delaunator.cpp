@@ -286,7 +286,6 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
 #endif
         bool modification = true; // false when no modification operate on triangulation
         // Creat some container
-        std::vector<Face*> unused_faces(0);
         std::vector<Face*> modified_faces(0); // modified faces that can break Delaunay condition
         std::vector<Edge*> nei_edge(0);
         std::vector<float> nei_dist(0);
@@ -321,12 +320,14 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
                                         && !del_vrtx_in_triangle) {
                                 // these tree points will be a triangle !
                                 // so, operate flip on the middle edge
-                                this->operateFlip(nei_edge[(target+1) % nei_dist.size()]);
+                                this->operateFlip(nei_edge[id2]);
                                 modification  = true;
                                 // remove middle vertex (id2) from neighbors lists
                                 nei_edge.erase(nei_edge.begin() + id2);
                                 nei_dist.erase(nei_dist.begin() + id2);
                                 nei_vrtx.erase(nei_vrtx.begin() + id2);
+                                // The modified faces must be referenced : maybe it break the Delaunay condition
+                                modified_faces.push_back(nei_edge[id1]->nextLeftEdge()->rightFace());
                         }
                 }
         }
@@ -359,8 +360,9 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
         side1l->setNextLeftEdge(side2l);
         side2l->setNextLeftEdge(side3l);
         side3l->setNextLeftEdge(side1l);
-        // Set face
+        // Set face's Edge reference to a valide side, and reference it as a modified face
         f1->setEdge(side1l);
+        modified_faces.push_back(f1);
         // Delete unwanted faces, edges, and finally del_vrtx
         this->removeEdgeFromEdges(edge1->oppositeEdge());
         this->removeEdgeFromEdges(edge2->oppositeEdge());
@@ -374,7 +376,8 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
 
 // RESTORE DELAUNAY CONDITION
         // Delaunay condition was break. It's time to restore it.
-        this->applyDelaunayCondition(f1);
+        for(Face* face : modified_faces) 
+                this->applyDelaunayCondition(face);
 
 // END
 #if DEBUG
