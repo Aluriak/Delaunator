@@ -266,9 +266,6 @@ Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
                 if(fabs(x-current->x()) < (precision+EPSILON) && fabs(y-current->y()) < (precision+EPSILON))
                         target = current;
         }
-        //if(target != NULL) {
-                //logs("TARGET: %u, have %u neighbors.\n", target->getID(), target->neighbourCount());
-        //}
         return target;
 }
 
