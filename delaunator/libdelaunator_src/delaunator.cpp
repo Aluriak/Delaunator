@@ -394,7 +394,13 @@ void Delaunator::DEBUG_tests() const {
                 assert((*it)->originVertex() != NULL);
                 assert((*it)->oppositeEdge() != NULL);
                 assert((*it)->leftFace() != NULL);
-                assert((*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == (*it));
+                if((*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() != (*it)) {
+                        logs("%u, ", (*it)->getID());
+                        logs("%u, ", (*it)->nextLeftEdge()->getID());
+                        logs("%u, ", (*it)->nextLeftEdge()->nextLeftEdge()->getID());
+                        logs("%u, ", (*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge()->getID());
+                        assert((*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == (*it));
+                }
         }
         for(IteratorOnAllFaces_read it = this->allFaces_read(); it != it.end(); it++) {
                 assert((*it)->getEdge() != NULL);
