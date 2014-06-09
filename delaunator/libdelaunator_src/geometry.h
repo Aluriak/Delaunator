@@ -35,6 +35,17 @@ namespace geometry {
          */
         bool pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0);
 
+
+        /**
+         * @param p1 Coordinates of a point of triangle
+         * @param p2 Coordinates of a point of triangle
+         * @param p3 Coordinates of a point of triangle
+         * @param p0 Coordinates of tested point
+         * @return true iff tested point is in triangle composed by p1, p2 and p3.
+         */
+        bool pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0);
+
+
         /**
          * @param x1 coordinate in x for first point of segment
          * @param y1 coordinate in y for first point of segment
