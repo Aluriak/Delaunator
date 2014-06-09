@@ -275,21 +275,111 @@ Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
 /**
  * Remove a Vertex from the triangulation.
  * Iterators will be invalidated, and vertex will be free.
- * @param v targeted Vertex
+ * @param del_vrtx targeted Vertex
  */
-void Delaunator::delVertex(Vertex* v) {
+void Delaunator::delVertex(Vertex* del_vrtx) {
 // INIT
 #if DEBUG
-        assert(v != NULL);
-        assert(this->haveVertex(v));
-        assert(!this->isCornerVertex(v));
+        assert(del_vrtx != NULL);
+        assert(this->haveVertex(del_vrtx));
+        assert(!this->isCornerVertex(del_vrtx));
 #endif
-        int nb_neighbor = 0;
-// TREAT
+        bool modification = true; // false when no modification operate on triangulation
+        // Creat some container
+        std::vector<Face*> unused_faces(0);
+        std::vector<Face*> modified_faces(0); // modified faces that can break Delaunay condition
+        std::vector<Edge*> nei_edge(0);
+        std::vector<float> nei_dist(0);
+        std::vector<Vertex*> nei_vrtx(0);
+        // Fill those that refer neighbors, edge to neighbors or distance to neighbors
+        Edge* edge = del_vrtx->getEdge();
+        do {    nei_edge.push_back(edge);
+                nei_vrtx.push_back(edge->destinVertex());
+                nei_dist.push_back(edge->destinVertex()->distanceTo(*del_vrtx));
+                edge = edge->rotLeftEdge();
+        } while(edge != del_vrtx->getEdge());
+
+// SIMPLIFY LOCAL TRIANGULATION
+        // When we can't do something, it's when the del_vrtx is linked to tree points exactly.
+        // At this time of the algo, Delaunay condition is breaked, and suppression of the point
+        // is easy. 
+        while(modification) {
+                modification = false; 
+                // For each neighbour
+                for(unsigned int target = 0; target < nei_edge.size(); target++) {
+                        // take tree consecutivs neighbors indexes
+                        unsigned int id1 = target;
+                        unsigned int id2 = (target+1) % nei_dist.size();
+                        unsigned int id3 = (target+2) % nei_dist.size();
+                        // collision between del_vrtx and triangle formed by neighbors
+                        bool del_vrtx_in_triangle = geometry::pointInTriangle(
+                                        *nei_vrtx[id1], *nei_vrtx[id2], *nei_vrtx[id3], *del_vrtx
+                        );
+                        // if middle point is farthest than at least one of the two others from del_vrtx
+                        //      AND del_vrtx is not in triangle formed by the tree neighbors
+                        if((nei_dist[id2] >= nei_dist[id1] || nei_dist[id2] >= nei_dist[id3]) 
+                                        && !del_vrtx_in_triangle) {
+                                // these tree points will be a triangle !
+                                // so, operate flip on the middle edge
+                                this->operateFlip(nei_edge[(target+1) % nei_dist.size()]);
+                                modification  = true;
+                                // remove middle vertex (id2) from neighbors lists
+                                nei_edge.erase(nei_edge.begin() + id2);
+                                nei_dist.erase(nei_dist.begin() + id2);
+                                nei_vrtx.erase(nei_vrtx.begin() + id2);
+                        }
+                }
+        }
         
+// DELETE POINT FROM TRIANGLE CONTAINER
+        // Container of del_vrtx is composed by the tree neighbors contains in nei_vrtx
+        // Delete del_vrtx is exactly the reverse of adding, after find the container.
+        Edge *edge1 = nei_edge.front();
+        Edge *edge2 = edge1->rotLeftEdge();
+        Edge *edge3 = edge2->rotLeftEdge();
+        // f2 and f3 will be deleted. f1 is the future Face of triangle
+        Face *f1 = edge1->leftFace(), *f2 = edge2->leftFace(), *f3 = edge3->leftFace();
+        // sides are the edge that are the sides of the final triangle of face f1
+        Edge *side1l = edge1->nextLeftEdge();
+        Edge *side2l = edge2->nextLeftEdge();
+        Edge *side3l = edge3->nextLeftEdge();
+#if DEBUG
+        // Some tests
+        assert(nei_vrtx.size() == 3);
+        assert(edge3  != edge1  && edge1  != edge2  && edge2  != edge3 );
+        assert(side3l != side1l && side1l != side2l && side2l != side3l);
+        assert(f1 != f3 && f3 != f2 && f2 != f1);
+        this->DEBUG_tests();
+#endif
+        // Origin Vertices must refers sides, no edge1, edge2 or edge3
+        side1l->originVertex()->setEdge(side1l);
+        side2l->originVertex()->setEdge(side2l);
+        side3l->originVertex()->setEdge(side3l);
+        // Set next left edge
+        side1l->setNextLeftEdge(side2l);
+        side2l->setNextLeftEdge(side3l);
+        side3l->setNextLeftEdge(side1l);
+        // Set face
+        f1->setEdge(side1l);
+        // Delete unwanted faces, edges, and finally del_vrtx
+        this->removeEdgeFromEdges(edge1->oppositeEdge());
+        this->removeEdgeFromEdges(edge2->oppositeEdge());
+        this->removeEdgeFromEdges(edge3->oppositeEdge());
+        this->removeEdgeFromEdges(edge1);
+        this->removeEdgeFromEdges(edge2);
+        this->removeEdgeFromEdges(edge3);
+        this->removeFaceFromFaces(f2);
+        this->removeFaceFromFaces(f3);
+        this->removeVertexFromVertices(del_vrtx);
+
+// RESTORE DELAUNAY CONDITION
+        // Delaunay condition was break. It's time to restore it.
+        this->applyDelaunayCondition(f1);
+
 // END
-        this->vertices.remove(v);
-        delete v;
+#if DEBUG
+        this->DEBUG_tests();
+#endif
 }
 
 
