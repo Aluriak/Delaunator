@@ -13,6 +13,9 @@ vsp	face.cpp
 tabnew	edge.h
 vsp	edge.cpp
 
+tabnew	geometry.h
+vsp	geometry.cpp
+
 tabnew  utils.h
 vsp	commons.h
 
