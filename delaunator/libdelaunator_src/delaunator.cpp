@@ -202,9 +202,9 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
 
 #if DELAUNAY_CONDITION
 // apply delaunay restrictions
-        this->flipOn(f1);
-        this->flipOn(f2);
-        this->flipOn(f3);
+        this->applyDelaunayCondition(f1);
+        this->applyDelaunayCondition(f2);
+        this->applyDelaunayCondition(f3);
 #endif
 // ending
         }}
@@ -246,7 +246,7 @@ void Delaunator::moveVertex(Vertex* v, float vec_x, float vec_y) {
 #if DEBUG
                 assert(f != NULL);
 #endif
-                this->flipOn(f);
+                this->applyDelaunayCondition(f);
         }
 #endif 
 }
@@ -503,35 +503,27 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
  * @return true if modifications operate on tiangulation
  */
 #if DEBUG
-bool Delaunator::flipOn(Face* f_ref, unsigned int ttl) {
+bool Delaunator::applyDelaunayCondition(Face* f_ref, unsigned int ttl) {
         assert(f_ref != NULL && f_ref->getEdge() != NULL);
 #else 
-bool Delaunator::flipOn(Face* f_ref) {
+bool Delaunator::applyDelaunayCondition(Face* f_ref) {
 #endif
 // INITIALIZATION
         bool flip_done = true; // we are optimist.
-        Face* f_nei = NULL; // neighbour of f_ref that have an illegal side with it.
-        Edge* illegal_edge1 = NULL; // illegal edge that relie the illegal vertex and the f_ref's vertex.
-        Edge* illegal_edge2 = NULL; // and it's opposite.
-        Vertex* illegal_vertex1 = NULL; // vertex that is illegal because of illegal edge.
-        Vertex* illegal_vertex2 = NULL; // idem. these two vertices will be linked by edge after flip.
-
+        Edge* illegal_edge = NULL; // illegal edge that relie the illegal vertex and the f_ref's vertex.
 
 // CONDITION: in circumcircle
         // FIRST NEIGHBOUR
         if(f_ref->circumcircleContainCoords(*f_ref->getEdge1()->nextRightEdge()->destinVertex())) {
-                illegal_edge1 = f_ref->getEdge1();
-                illegal_vertex1 = f_ref->getP3();
+                illegal_edge = f_ref->getEdge1();
 
         // SECOND NEIGHBOUR
         } else if(f_ref->circumcircleContainCoords(*f_ref->getEdge2()->nextRightEdge()->destinVertex())) {
-                illegal_edge1 = f_ref->getEdge2();
-                illegal_vertex1 = f_ref->getP1();
+                illegal_edge = f_ref->getEdge2();
 
         // THIRD NEIGHBOUR
         } else if(f_ref->circumcircleContainCoords(*f_ref->getEdge3()->nextRightEdge()->destinVertex())) {
-                illegal_edge1 = f_ref->getEdge3();
-                illegal_vertex1 = f_ref->getP2();
+                illegal_edge = f_ref->getEdge3();
 
         // NO ILLEGAL SIDE
         } else  flip_done = false;
@@ -539,80 +531,19 @@ bool Delaunator::flipOn(Face* f_ref) {
 
 // MODIFICATION OF FACES
         if(flip_done) {
-
-                // Deduce some shortcuts
-                illegal_edge2 = illegal_edge1->oppositeEdge();
-                illegal_vertex2 = illegal_edge1->nextRightEdge()->destinVertex();
-                f_nei = illegal_edge2->leftFace();
-                // previous and next edge in the cycle that form the Face.
-                Edge* edge1_prev = illegal_edge1->nextLeftEdge();
-                Edge* edge1_next = illegal_edge1->nextRightEdge()->oppositeEdge();
-                Edge* edge2_prev = illegal_edge2->nextLeftEdge();
-                Edge* edge2_next = illegal_edge2->nextRightEdge()->oppositeEdge();
-
-#if DEBUG
-                assert(illegal_edge1->originVertex() != illegal_vertex1);
-                assert(illegal_edge2->originVertex() != illegal_vertex1);
-                assert(illegal_edge1->originVertex() != illegal_vertex2);
-                assert(illegal_edge2->originVertex() != illegal_vertex2);
-#endif
-
-                // Origin vertex of illegal edges can't reference illegal edges anymore
-                illegal_edge1->originVertex()->setEdge(edge2_prev);
-                illegal_edge2->originVertex()->setEdge(edge1_prev);
-
-                // Modify next left and right edges of non-illegal edges
-                // NB: use of inter vars because change the next left edge will change the result of nextRightEdge.
-                edge1_prev->setNextLeftEdge(illegal_edge1);
-                edge2_prev->setNextLeftEdge(illegal_edge2);
-
-                edge1_next->setNextLeftEdge(edge1_prev);
-                edge2_next->setNextLeftEdge(edge2_prev);
-
-                illegal_edge1->setNextLeftEdge(edge1_next); // Close the cycle
-                illegal_edge2->setNextLeftEdge(edge2_next); 
-
-
-                // assign origin vertex
-                illegal_edge1->setOriginVertex(illegal_vertex1);
-                illegal_edge2->setOriginVertex(illegal_vertex2);
-
-                // update faces
-                f_ref->setEdge(illegal_edge1);
-                f_nei->setEdge(illegal_edge2);
-
-#if DEBUG
-                assert(illegal_edge1->originVertex() == illegal_vertex1);
-                assert(illegal_edge1->nextLeftEdge() == illegal_edge2->nextRightEdge()->nextRightEdge()->oppositeEdge());
-                assert(illegal_edge1->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == illegal_edge1);
-                assert(illegal_edge1->leftFace() == f_ref);
-                assert(illegal_edge1->nextLeftEdge()->leftFace() == f_ref);
-                assert(illegal_edge1->nextLeftEdge()->nextLeftEdge()->leftFace() == f_ref);
-
-                assert(illegal_edge2->destinVertex() == illegal_vertex1);
-                assert(illegal_edge2->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == illegal_edge2);
-                assert(illegal_edge2->leftFace() == f_nei);
-                assert(illegal_edge2->nextLeftEdge()->leftFace() == f_nei);
-                assert(illegal_edge2->nextLeftEdge()->nextLeftEdge()->leftFace() == f_nei);
-
-                this->DEBUG_tests();
-#endif
-#ifdef FOLLOW_SEARCH
-                illegal_edge1->passing= false;
-                illegal_edge2->passing= false;
-#endif
+                this->operateFlip(illegal_edge);
                 // Recursiv call on the updated faces
 #if DEBUG
                 // protection against infinite recursive call.
                 if(ttl < this->faces.size()/2) {
-                        this->flipOn(f_ref, ttl+1);
-                        this->flipOn(f_nei, ttl+1);
+                        this->applyDelaunayCondition(illegal_edge->leftFace(), ttl+1);
+                        this->applyDelaunayCondition(illegal_edge->rightFace(), ttl+1);
                 } else {
                         logs("TTL %u reached !\n", ttl);
                 }
 #else
-                this->flipOn(f_ref);
-                this->flipOn(f_nei);
+                this->applyDelaunayCondition(illegal_edge->leftFace());
+                this->applyDelaunayCondition(illegal_edge->rightFace());
 #endif
         }
 
@@ -625,6 +556,79 @@ bool Delaunator::flipOn(Face* f_ref) {
 
 
 
+/**
+ * Operate the flip algorithm, as if the received Edge don't respect the Delaunay condition.
+ * @param illegal_edge1 an Edge that is defined illegal
+ */
+void Delaunator::operateFlip(Edge* illegal_edge1) {
+// DEDUCE SOME SHORTCUTS
+        Edge *illegal_edge2 = illegal_edge1->oppositeEdge();
+        Vertex *illegal_vertex1 = illegal_edge1->nextLeftEdge()->destinVertex();
+        Vertex *illegal_vertex2 = illegal_edge1->nextRightEdge()->destinVertex();
+        Face *face1 = illegal_edge2->rightFace();
+        Face *face2 = illegal_edge2->leftFace();
+        // previous and next edge in the cycle that form the Face.
+        Edge* edge1_prev = illegal_edge1->nextLeftEdge();
+        Edge* edge1_next = illegal_edge1->nextRightEdge()->oppositeEdge();
+        Edge* edge2_prev = illegal_edge2->nextLeftEdge();
+        Edge* edge2_next = illegal_edge2->nextRightEdge()->oppositeEdge();
+
+
+#if DEBUG
+// TESTS
+        assert(illegal_edge1->originVertex() != illegal_vertex1);
+        assert(illegal_edge2->originVertex() != illegal_vertex1);
+        assert(illegal_edge1->originVertex() != illegal_vertex2);
+        assert(illegal_edge2->originVertex() != illegal_vertex2);
+#endif
+
+// MODIFICATIONS
+        // Origin vertex of illegal edges can't reference illegal edges anymore
+        illegal_edge1->originVertex()->setEdge(edge2_prev);
+        illegal_edge2->originVertex()->setEdge(edge1_prev);
+
+        // Modify next left and right edges of non-illegal edges
+        // NB: use of inter vars because change the next left edge will change the result of nextRightEdge.
+        edge1_prev->setNextLeftEdge(illegal_edge1);
+        edge2_prev->setNextLeftEdge(illegal_edge2);
+
+        edge1_next->setNextLeftEdge(edge1_prev);
+        edge2_next->setNextLeftEdge(edge2_prev);
+
+        illegal_edge1->setNextLeftEdge(edge1_next); // Close the cycle
+        illegal_edge2->setNextLeftEdge(edge2_next); 
+
+
+        // assign origin vertex
+        illegal_edge1->setOriginVertex(illegal_vertex1);
+        illegal_edge2->setOriginVertex(illegal_vertex2);
+
+        // update faces
+        face1->setEdge(illegal_edge1);
+        face2->setEdge(illegal_edge2);
+
+#if DEBUG
+// TESTS
+        assert(illegal_edge1->originVertex() == illegal_vertex1);
+        assert(illegal_edge1->nextLeftEdge() == illegal_edge2->nextRightEdge()->nextRightEdge()->oppositeEdge());
+        assert(illegal_edge1->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == illegal_edge1);
+        assert(illegal_edge1->leftFace() == face1);
+        assert(illegal_edge1->nextLeftEdge()->leftFace() == face1);
+        assert(illegal_edge1->nextLeftEdge()->nextLeftEdge()->leftFace() == face1);
+
+        assert(illegal_edge2->destinVertex() == illegal_vertex1);
+        assert(illegal_edge2->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == illegal_edge2);
+        assert(illegal_edge2->leftFace() == face2);
+        assert(illegal_edge2->nextLeftEdge()->leftFace() == face2);
+        assert(illegal_edge2->nextLeftEdge()->nextLeftEdge()->leftFace() == face2);
+
+        this->DEBUG_tests();
+#endif
+#ifdef FOLLOW_SEARCH
+        illegal_edge1->passing= false;
+        illegal_edge2->passing= false;
+#endif
+}
 
 
 
