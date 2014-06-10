@@ -25,6 +25,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [ ] implement iterator on the N nearest neighbors of a vertex that respect a predicat;  
 - [ ] implements DAG version of coordinates' container finding;  
 - [ ] do benchmarks between DAG and current vertex finder;  
+- [ ] permit to user to choose finder and debug options at installation;  
 
 
 ## MAYBE-A-DAY DO LIST
@@ -33,6 +34,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - built-in collision API;
 - do a technical tutorial on quad-edge and other structure/algo used by this module;  
 - do a technical tutorial on methodology for creat a package like this;  
+- build documentation of source, presented in Python style;  
 
 
 
@@ -74,7 +76,12 @@ Some problems can appear :
 
 Contact maintainer by mail for help if necessary.
 
+### Options in installations
+You can edit setup.py file, and change lines 38-42, where some macros are listed :
+- when DEBUG is defined, lots of verifications are done (by assert calls), so delete DEBUG will increase performances but block detection of corruptions;
+- FINDER METHOD is used for choose the initial edge when a container of Coordinates is looking for, while no benchmarks are done, i don't know wich method is the better;
 
+Feel free to modify theses. (notabily delete DEBUG, if you want use delaunator in the faster way)  
 
 
 
@@ -89,13 +96,22 @@ or
     doxygen Doxyfile
 
 HTML and Latex documentations are generated in doc repertory.  
+An online documentation can be found at pythonhosted.org. (see links below)  
 
+
+
+## USE DOCUMENTATION
+The documentation is generated with Doxygen by parsing C++ source. 
+However, as SWIG creat Python wrapper by parsing same source, documentation is usable for Python codes.  
+
+Maybe later, i will found a solution for generate pure Python documentation.  
 
 
 
 ### Some links
 https://github.com/Aluriak/Delaunator
 https://pypi.python.org/pypi/delaunator
+https://pythonhosted.org/delaunator/
 
 http://swig.org    
 http://swig.org/tutorial.html  
