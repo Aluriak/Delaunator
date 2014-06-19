@@ -44,7 +44,7 @@ See github repo, pydelaunator repertory, for built-in example.
 
     from delaunator import Delaunator
 
-    dt = Delaunator(600, 600)
+    dt = Delaunator(0, 600, 0, 600)
     vtx = dt.addVertexAt(342, 23)
 
     for i in range(100):
