@@ -109,9 +109,9 @@ Maybe later, i will found a solution for generate pure Python documentation.
 
 
 ### Some links
-https://github.com/Aluriak/Delaunator
-https://pypi.python.org/pypi/delaunator
-https://pythonhosted.org/delaunator/
+https://github.com/Aluriak/Delaunator  
+https://pypi.python.org/pypi/delaunator  
+https://pythonhosted.org/delaunator/  
 
 http://swig.org    
 http://swig.org/tutorial.html  
