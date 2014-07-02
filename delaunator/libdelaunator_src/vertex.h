@@ -54,6 +54,9 @@ struct Coordinates {
                 bool operator==(const Coordinates& othr) {
                         return fabs(othr._x - this->_x) < EPSILON && fabs(othr._y - this->_y) < EPSILON;
                 }
+                bool operator!=(const Coordinates& othr) {
+                        return !(*this == othr);
+                }
                 Coordinates operator+(const Coordinates& c) {
                         Coordinates r(this->_x + c._x, this->_y + c._y);
                         return r;
