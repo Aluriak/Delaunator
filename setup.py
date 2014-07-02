@@ -37,9 +37,10 @@ swig_extension = Extension(
     define_macros = [
         ('DEBUG', 1),
         # choose your finder mode here !
-        ('DEULAUNAY_FINDER_INITIAL_RANDOM', None),
-        #('DEULAUNAY_FINDER_INITIAL_FIRST', None),
-        #('DEULAUNAY_FINDER_INITIAL_MIDDLE', None),
+        ('DELAUNAY_FINDER_INITIAL_RANDOM', None),
+        #('DELAUNAY_FINDER_INITIAL_FIRST', None),
+        #('DELAUNAY_FINDER_INITIAL_MIDDLE', None),
+        #('DELAUNAY_FINDER_INITIAL_LAST', None),
     ],
     optional = False,
     extra_compile_args = [
