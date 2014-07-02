@@ -523,13 +523,17 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
 #endif
 
 // choose the initial Edge ( >edge> )
-#ifdef DEULAUNAY_FINDER_INITIAL_RANDOM 
+#ifdef DELAUNAY_FINDER_INITIAL_RANDOM 
         edge_cur = this->edges[randN(this->edges.size())];
 #else
-#ifdef DEULAUNAY_FINDER_INITIAL_MIDDLE
+#ifdef DELAUNAY_FINDER_INITIAL_MIDDLE
         edge_cur = this->edges[this->edges.size() / 2];
 #else
+#ifdef DELAUNAY_FINDER_INITIAL_LAST
+        edge_cur = this->edges[this->edges.size() - 1];
+#else
         edge_cur = this->edges[0];
+#endif
 #endif
 #endif
 
