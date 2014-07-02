@@ -51,6 +51,9 @@ class Face {
                 Vertex* getP2()       const;
                 Vertex* getP3()       const;
                 unsigned int getID()  const { return this->id; }
+                Coordinates circumcenter() const {
+                        return geometry::circumcenterOf(*this->getP1(), *this->getP2(), *this->getP3());
+                }
                 //setter
                 void setEdge(Edge*);
                 void setVisibility(bool v)      { this->visible = v; }
