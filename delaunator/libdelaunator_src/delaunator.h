@@ -19,7 +19,6 @@
 /*
  * DEFINES
  */
-#define DELAUNAY_CONDITION 1
 
 
 

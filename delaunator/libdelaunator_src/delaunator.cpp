@@ -200,12 +200,10 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
         this->DEBUG_tests();
 #endif
 
-#if DELAUNAY_CONDITION
 // apply delaunay restrictions
         this->applyDelaunayCondition(f1);
         this->applyDelaunayCondition(f2);
         this->applyDelaunayCondition(f3);
-#endif
 // ending
         }}
         return new_vertex;
