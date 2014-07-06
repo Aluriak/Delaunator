@@ -1,6 +1,21 @@
-all: clear
+########################
+# BUILD & INSTALL
+########################
+all: build install 
+
+build: clear
+	python3.2 setup.py build
+
+install:
 	python3.2 setup.py install
 
+
+
+
+
+########################
+# OTHERS
+########################
 src:
 	virtualenv ./ --system-site-packages
 
