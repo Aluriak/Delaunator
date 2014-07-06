@@ -55,7 +55,7 @@ class Delaunator {
                 void moveVertex(Vertex* v, float x, float y);
                 void moveVertexTo(Vertex* v, Coordinates c);
                 void delVertex(Vertex* v);
-#if DEBUG // some tests with assertions
+#ifdef DEBUG // some tests with assertions
                 void DEBUG_tests() const;
 #endif
 	// ACCESSORS
@@ -104,7 +104,7 @@ class Delaunator {
                 std::vector<Face*> faces;
 	// PRIVATE METHODS
                 Face* findContainerOf(Coordinates) const;
-#if DEBUG
+#ifdef DEBUG
                 bool applyDelaunayCondition(Face*, unsigned int ttl = 0);
 #else
                 bool applyDelaunayCondition(Face*);
@@ -157,7 +157,7 @@ class Delaunator {
                         } while(edge != v->getEdge());
 
                         for(Face* f : nei_faces) {
-#if DEBUG
+#ifdef DEBUG
                                 assert(f != NULL);
 #endif
                                 this->applyDelaunayCondition(f);

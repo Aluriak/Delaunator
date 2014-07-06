@@ -115,7 +115,7 @@ Delaunator::Delaunator(const float xmin, const float xmax,
 
         eSW2SE->setNextLeftEdge(eSE2NE);
         eSW2SE->setOppositeEdge(eSE2SW);
-#if DEBUG
+#ifdef DEBUG
         assert(eSW2SE == this->edges[11]);
         assert(eNW2NE == this->edges[0]);
         assert(eNW2NE->oppositeEdge() == eNE2NW);
@@ -127,7 +127,7 @@ Delaunator::Delaunator(const float xmin, const float xmax,
         this->faces.push_back(new Face(eSW2NW, false)); // extern face, describe outer world
         this->faces.push_back(new Face(eNE2SE, false)); // extern face, describe outer world
 
-#if DEBUG
+#ifdef DEBUG
         assert(eSW2NE->leftFace() == this->faces[0]);
         assert(eNE2SW->leftFace() == this->faces[1]);
         assert(eSE2SW->leftFace() == this->faces[2]);
@@ -186,7 +186,7 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
         Edge* p1_p2 = container->getEdge1();
         Edge* p2_p3 = container->getEdge2();
         Edge* p3_p1 = container->getEdge3();
-#if DEBUG
+#ifdef DEBUG
         assert(p1_p2->leftFace() == container);
         assert(p2_p3->leftFace() == container);
         assert(p3_p1->leftFace() == container);
@@ -224,7 +224,7 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
         f1->setEdge(p2_p0); 
         f2->setEdge(p3_p0);
         f3->setEdge(p1_p0);
-#if DEBUG
+#ifdef DEBUG
         this->DEBUG_tests();
 #endif
 
@@ -359,7 +359,7 @@ Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
  */
 void Delaunator::delVertex(Vertex* del_vrtx) {
 // INIT
-#if DEBUG
+#ifdef DEBUG
         assert(del_vrtx != NULL);
         assert(this->haveVertex(del_vrtx));
         assert(!this->isCornerVertex(del_vrtx));
@@ -424,7 +424,7 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
         Edge *side1l = edge1->nextLeftEdge();
         Edge *side2l = edge2->nextLeftEdge();
         Edge *side3l = edge3->nextLeftEdge();
-#if DEBUG
+#ifdef DEBUG
         // Some tests
         assert(nei_vrtx.size() == 3);
         assert(edge3  != edge1  && edge1  != edge2  && edge2  != edge3 );
@@ -460,7 +460,7 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
                 this->applyDelaunayCondition(face);
 
 // END
-#if DEBUG
+#ifdef DEBUG
         this->DEBUG_tests();
 #endif
 }
@@ -468,7 +468,7 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
 
 
 
-#if DEBUG // some tests with assertions
+#ifdef DEBUG // some tests with assertions
 /*
  * DEBUG TESTS.
  */
@@ -552,7 +552,7 @@ bool Delaunator::haveVertex(Vertex* v) const {
  * @return true iff tested Vertex is referenced by triangulation and is one of the four corner vertice
  */
 bool Delaunator::isCornerVertex(Vertex* v) const {
-#if DEBUG
+#ifdef DEBUG
         assert(v != NULL);
 #endif
         return v->getID() <= 4;
@@ -567,7 +567,7 @@ bool Delaunator::isCornerVertex(Vertex* v) const {
  * @return true iff tested Edge is referenced by triangulation and is one of the eight external Edge
  */
 bool Delaunator::isExternalEdge(Edge *e) const {
-#if DEBUG
+#ifdef DEBUG
         assert(e != NULL);
 #endif
         //return e->getID() <= 12;
@@ -618,7 +618,7 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
         Face* container = NULL;
         Edge *edge_cur = NULL;
 
-#if DEBUG
+#ifdef DEBUG
         assert(this->collideAt(target));
 #endif
 
@@ -638,7 +638,7 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
 #endif
 
 // while face not found, search face ( >edge>, container> , >counter> )
-#if DEBUG
+#ifdef DEBUG
         unsigned int iter_count = 0;
 #endif
         short counter_left = 0;
@@ -667,7 +667,7 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
                         // And then churn to left for get the better way.
                         edge_nxt = edge_cur;
                 }
-#if DEBUG
+#ifdef DEBUG
                 assert(edge_nxt != NULL); // there is always an edge that go on the right of the target
                 assert(edge_nxt->originVertex() == edge_cur->originVertex());
 #endif
@@ -678,11 +678,11 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
                 if(counter_left >= 3)   container = edge_cur->leftFace();
 
 
-#if DEBUG
+#ifdef DEBUG
                 assert((iter_count++) < (this->edges.size()*2+4));
 #endif
         }
-#if DEBUG
+#ifdef DEBUG
         assert(container->collideAt(target));
 #endif
 
@@ -702,7 +702,7 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
  * @param ttl time-to-live, or number of recursiv call operated
  * @return true if modifications operate on tiangulation
  */
-#if DEBUG
+#ifdef DEBUG
 bool Delaunator::applyDelaunayCondition(Face* f_ref, unsigned int ttl) {
         assert(f_ref != NULL && f_ref->getEdge() != NULL);
 #else 
@@ -735,7 +735,7 @@ bool Delaunator::applyDelaunayCondition(Face* f_ref) {
         if(flip_done) {
                 this->operateFlip(illegal_edge);
                 // Recursiv call on the updated faces
-#if DEBUG
+#ifdef DEBUG
                 // protection against infinite recursive call.
                 if(ttl < this->faces.size() / 2) {
                         this->applyDelaunayCondition(illegal_edge->leftFace(), ttl+1);
@@ -776,7 +776,7 @@ void Delaunator::operateFlip(Edge* illegal_edge1) {
         Edge* edge2_next = illegal_edge2->nextRightEdge()->oppositeEdge();
 
 
-#if DEBUG
+#ifdef DEBUG
 // TESTS
         assert(illegal_edge1->originVertex() != illegal_vertex1);
         assert(illegal_edge2->originVertex() != illegal_vertex1);
@@ -809,7 +809,7 @@ void Delaunator::operateFlip(Edge* illegal_edge1) {
         face1->setEdge(illegal_edge1);
         face2->setEdge(illegal_edge2);
 
-#if DEBUG
+#ifdef DEBUG
 // TESTS
         assert(illegal_edge1->originVertex() == illegal_vertex1);
         assert(illegal_edge1->nextLeftEdge() == illegal_edge2->nextRightEdge()->nextRightEdge()->oppositeEdge());
