@@ -10,33 +10,6 @@
  */
 Delaunator::Delaunator(const float xmin, const float xmax, 
                 const float ymin, const float ymax) : xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax) {
-# ifdef DEBUG
-// UNIT TESTS
-        assert(geometry::collisionBetweenSegmentAndLine(
-                                Coordinates(0,1),
-                                Coordinates(1,0),
-                                Coordinates(0,0),
-                                Coordinates(2,2)
-                                ));
-        assert(geometry::collisionBetweenSegmentAndLine(
-                                Coordinates(1,1),
-                                Coordinates(1,0),
-                                Coordinates(0,0),
-                                Coordinates(1,0)
-                                ));
-        assert(geometry::collisionBetweenSegmentAndLine(
-                                Coordinates(0,1),
-                                Coordinates(1,0),
-                                Coordinates(0,0),
-                                Coordinates(.5,.5)
-                                ));
-        assert(geometry::collisionBetweenSegmentAndLine(
-                                Coordinates(1,1),
-                                Coordinates(0,0),
-                                Coordinates(0,0),
-                                Coordinates(1,1)
-                                ));
-# endif
 // Creation of primitive mesh, with four points.
         this->vertices.push_back(new Vertex(xmin, ymin)); // NORTH-WEST
         this->vertices.push_back(new Vertex(xmax, ymin)); // NORTH-EAST
