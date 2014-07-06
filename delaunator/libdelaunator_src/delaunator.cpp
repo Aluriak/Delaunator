@@ -10,6 +10,33 @@
  */
 Delaunator::Delaunator(const float xmin, const float xmax, 
                 const float ymin, const float ymax) : xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax) {
+# ifdef DEBUG
+// UNIT TESTS
+        assert(geometry::collisionBetweenSegmentAndLine(
+                                Coordinates(0,1),
+                                Coordinates(1,0),
+                                Coordinates(0,0),
+                                Coordinates(2,2)
+                                ));
+        assert(geometry::collisionBetweenSegmentAndLine(
+                                Coordinates(1,1),
+                                Coordinates(1,0),
+                                Coordinates(0,0),
+                                Coordinates(1,0)
+                                ));
+        assert(geometry::collisionBetweenSegmentAndLine(
+                                Coordinates(0,1),
+                                Coordinates(1,0),
+                                Coordinates(0,0),
+                                Coordinates(.5,.5)
+                                ));
+        assert(geometry::collisionBetweenSegmentAndLine(
+                                Coordinates(1,1),
+                                Coordinates(0,0),
+                                Coordinates(0,0),
+                                Coordinates(1,1)
+                                ));
+# endif
 // Creation of primitive mesh, with four points.
         this->vertices.push_back(new Vertex(xmin, ymin)); // NORTH-WEST
         this->vertices.push_back(new Vertex(xmax, ymin)); // NORTH-EAST
@@ -105,6 +132,7 @@ Delaunator::Delaunator(const float xmin, const float xmax,
         assert(eNE2SW->leftFace() == this->faces[1]);
         assert(eSE2SW->leftFace() == this->faces[2]);
         assert(eNE2SE->leftFace() == this->faces[3]);
+        this->DEBUG_tests();
 #endif
 }
 
@@ -211,43 +239,97 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
 
 
 
+
+
+
+
 /**
  * Move given vertex by given vector values.
  * Modify the mesh in consequence.
  * Vertex can't pass over the mesh bounds.
+ * @param mv_vrtx the Vertex to move
+ * @param vec_x move in x axis
+ * @param vec_y move in y axis
  */
-void Delaunator::moveVertex(Vertex* v, float vec_x, float vec_y) {
-// Move the vertex
-        //v->x() += vec_x;
-        //v->y() += vec_y;
-        v->setX(v->x() + vec_x);
-        v->setY(v->y() + vec_y);
-        if(v->x() < this->xmin)  v->setX(this->xmin);
-        if(v->x() > this->xmax)  v->setX(this->xmax);
-        if(v->y() < this->ymin)  v->setY(this->ymin);
-        if(v->y() > this->ymax)  v->setY(this->ymax);
-
-// Detect if outside the face
-        
-
-// Modify Face 
-#if DELAUNAY_CONDITION
-// Apply Delaunay Condition
-        std::vector<Face*> nei_faces;
-        Edge* edge = v->getEdge();
-        do {
-                nei_faces.push_back(edge->leftFace());
-                edge = edge->rotLeftEdge();
-        } while(edge != v->getEdge());
-
-        for(Face* f : nei_faces) {
-#if DEBUG
-                assert(f != NULL);
-#endif
-                this->applyDelaunayCondition(f);
-        }
-#endif 
+void Delaunator::moveVertex(Vertex* v, float x, float y) { 
+        this->moveVertexTo(v, Coordinates(v->x()+x, v->y()+y)); 
 }
+
+
+
+/**
+ * Move given vertex at given Coordinates.
+ * Modify the mesh in consequence.
+ * Vertex can't pass over the mesh bounds.
+ * @param mv_vrtx the Vertex to move
+ * @param new_position of the Vertex
+ */
+void Delaunator::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
+// INIT
+        Edge* col_edge = NULL;
+        Coordinates circumcenter;
+        // some containers
+        std::vector<Edge*> limiter_edges;
+
+        if((*mv_vrtx) != new_position) {
+// LIMIT MOVE
+                logs("LIMIT MOVE\n");
+                if(new_position.x() < this->xmin)  new_position.setX(this->xmin);
+                if(new_position.x() > this->xmax)  new_position.setX(this->xmax);
+                if(new_position.y() < this->ymin)  new_position.setY(this->ymin);
+                if(new_position.y() > this->ymax)  new_position.setY(this->ymax);
+
+// FIND LIMITER EDGES 
+                logs("FIND LIMITER EDGES\n");
+                // limiter edges are the next left edges of all edge that have mv_vrtx as origin.
+                col_edge = mv_vrtx->getEdge();
+                do {
+                        limiter_edges.push_back(col_edge->nextLeftEdge());
+                        col_edge = col_edge->rotLeftEdge();
+                } while(col_edge != mv_vrtx->getEdge());
+
+// DETECT COLLISION WITH LIMITER EDGES
+                logs("DETECT COLLISION WITH %i LIMITER EDGES\n", limiter_edges.size());
+                // if no collision, just run the move pure
+                col_edge = NULL;
+                for(std::vector<Edge*>::iterator it = limiter_edges.begin(); it != limiter_edges.end(); it++) {
+                        if((*(*it)->originVertex()) == new_position) {
+                                it = limiter_edges.end();
+                        } else if(geometry::collisionBetweenSegmentAndSegment(
+                                        *(*it)->destinVertex(), *(*it)->originVertex(),
+                                        *mv_vrtx, new_position)
+                                && !geometry::parallelsLines(
+                                        *(*it)->destinVertex(), *(*it)->originVertex(),
+                                        *mv_vrtx, new_position)
+                                && !isExternalEdge(*it)
+                                        ) {
+                                                col_edge = (*it); 
+                                                it = limiter_edges.end()-1;
+                        }
+                }
+
+// OPERATE MOVING
+                logs("OPERATE MOVING BY %p\n", col_edge);
+                // Verify collision with neighbour edge
+                if(col_edge == NULL) {
+                        // No collision found: we just move vertex and verify Delaunay condition
+                        this->moveVertex_pure(mv_vrtx, new_position);
+                } else {
+                        // A collision is found !
+                        Coordinates intersec = geometry::intersectionOfLines(
+                                        *col_edge->destinVertex(), *col_edge->originVertex(),
+                                        *mv_vrtx, new_position
+                                        );
+                        if((*mv_vrtx) != new_position && intersec != new_position) {
+                                this->moveVertex_pure(mv_vrtx, intersec);
+                                this->moveVertexTo(mv_vrtx, new_position);
+                        }
+                }
+// ENDING
+        }
+}
+
+
 
 
 
@@ -470,7 +552,27 @@ bool Delaunator::haveVertex(Vertex* v) const {
  * @return true iff tested Vertex is referenced by triangulation and is one of the four corner vertice
  */
 bool Delaunator::isCornerVertex(Vertex* v) const {
-        return this->getIndexOf(v) < 4;
+#if DEBUG
+        assert(v != NULL);
+#endif
+        return v->getID() <= 4;
+}
+
+
+
+
+/**
+ * An external Edge is an Edge that rely two corner Vertex.
+ * @param e tested Edge
+ * @return true iff tested Edge is referenced by triangulation and is one of the eight external Edge
+ */
+bool Delaunator::isExternalEdge(Edge *e) const {
+#if DEBUG
+        assert(e != NULL);
+#endif
+        //return e->getID() <= 12;
+        // an edge is external if in contact with a unvisible face. 
+        return !e->leftFace()->isVisible() || !e->rightFace()->isVisible();
 }
 
 
@@ -611,20 +713,22 @@ bool Delaunator::applyDelaunayCondition(Face* f_ref) {
         Edge* illegal_edge = NULL; // illegal edge that relie the illegal vertex and the f_ref's vertex.
 
 // CONDITION: in circumcircle
-        // FIRST NEIGHBOUR
-        if(f_ref->circumcircleContainCoords(*f_ref->getEdge1()->nextRightEdge()->destinVertex())) {
-                illegal_edge = f_ref->getEdge1();
+        if(f_ref->isVisible()) {
+                // FIRST NEIGHBOUR
+                if(f_ref->circumcircleContainCoords(*f_ref->getEdge1()->nextRightEdge()->destinVertex())) {
+                        illegal_edge = f_ref->getEdge1();
 
-        // SECOND NEIGHBOUR
-        } else if(f_ref->circumcircleContainCoords(*f_ref->getEdge2()->nextRightEdge()->destinVertex())) {
-                illegal_edge = f_ref->getEdge2();
+                // SECOND NEIGHBOUR
+                } else if(f_ref->circumcircleContainCoords(*f_ref->getEdge2()->nextRightEdge()->destinVertex())) {
+                        illegal_edge = f_ref->getEdge2();
 
-        // THIRD NEIGHBOUR
-        } else if(f_ref->circumcircleContainCoords(*f_ref->getEdge3()->nextRightEdge()->destinVertex())) {
-                illegal_edge = f_ref->getEdge3();
+                // THIRD NEIGHBOUR
+                } else if(f_ref->circumcircleContainCoords(*f_ref->getEdge3()->nextRightEdge()->destinVertex())) {
+                        illegal_edge = f_ref->getEdge3();
 
-        // NO ILLEGAL SIDE
-        } else  flip_done = false;
+                // NO ILLEGAL SIDE
+                } else  flip_done = false;
+        } else flip_done = false;
 
 
 // MODIFICATION OF FACES
@@ -633,7 +737,7 @@ bool Delaunator::applyDelaunayCondition(Face* f_ref) {
                 // Recursiv call on the updated faces
 #if DEBUG
                 // protection against infinite recursive call.
-                if(ttl < this->faces.size()/2) {
+                if(ttl < this->faces.size() / 2) {
                         this->applyDelaunayCondition(illegal_edge->leftFace(), ttl+1);
                         this->applyDelaunayCondition(illegal_edge->rightFace(), ttl+1);
                 } else {

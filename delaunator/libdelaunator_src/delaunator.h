@@ -52,8 +52,8 @@ class Delaunator {
                 Vertex* addVertexAt(float x, float y) { return this->addVertexAt(Coordinates(x, y)); }
                 Vertex* vertexAt(float, float, float) const;
                 Vertex* vertexAt(Coordinates c, float p) const { return this->vertexAt(c.x(), c.y(), p); }
-                void moveVertex(Vertex* v, float vec_x, float vec_y);
-                void moveVertex(Vertex* v, Coordinates c) { this->moveVertex(v, c.x(), c.y()); }
+                void moveVertex(Vertex* v, float x, float y);
+                void moveVertexTo(Vertex* v, Coordinates c);
                 void delVertex(Vertex* v);
 #if DEBUG // some tests with assertions
                 void DEBUG_tests() const;
@@ -71,13 +71,17 @@ class Delaunator {
         // PREDICATS
                 bool haveVertex(Vertex*) const;
                 bool isCornerVertex(Vertex*) const;
+                bool isExternalEdge(Edge*) const;
                 bool collideAt(Coordinates) const;
-#ifdef FOLLOW_SEARCH
-                bool opt_follow_search() const { return true; }
+#ifdef DEBUG
                 bool opt_isdebug()       const { return true; }
 #else
-                bool opt_follow_search() const { return false; }
                 bool opt_isdebug()       const { return false; }
+#endif
+#ifdef FOLLOW_SEARCH
+                bool opt_follow_search() const { return true; }
+#else
+                bool opt_follow_search() const { return false; }
 #endif
 
 
@@ -135,6 +139,28 @@ class Delaunator {
                                         delete f;
                                         it = this->faces.end()-1;
                                 }
+                        }
+                }
+                /*
+                 * Replace given vertex coords by given values.
+                 */
+                inline void moveVertex_pure(Vertex* v, Coordinates new_p) {
+                // Move the vertex
+                        v->setX(new_p.x());
+                        v->setY(new_p.y());
+                // Apply Delaunay Condition
+                        std::vector<Face*> nei_faces;
+                        Edge* edge = v->getEdge();
+                        do {
+                                nei_faces.push_back(edge->leftFace());
+                                edge = edge->rotLeftEdge();
+                        } while(edge != v->getEdge());
+
+                        for(Face* f : nei_faces) {
+#if DEBUG
+                                assert(f != NULL);
+#endif
+                                this->applyDelaunayCondition(f);
                         }
                 }
 };
