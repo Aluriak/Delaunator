@@ -79,9 +79,8 @@ Some problems can appear :
 Contact maintainer by mail for help if necessary.
 
 ### Options in installations
-You can edit setup.py file, and change lines 38-42, where some macros are listed :
-- when DEBUG is defined, lots of verifications are done (by assert calls), so delete DEBUG will increase performances but block detection of corruptions;
-- FINDER METHOD is used for choose the initial edge when a container of Coordinates is looking for, while no benchmarks are done, i don't know wich method is the better;
+You can edit setup.py file, and change lines about 38, where DEBUG macro is defined. When DEBUG is defined, 
+lots of verifications are done (by assert calls), so delete DEBUG will increase performances but block detection of corruptions;
 
 Feel free to modify theses. (notabily delete DEBUG, if you want use delaunator in the faster way)  
 
