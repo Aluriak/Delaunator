@@ -7,8 +7,8 @@
 #########################
 # IMPORTS               #
 #########################
-from libdelaunator.libdelaunator import Delaunator, Vertex, Coordinates, Edge
-from libdelaunator.libdelaunator import IteratorOnAllEdges, IteratorFaceToNeighbourFaces, IteratorVertexToNeighbourVertices
+from delaunator import Delaunator, Vertex, Coordinates, Edge
+from delaunator import IteratorOnAllEdges, IteratorFaceToNeighbourFaces, IteratorVertexToNeighbourVertices
 from commons.commons import INTERFACE_TIME_SPEED, VIDEO_MODE_X, VIDEO_MODE_Y, PROGRAM_NAME, OFFSET, MOUSE_PRECISION
 from random import randint, choice
 from threading import Thread
@@ -77,14 +77,18 @@ class Delinterface(Thread):
                         self.addPointToDT(x-OFFSET, y-OFFSET)
                     elif event.key == pygame.K_SPACE:
                         self.togglePause()
+                    elif event.key == pygame.K_DELETE:
+                        vertex = self.getPointAt(*pygame.mouse.get_pos())
+                        if vertex is not None:
+                            self.dt.delVertex(vertex)
                     elif event.key == pygame.K_UP:
-                        self.movePoint(0,-10)
+                        self.movePoint(0,-500,self.dragged_point)
                     elif event.key == pygame.K_RIGHT:
-                        self.movePoint(10,0)
+                        self.movePoint(500,0,self.dragged_point)
                     elif event.key == pygame.K_DOWN:
-                        self.movePoint(0,10)
+                        self.movePoint(0,500,self.dragged_point)
                     elif event.key == pygame.K_LEFT:
-                        self.movePoint(-10,0)
+                        self.movePoint(-500,0,self.dragged_point)
                     elif event.key == pygame.K_a:
                         self.auto_add = not self.auto_add
                     elif event.key == pygame.K_n:
@@ -152,52 +156,7 @@ class Delinterface(Thread):
                 width = 1
             pygame.draw.line(self.screen, color, (p1.x+OFFSET, p1.y+OFFSET), (p2.x+OFFSET, p2.y+OFFSET), width)
             pygame.draw.circle(self.screen, color, (int(p2.x+OFFSET), int(p2.y+OFFSET)), 10, width)
-        #for it in self.dt.allFaces():
-            #p1 = it.getP1()
-            #p2 = it.getP2()
-            #p3 = it.getP3()
-            #if self.dragging and self.dragged_point in (p1, p2, p3):
-                #pygame.draw.line(self.screen, (255,0,0), (p1.x()+OFFSET, p1.y()+OFFSET), (p2.x()+OFFSET, p2.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (255,0,0), (p2.x()+OFFSET, p2.y()+OFFSET), (p3.x()+OFFSET, p3.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (255,0,0), (p3.x()+OFFSET, p3.y()+OFFSET), (p1.x()+OFFSET, p1.y()+OFFSET) )
-            #elif it.isVisible():
-                #pygame.draw.line(self.screen, (0,255,0), (p1.x()+OFFSET, p1.y()+OFFSET), (p2.x()+OFFSET, p2.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (0,255,0), (p2.x()+OFFSET, p2.y()+OFFSET), (p3.x()+OFFSET, p3.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (0,255,0), (p3.x()+OFFSET, p3.y()+OFFSET), (p1.x()+OFFSET, p1.y()+OFFSET) )
-            
-        #for i in range(self.dt.lstTri.nbItem):
-            #t = TL_getTri(self.dt.lstTri, i)
-            #p1 = TRI_p1(t)
-            #p2 = TRI_p2(t)
-            #p3 = TRI_p3(t)
-            #pl = t.circumcenter
-            #if self.print_triangles:
-                #pygame.draw.line(self.screen, (200,0,0), (p1.x()+OFFSET, p1.y()+OFFSET), (p2.x()+OFFSET, p2.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (0,200,0), (p2.x()+OFFSET, p2.y()+OFFSET), (p3.x()+OFFSET, p3.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (0,0,200), (p3.x()+OFFSET, p3.y()+OFFSET), (p1.x()+OFFSET, p1.y()+OFFSET) )
 
-            ## draw lines between gravity point of current triangle and its neighbors
-            #if self.print_neighbors:
-                #centroidT0 = t.centroid
-                #centroidT1 = TRI_getNeighbor1(t)
-                #centroidT2 = TRI_getNeighbor2(t)
-                #centroidT3 = TRI_getNeighbor3(t)
-                #if not math.isnan(centroidT0.x()):
-                    #if centroidT1 is not None: 
-                        #centroidT1 = TRI_getNeighbor1(t).centroid
-                        #if not math.isnan(centroidT1.x()):
-                            #pygame.draw.line(self.screen, (0,0,0), 
-                                     #(centroidT0.x()+OFFSET, centroidT0.y()+OFFSET), (centroidT1.x()+OFFSET, centroidT1.y()+OFFSET) )
-                    #if centroidT2 is not None: 
-                        #centroidT2 = TRI_getNeighbor2(t).centroid
-                        #if not math.isnan(centroidT2.x()):
-                            #pygame.draw.line(self.screen, (0,0,0), 
-                                     #(centroidT0.x()+OFFSET, centroidT0.y()+OFFSET), (centroidT2.x()+OFFSET, centroidT2.y()+OFFSET) )
-                    #if centroidT3 is not None: 
-                        #centroidT3 = TRI_getNeighbor3(t).centroid
-                        #if not math.isnan(centroidT3.x()):
-                            #pygame.draw.line(self.screen, (0,0,0), 
-                                     #(centroidT0.x()+OFFSET, centroidT0.y()+OFFSET), (centroidT3.x()+OFFSET, centroidT3.y()+OFFSET) )
 
 
 
@@ -224,9 +183,6 @@ class Delinterface(Thread):
         else:
             p = Coordinates(x, y)
         self.dt.addVertexAt(p)
-
-        #print("Point ("+str(p.x())+";"+str(p.y())+") added.")
-        #print("Total of "+str(self.dt.nb_points)+" points and "+str(self.dt.lstTri.nbItem)+" triangles")
 
 # PRIVATE METHODS #############################################################
 # PREDICATS ###################################################################

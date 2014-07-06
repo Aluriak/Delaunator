@@ -7,7 +7,7 @@
 #########################
 # IMPORTS               #
 #########################
-from libdelaunator.libdelaunator import Delaunator
+from delaunator import Delaunator
 from delinterface.delinterface import Delinterface
 from random import randint
 
