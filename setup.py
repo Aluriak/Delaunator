@@ -79,14 +79,7 @@ setup(
         "Programming Language :: C",
         "Programming Language :: C++",
         "Programming Language :: Python :: 3",
-        "Programming Language :: C#",
-        "Programming Language :: Java",
-        "Programming Language :: OCaml",
-        "Programming Language :: Other",
-        "Programming Language :: Perl",
-        "Programming Language :: PHP",
         "Programming Language :: Python",
-        "Programming Language :: Tcl",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ]
