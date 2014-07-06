@@ -7,9 +7,15 @@
  ***************************************************/
 /**
  * Wait for limits of triangulation in axis x and y.
+ * @param xmin minimal value in x axis allowed
+ * @param xmax maximal value in x axis allowed
+ * @param ymin minimal value in y axis allowed
+ * @param ymax maximal value in y axis allowed
+ * @param finder_mode for choose which mode of finder will be used for search Coordinates, LAST by default
+ * @see FinderInitial
  */
 Delaunator::Delaunator(const float xmin, const float xmax, 
-                       const float ymin, const float ymax, Delaunator::FinderInitial finder_mode) : 
+                       const float ymin, const float ymax, const FinderInitial finder_mode) : 
                                 xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax), finder_mode(finder_mode) {
 // Creation of primitive mesh, with four points.
         this->vertices.push_back(new Vertex(xmin, ymin)); // NORTH-WEST

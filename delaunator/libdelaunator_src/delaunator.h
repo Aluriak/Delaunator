@@ -62,7 +62,7 @@ class Delaunator {
 
 	// CONSTRUCTOR
 		Delaunator(const float, const float, 
-                           const float, const float, Delaunator::FinderInitial = Delaunator::FINDER_INITIAL_LAST);
+                           const float, const float, const FinderInitial = FINDER_INITIAL_LAST);
 		~Delaunator();
 	// PUBLIC METHODS
                 Vertex* addVertexAt(Coordinates);
@@ -84,6 +84,8 @@ class Delaunator {
                 float getYmin() const { return this->ymin; }
                 float getYmax() const { return this->ymax; }
                 float epsilon() const { return EPSILON; }
+                FinderInitial getFinderMode() const { return this->finder_mode; }
+                void setFinderMode(FinderInitial m) { this->finder_mode = m;    }
 
         // PREDICATS
                 bool haveVertex(Vertex*) const;
