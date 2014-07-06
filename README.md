@@ -18,14 +18,15 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] doxygen integration;
 - [x] find a better way than TTL limit for fix infinite recursion problem;  (find: better management of computing precision)  
 - [x] vertex deleting;  
-- [ ] manage big/precise moves;  
+- [x] manage big/precise moves;  
+- [ ] manage confunded Vertex;  
 - [ ] optimize Vertex, Edge and Face containing;
 - [ ] use threads;  
 - [ ] implement iterator on the N nearest neighbors of a vertex;  
 - [ ] implement iterator on the N nearest neighbors of a vertex that respect a predicat;  
 - [ ] implements DAG version of coordinates' container finding;  
 - [ ] do benchmarks between DAG and current vertex finder;  
-- [ ] permit to user to choose finder and debug options at installation;  
+- [ ] permit to user to choose finder and debug options at Delaunator instanciation;  
 
 
 ## MAYBE-A-DAY DO LIST
