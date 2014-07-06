@@ -9,7 +9,8 @@
  * Wait for limits of triangulation in axis x and y.
  */
 Delaunator::Delaunator(const float xmin, const float xmax, 
-                const float ymin, const float ymax) : xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax) {
+                       const float ymin, const float ymax, Delaunator::FinderInitial finder_mode) : 
+                                xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax), finder_mode(finder_mode) {
 // Creation of primitive mesh, with four points.
         this->vertices.push_back(new Vertex(xmin, ymin)); // NORTH-WEST
         this->vertices.push_back(new Vertex(xmax, ymin)); // NORTH-EAST
@@ -596,19 +597,21 @@ Face* Delaunator::findContainerOf(Coordinates target) const {
 #endif
 
 // choose the initial Edge ( >edge> )
-#ifdef DELAUNAY_FINDER_INITIAL_RANDOM 
-        edge_cur = this->edges[randN(this->edges.size())];
-#else
-#ifdef DELAUNAY_FINDER_INITIAL_MIDDLE
-        edge_cur = this->edges[this->edges.size() / 2];
-#else
-#ifdef DELAUNAY_FINDER_INITIAL_LAST
-        edge_cur = this->edges[this->edges.size() - 1];
-#else
-        edge_cur = this->edges[0];
-#endif
-#endif
-#endif
+        switch(this->finder_mode) {
+                case Delaunator::FINDER_INITIAL_RANDOM:
+                        edge_cur = this->edges[randN(this->edges.size())];
+                        break;
+                case Delaunator::FINDER_INITIAL_FIRST:
+                        edge_cur = this->edges[0];
+                        break;
+                case Delaunator::FINDER_INITIAL_MIDDLE:
+                        edge_cur = this->edges[this->edges.size() / 2];
+                        break;
+                case Delaunator::FINDER_INITIAL_LAST:
+                default:
+                        edge_cur = this->edges[this->edges.size() - 1];
+                        break;
+        }
 
 // while face not found, search face ( >edge>, container> , >counter> )
 #ifdef DEBUG

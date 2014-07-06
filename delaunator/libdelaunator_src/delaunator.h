@@ -26,12 +26,11 @@
  * PREDECLARATIONS
  */
 
-
-
 /*
  * For some explanations on quad-edge implementation :
  * http://totologic.blogspot.fr/2013/11/core-quad-edge-implementation-explained.html
 */
+
 
 
 
@@ -44,8 +43,26 @@
  */
 class Delaunator {
 	public:
+        // INTERNAL CLASS TYPES
+        /**
+         * Finder mode for when triangulation looking for the Face that contain Coordinates 
+         *   (notabily for Vertex adding).  
+         * Random: random Edge in all existing in Delaunator instance
+         * First: the first added Edge
+         * Middle: the Edge in the middle of the Edge list
+         * Last: the last added Edge
+         * @note Last mode is certainly the better, especially in case where added Vertex are close to previous one
+         */
+        enum FinderInitial {
+                FINDER_INITIAL_RANDOM,
+                FINDER_INITIAL_FIRST,
+                FINDER_INITIAL_MIDDLE,
+                FINDER_INITIAL_LAST
+        };
+
 	// CONSTRUCTOR
-		Delaunator(const float, const float, const float, const float);
+		Delaunator(const float, const float, 
+                           const float, const float, Delaunator::FinderInitial = Delaunator::FINDER_INITIAL_LAST);
 		~Delaunator();
 	// PUBLIC METHODS
                 Vertex* addVertexAt(Coordinates);
@@ -96,9 +113,15 @@ class Delaunator {
                 IteratorOnAllVertices allVertices()     { return IteratorOnAllVertices(&this->vertices); }
                 IteratorOnAllVertices_read allVertices_read() const 
                                                         { return IteratorOnAllVertices_read(&this->vertices); }
+
+
+
+
+// PRIVATE
 	private:
 	// ATTRIBUTES
                 float xmin, xmax, ymin, ymax;
+                FinderInitial finder_mode;
                 std::vector<Vertex*> vertices;
                 std::vector<Edge*> edges;
                 std::vector<Face*> faces;
