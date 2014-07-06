@@ -36,11 +36,6 @@ swig_extension = Extension(
     swig_opts = ['-c++'],
     define_macros = [
         ('DEBUG', 1),
-        # choose your finder mode here !
-        ('DELAUNAY_FINDER_INITIAL_RANDOM', None),
-        #('DELAUNAY_FINDER_INITIAL_FIRST', None),
-        #('DELAUNAY_FINDER_INITIAL_MIDDLE', None),
-        #('DELAUNAY_FINDER_INITIAL_LAST', None),
     ],
     optional = False,
     extra_compile_args = [
