@@ -73,7 +73,7 @@ must be enough.
 Please note that SWIG is needed. (see links below; SWIG is in official repositories in most of cases)  
 
 Some problems can appear : 
-- on my debian stable, SWIG is named *swig2.0*, but setuptools use *swig*. You can can correct that with command *python3 setup.py setopt --command=build_ext --option=swig --set-value=swig2.0*, or something like that.  
+- on my debian stable, SWIG is named *swig2.0*, but setuptools call *swig*. You can correct that with command *python3 setup.py setopt --command=build_ext --option=swig --set-value=swig2.0*, or something like that.  
 - be sur to have only one version of setuptools, sometimes there are problems when two different versions are installed.  
 
 Contact maintainer by mail for help if necessary.
