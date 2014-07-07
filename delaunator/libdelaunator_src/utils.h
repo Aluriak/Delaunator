@@ -53,47 +53,4 @@ float round_float(const float, const float);
 
 
 
-/*
- * PREDECLARATIONS
- */
-// structure of dual, two int (for coordonate, sizes,...)
-struct dual {
-	// CONSTRUCTOR
-		dual(const int a = 0, const int b = 0) : x(a), y(b) {}
-	// OPERATORS
-                dual operator+(const dual &d) const     {return dual(x+d.x, y+d.y);}
-                dual operator+=(const dual &d)          {x += d.x; y+= d.y; return *this;}
-                dual operator-(const dual &d) const     {return dual(x-d.x, y-d.y);}
-                bool operator==(const dual &d) const    {return (x==d.x && y==d.y);}
-	// ATTRIBUTES
-		int x, y;
-};
-
-// structure of integer percentage
-struct percentage {
-	public:
-	// CONSTRUCTOR
-		percentage(const int p_ = 0) {p = valAbs(p_) % 101; }
-		percentage(const percentage &p_) {p = p_.p;}
-	// METHODS
-                int of(const int nb) { return (nb * p) / 100; }
-                float of(const float nb) { return (nb * (float)p) / 100.; }
-                int value() { return p; }
-	// OPERATORS
-		int operator==(const percentage &p_)	{return (p_.p == p);}
-		int operator==(const int p_) 		{return (p_ == p);}
-		int operator=(const percentage p_) 	{p = p_.p; return p;}
-		int operator=(const int p_) 		{p = valAbs(p_)%101; return p;}
-		int operator+(const percentage &p_) 	{return (p + p_.p)%101;}
-		int operator+(const int p_) 		{return (p + p_)%101;}
-		int operator-(const percentage &p_) 	{return valAbs(p - p_.p)%101;}
-		int operator-(const int p_) 		{return valAbs(p - p_)%101;}
-	private:
-	// ATTRIBUTES
-		int p; // value of percentage
-};
-
-
-
-
 #endif
