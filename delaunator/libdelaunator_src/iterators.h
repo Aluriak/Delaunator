@@ -36,6 +36,7 @@ class IteratorOnAllVertices {
 	public:
 	// CONSTRUCTOR
 		IteratorOnAllVertices(std::vector<Vertex*>* v) : vertices(v) {
+                        // ignore the 4 first vertices, that are the external ones.
                         this->it = this->vertices->begin()+4;
                 }
 	// PUBLIC METHODS
@@ -68,8 +69,8 @@ class IteratorOnAllVertices_read {
 	public:
 	// CONSTRUCTOR
 		IteratorOnAllVertices_read(const std::vector<Vertex*>* const v) : vertices(v) {
-                        this->it = this->vertices->begin();
-                        this->next(); this->next(); this->next(); this->next();
+                        // ignore the 4 first vertices, that are the external ones.
+                        this->it = this->vertices->begin()+4;
                 }
 	// PUBLIC METHODS
                 IteratorOnAllVertices_read& next() { 
