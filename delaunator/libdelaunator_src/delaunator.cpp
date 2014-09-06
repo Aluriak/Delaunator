@@ -100,6 +100,7 @@ Delaunator::Delaunator(const float xmin, const float xmax,
         assert(eSW2SE == this->edges[11]);
         assert(eNW2NE == this->edges[0]);
         assert(eNW2NE->oppositeEdge() == eNE2NW);
+        geometry::unit_tests();
 #endif
 
 // Creation of the four faces. (two external faces exist, but are not used, for simplify treatments)
