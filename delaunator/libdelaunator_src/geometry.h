@@ -27,6 +27,8 @@ namespace geometry {
         void unit_tests(); // call that once for verify integrity of geometry fonctions
 
 
+        float squareDistanceBetweenPoints(float x1, float y1, float x2, float y2);
+
         bool pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0);
 
         Coordinates circumcenterOf(Coordinates A, Coordinates B, Coordinates C);

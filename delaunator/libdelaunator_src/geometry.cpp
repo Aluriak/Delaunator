@@ -29,6 +29,27 @@ void geometry::unit_tests() {
 
 
 
+/***************************************************
+ * SQUARE DISTANCE BETWEEN POINTS
+ ***************************************************/
+/**
+ * @param x1 coordinate in x for first point 
+ * @param y1 coordinate in y for first point 
+ * @param x2 coordinate in x for second point
+ * @param y2 coordinate in y for second point
+ * @return square distance between the two points
+ * @warning return value is square of distance, not real distance
+ */
+float geometry::squareDistanceBetweenPoints(float x1, float y1, float x2, float y2) {
+        return (x1-x2) * (x1-x2) + (y1-y2) * (y1-y2);
+}
+
+
+
+
+
+
+
 
 /***************************************************
  * POINT IN CIRCUMCIRCLE OF 
