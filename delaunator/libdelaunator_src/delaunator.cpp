@@ -279,8 +279,12 @@ void Delaunator::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                 // Detect collision with each limiter edge
                 // the nearer collision of mv_vrtx will be kept as col_edge
                 for(std::vector<Edge*>::iterator it = limiter_edges.begin(); it != limiter_edges.end(); it++) {
+                        // if point is already on another point
+                        if(*mv_vrtx == *(*it)->originVertex()) {
+                                assert(false); // we will find a better idea later
+                        } 
                         // if limiter vertex is on the way to new_position, there is collision !
-                        if(geometry::squareDistanceBetweenSegmentAndPoint(
+                        else if(geometry::squareDistanceBetweenSegmentAndPoint(
                                                 //Way to new_position coords
                                                 mv_vrtx->x(), mv_vrtx->y(),
                                                 new_position.x(), new_position.y(),
