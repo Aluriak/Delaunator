@@ -18,10 +18,11 @@ Delaunator::Delaunator(const float xmin, const float xmax,
                        const float ymin, const float ymax, const FinderInitial finder_mode) : 
                                 xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax), finder_mode(finder_mode) {
 // Creation of primitive mesh, with four points.
-        this->vertices.push_back(new Vertex(xmin, ymin)); // NORTH-WEST
-        this->vertices.push_back(new Vertex(xmax, ymin)); // NORTH-EAST
-        this->vertices.push_back(new Vertex(xmax, ymax)); // SOUTH-EAST
-        this->vertices.push_back(new Vertex(xmin, ymax)); // SOUTH-WEST
+        this->vertices.push_back(new Vertex(xmin-1, ymin-1)); // NORTH-WEST
+        this->vertices.push_back(new Vertex(xmax+1, ymin-1)); // NORTH-EAST
+        this->vertices.push_back(new Vertex(xmax+1, ymax+1)); // SOUTH-EAST
+        this->vertices.push_back(new Vertex(xmin-1, ymax+1)); // SOUTH-WEST
+        std::cout << this->vertices[0]->x() << ";" << this->vertices[0]->y() << std::endl;
 
 // Creation of Edges that rely vertices.
         this->edges.push_back(new Edge(this->vertices[0]));
