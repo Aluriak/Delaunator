@@ -21,19 +21,20 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] manage big/precise moves;  
 - [x] permit to user to choose finder options at Delaunator instanciation;  
 - [ ] manage confunded Vertex;  
+- [ ] manage internal association between Vertex and associated user objects;
+- [ ] manage groups of vertices that moves together;
 - [ ] optimize Vertex, Edge and Face containing;
 - [ ] use threads;  
 - [ ] implement iterator on the N nearest neighbors of a vertex;  
 - [ ] implement iterator on the N nearest neighbors of a vertex that respect a predicat;  
-- [ ] implements DAG version of coordinates' container finding;  
-- [ ] do benchmarks between DAG and current vertex finder;  
-- [ ] permit to user to choose preprocessor options by config files;  
+- [ ] permit to user to choose preprocessor options by config files or other useful way;  
 
 
 ## MAYBE-A-DAY DO LIST
-- support the third dimension;  
 - support constraints;
 - built-in collision API;
+- support the third dimension;  
+- implements DAG version of coordinates' container finding & do benchmarks between it and current finder;  
 - do a technical tutorial on quad-edge and other structure/algo used by this module;  
 - do a technical tutorial on methodology for creat a package like this;  
 - build documentation of source, presented in Python style;  
@@ -54,7 +55,7 @@ See github repo, pydelaunator repertory, for built-in example.
 
     dt.moveVertex(vtx, .5, -31)
     
-    # print ID of all all neighbour vertices
+    # print ID of all neighbour vertices
     print(", ".join([str(_.getID()) for _ in self.dt.getNeighbors(vtx)]))
     
     dt.delVertex(vtx)
@@ -81,7 +82,7 @@ Contact maintainer by mail for help if necessary.
 
 ### Options in installations
 You can edit setup.py file, and change lines about 38, where DEBUG macro is defined. When DEBUG is defined, 
-lots of verifications are done (by assert calls), so delete DEBUG will increase performances but block detection of corruptions;
+lots of verifications are done (by assert calls), so delete DEBUG will increase performances but remove detection of corruptions;
 
 Feel free to modify theses. (notabily delete DEBUG, if you want use delaunator in the faster way)  
 
