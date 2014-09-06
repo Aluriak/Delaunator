@@ -146,9 +146,11 @@ Delaunator::~Delaunator() {
  ***************************************************/
 /**
  * Add a new vertex to Mesh at given coordinates.
- * Return address of that point in Mesh, or NULL if not found or out of bounds.
+ * @param p Coordinates where Vertex will be add
+ * @param first initial Edge use by finder, in place of the one taked according to FinderMode
+ * @return address of that point in Mesh, or NULL if not found or out of bounds.
  */
-Vertex* Delaunator::addVertexAt(Coordinates p) {
+Vertex* Delaunator::addVertexAt(Coordinates p, Edge* first) {
 // initialization
         Face* container = NULL; // container of p
         Vertex* new_vertex = NULL; // returned vertex
@@ -160,7 +162,7 @@ Vertex* Delaunator::addVertexAt(Coordinates p) {
                 (*it)->passing = false;
         }
 #endif
-        container = this->findContainerOf(p);
+        container = this->findContainerOf(p, first);
         if(container != NULL) {
         
 // divide in 3 triangles ( >container>, >p>, >new_vertex )
@@ -285,13 +287,7 @@ void Delaunator::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                                                 //Limiter vertex coords
                                                 (*it)->originVertex()->x(), (*it)->originVertex()->y()
                                 ) <= EPSILON) {
-                                        logs(":(%f;%f), (%f;%f), (%f;%f)\n",
-                                                //Way to new_position coords
-                                                mv_vrtx->x(), mv_vrtx->y(),
-                                                new_position.x(), new_position.y(),
-                                                //Limiter vertex coords
-                                                (*it)->originVertex()->x(), (*it)->originVertex()->y()
-                                        );
+                                        logs(":");
                                         // Collision with a vertex !
                                         // if distance to the vertex is lower
                                         if(distance > (*it)->originVertex()->squareDistanceTo(*mv_vrtx)) {
@@ -301,10 +297,10 @@ void Delaunator::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                                                         col_edge = col_edge->rotLeftEdge();
                                                 // distance updated
                                                 distance = col_edge->length();
-                                        }
 #if DEBUG
-                                        assert((*it)->originVertex() == col_edge->originVertex());
+                                                assert((*it)->originVertex() == col_edge->originVertex());
 #endif
+                                        }
                         // collision with limiter edge
                         } else if(geometry::collisionBetweenSegmentAndSegment(
                                         *(*it)->destinVertex(), *(*it)->originVertex(),
@@ -656,33 +652,35 @@ IteratorVertexToNeighbourVertices Delaunator::getNeighbors(Vertex* v) {
  * PRIVATE METHODS
  ***************************************************/
 /**
- * @param target Coordinates that must be different of NULL.
+ * @param target Coordinates that must be valid (no out of bounds).
+ * @param edge_cur the first Vertex used for research. if NULL, first will be set accordins to FinderMode.
  * @return address of Face of Delaunator that contains given coordinates, or NULL if error. If out of bounds, return the unvisible face that contain p
  */
-Face* Delaunator::findContainerOf(Coordinates target) const {
+Face* Delaunator::findContainerOf(Coordinates target, Edge* edge_cur) const {
 // initialization
         Face* container = NULL;
-        Edge *edge_cur = NULL;
 
 #ifdef DEBUG
         assert(this->collideAt(target));
 #endif
 
 // choose the initial Edge ( >edge> )
-        switch(this->finder_mode) {
-                case Delaunator::FINDER_INITIAL_RANDOM:
-                        edge_cur = this->edges[randN(this->edges.size())];
-                        break;
-                case Delaunator::FINDER_INITIAL_FIRST:
-                        edge_cur = this->edges[0];
-                        break;
-                case Delaunator::FINDER_INITIAL_MIDDLE:
-                        edge_cur = this->edges[this->edges.size() / 2];
-                        break;
-                case Delaunator::FINDER_INITIAL_LAST:
-                default:
-                        edge_cur = this->edges[this->edges.size() - 1];
-                        break;
+        if(edge_cur == NULL) {
+                switch(this->finder_mode) {
+                        case Delaunator::FINDER_INITIAL_RANDOM:
+                                edge_cur = this->edges[randN(this->edges.size())];
+                                break;
+                        case Delaunator::FINDER_INITIAL_FIRST:
+                                edge_cur = this->edges[0];
+                                break;
+                        case Delaunator::FINDER_INITIAL_MIDDLE:
+                                edge_cur = this->edges[this->edges.size() / 2];
+                                break;
+                        case Delaunator::FINDER_INITIAL_LAST:
+                        default:
+                                edge_cur = this->edges[this->edges.size() - 1];
+                                break;
+                }
         }
 
 // while face not found, search face ( >edge>, container> , >counter> )
