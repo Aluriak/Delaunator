@@ -24,6 +24,9 @@
  * Geometry is a namespace that define lots of useful geometry functions.
  */
 namespace geometry {
+        void unit_tests(); // call that once for verify integrity of geometry fonctions
+
+
         bool pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0);
 
         Coordinates circumcenterOf(Coordinates A, Coordinates B, Coordinates C);

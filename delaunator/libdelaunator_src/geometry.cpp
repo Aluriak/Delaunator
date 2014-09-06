@@ -2,6 +2,33 @@
 
 
 
+/***************************************************
+ * UNIT TESTS 
+ ***************************************************/
+/** 
+ * call that once for verify integrity of geometry fonctions
+ * @warning: assertion fail if detected problem
+ */
+void geometry::unit_tests() {
+        assert(pointInCircumcircleOf(Coordinates(1,0), Coordinates(0,1), 
+                                Coordinates(1,2), Coordinates(2-EPSILON,1)));
+        float d = sqrt(squareDistanceBetweenSegmentAndPoint(
+                0,0, 1,1, 1,2
+        )); 
+        assert(abs(d-1.) < EPSILON);
+        //assert();
+        //assert();
+}
+
+
+
+
+
+
+
+
+
+
 
 /***************************************************
  * POINT IN CIRCUMCIRCLE OF 
