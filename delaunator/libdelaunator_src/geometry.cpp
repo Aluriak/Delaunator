@@ -234,8 +234,9 @@ float geometry::squareDistanceBetweenSegmentAndPoint(float x1, float y1, float x
 
 
 
+
 /***************************************************
- * INTERSECTION OF LINES
+ * PARALLELS LINES
  ***************************************************/
 /**
  * @param A Coordinates of a line point
