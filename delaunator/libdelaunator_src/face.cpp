@@ -42,6 +42,9 @@ void Face::computeInternalValues() {
         // Deduce coordinates of Centroid.
         this->centroid.setX((p1->x() + p2->x() + p3->x()) / 3.);
         this->centroid.setY((p1->y() + p2->y() + p3->y()) / 3.);
+
+        // Deduce coordinates of Circumcenter
+        this->circumcenter_ = geometry::circumcenterOf(*this->getP1(), *this->getP2(), *this->getP3());
 }
 
 
