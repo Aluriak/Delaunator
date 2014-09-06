@@ -46,7 +46,7 @@ namespace geometry {
         bool collisionBetweenSegmentAndSegment(Coordinates A, Coordinates B, Coordinates C, Coordinates D);
         
         bool collisionBetweenLineAndCircle(Coordinates A, Coordinates B, Coordinates C, float radius);
-        
+
         bool pointInCircle(Coordinates A, Coordinates C, float radius);
         
         bool collisionBetweenSegmentAndCircle(Coordinates A, Coordinates B, Coordinates C, float radius);
@@ -54,6 +54,9 @@ namespace geometry {
         Coordinates projectionOfPointOnLine(Coordinates A, Coordinates B, Coordinates C);
         
         unsigned int intersectionsBetweenLineAndCircle(Coordinates A, Coordinates B, Coordinates C, 
+                        float radius, Coordinates* S1, Coordinates* S2);
+        
+        unsigned int intersectionsBetweenSegmentAndCircle(Coordinates A, Coordinates B, Coordinates C, 
                         float radius, Coordinates* S1, Coordinates* S2);
         
         bool coeffAndOrdnOfLine(Coordinates A, Coordinates B, float* coef, float* ordn);

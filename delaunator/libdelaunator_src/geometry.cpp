@@ -510,6 +510,49 @@ unsigned int geometry::intersectionsBetweenLineAndCircle(Coordinates A, Coordina
 
 
 /***************************************************
+ * INTERSECTIONS BETWEEN SEGMENT AND CIRCLE
+ ***************************************************/
+/**
+ * @param A Coordinates of extremity of [AB]
+ * @param B Coordinates of extremity of [AB]
+ * @param C Coordinates of center of circle
+ * @param radius of the circle 
+ * @param S1 reference to Coordinates of the first find point of intersection between cricle and [AB]
+ * @param S2 reference to Coordinates of the second find point
+ * @return number of solution, 0, 1 or 2
+ * @note if return 2, S1 and S2 are modified, if 1, S1 is modified and maybe S2, else both can be modified
+ */
+unsigned int geometry::intersectionsBetweenSegmentAndCircle(Coordinates A, Coordinates B, Coordinates C, 
+                float radius, Coordinates* S1, Coordinates* S2) {
+        unsigned int nb_solution = intersectionsBetweenLineAndCircle(A, B, C, radius, S1, S2);
+        float distance_AB = A.squareDistanceTo(B);
+        // RETRACT solutions that aren't on [AB]
+        if(nb_solution == 2) {
+                if(S2->squareDistanceTo(A) > distance_AB || S2->squareDistanceTo(B) > distance_AB) {
+                        nb_solution--;
+                }
+                if(S1->squareDistanceTo(A) > distance_AB || S1->squareDistanceTo(B) > distance_AB) {
+                        nb_solution--;
+                        *S1 = *S2;
+                }
+        } 
+        if(nb_solution == 1) {
+                if(S1->squareDistanceTo(A) > distance_AB || S1->squareDistanceTo(B) > distance_AB) {
+                        nb_solution--;
+                }
+        }
+        // END
+        return nb_solution;
+}
+
+
+
+
+
+
+
+
+/***************************************************
  * COEF AND ORDN OF LINE
  ***************************************************/
 /**
