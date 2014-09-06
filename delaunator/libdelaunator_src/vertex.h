@@ -61,6 +61,10 @@ struct Coordinates {
                         Coordinates r(this->_x + c._x, this->_y + c._y);
                         return r;
                 }
+                Coordinates operator-(const Coordinates& c) {
+                        Coordinates r(this->_x - c._x, this->_y - c._y);
+                        return r;
+                }
                 Coordinates operator+=(const Coordinates& c) {
                         return *this + c;
                 }
