@@ -36,6 +36,7 @@ swig_extension = Extension(
     swig_opts = ['-c++'],
     define_macros = [
         ('DEBUG', 1),
+        ('VERBOSE', 1),
     ],
     optional = False,
     extra_compile_args = [
