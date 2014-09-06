@@ -193,31 +193,36 @@ bool geometry::pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, C
 
 
 /***************************************************
- * DISTANCE BETWEEN POINT AND SEGMENT
+ * SQUARE DISTANCE BETWEEN SEGMENT AND POINT 
  ***************************************************/
 /**
  * @param x1 coordinate in x for first point of segment
  * @param y1 coordinate in y for first point of segment
- * @param y2 coordinate in y for second point of segment
  * @param x2 coordinate in x for second point of segment
+ * @param y2 coordinate in y for second point of segment
  * @param px coordinate in x of tested point
  * @param py coordinate in y of tested point
  * @return shorter square distance between segment and point
  * @warning return value is square of distance, not real distance
  */
-float geometry::distanceBetweenPointAndSegment(float x1, float x2, float y1, float y2, float px, float py) {
-        // Algorithm found on http://totologic.blogspot.fr/2014/01/accurate-point-in-triangle-test.html
-        float p1_p2_square_dist = (x2-x1) * (x2-x1) + (y2-y1) * (y2-y1);
-        float dotProduct = ((px-x1) * (x2-x1) + (py-y1) * (y2-y1)) / p1_p2_square_dist;
-        float distance = 0.;
+float geometry::squareDistanceBetweenSegmentAndPoint(float x1, float y1, float x2, float y2, float px, float py) {
+        float distance = -1.;
+        // Algorithm found on 
+        //   http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+        const float square_len = geometry::squareDistanceBetweenPoints(x1, y1, x2, y2);  // distance squared
+        if(abs(square_len) < EPSILON) 
+                distance = geometry::squareDistanceBetweenPoints(x1, y1, px, py);
 
-        if(dotProduct < 0)
-                distance = (px-x1) * (px-x1) + (py-y1) * (py-y1);
-        else if(dotProduct <= 1) {
-                float p_p1_square_dist = (x1-px) * (x1-px) + (y1-py) * (y1-py);
-                distance = p_p1_square_dist - dotProduct * dotProduct * p1_p2_square_dist;
+        Coordinates pxy1(px-x1, py-y1), pxy2(px-x2, py-y2);
+        const float t = (pxy1.x()*pxy2.x() + pxy1.y()*pxy2.y()) / square_len;
+
+        if(t < 0.) {
+                distance = geometry::squareDistanceBetweenPoints(px, py, x1, y1);
+        } else if(t > 1.) {
+                distance = geometry::squareDistanceBetweenPoints(px, py, x2, y2);
+        } else { 
+                distance = geometry::squareDistanceBetweenPoints(px, py, x1 + t*(x2-x1), y1 + t*(y2-y1));
         }
-        else {  distance = (px-x2) * (px-x2) + (py-y2) * (py-y2); }
 
         return distance;
 }

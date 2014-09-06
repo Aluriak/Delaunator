@@ -35,7 +35,7 @@ namespace geometry {
         
         bool pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0);
         
-        float distanceBetweenPointAndSegment(float x1, float x2, float y1, float y2, float px, float py);
+        float squareDistanceBetweenSegmentAndPoint(float x1, float x2, float y1, float y2, float px, float py);
         
         bool parallelsLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D);
         
