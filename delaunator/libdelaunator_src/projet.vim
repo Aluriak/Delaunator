@@ -22,7 +22,11 @@ vsp	commons.h
 tabnew  templates.h
 vsp     inlines.h
 
-tabnew	iterators.h
+tabnew	vertex_iterators.h
+vsp     iterators.h
+
+tabnew	face_iterators.h
+vsp     edge_iterators.h
 
 tabnew  libdelaunator.i
 vsp     iterators.i
