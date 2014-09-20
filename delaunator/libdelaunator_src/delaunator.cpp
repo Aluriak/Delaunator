@@ -516,6 +516,29 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
 
 
 
+/**
+ * Merge two Vertex by destroying the second one
+ * @param v the Vertex
+ * @param v_destroyed the Vertex that will be destroyed
+ * @note all iterators and pointers on v_destroyed will be destroyed
+ */
+void Delaunator::mergeVertex(Vertex* v, Vertex* v_destroyed) {
+#if DEBUG
+        assert(v->isNeighbourOf(v_destroyed));
+#endif
+        // Transmission of objects of v_destroyed to v
+        v_destroyed->giveTrianguledObjectsTo(v);
+        // Deletion of v_destroyed
+        this->delVertex(v_destroyed);
+}
+
+
+
+
+
+
+
+
 #ifdef DEBUG // some tests with assertions
 /*
  * DEBUG TESTS.

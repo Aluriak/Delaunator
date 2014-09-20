@@ -75,6 +75,7 @@ class Delaunator {
                 void moveVertex(Vertex* v, float x, float y);
                 void moveVertexTo(Vertex* v, Coordinates c);
                 void delVertex(Vertex* v);
+                void mergeVertex(Vertex* v, Vertex* v_destroyed);
 #ifdef DEBUG // some tests with assertions
                 void DEBUG_tests() const;
 #endif
