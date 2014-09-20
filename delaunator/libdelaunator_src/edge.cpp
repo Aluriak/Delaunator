@@ -95,6 +95,18 @@ bool Edge::coordOnTheLeft(Coordinates c)        const { return dot_product(this,
  * ACCESSORS
  ***************************************************/
 /**
+ * An external Edge is an Edge that rely two corner Vertex.
+ * @return true iff this is one of the eight external Edge.
+ */
+bool Edge::isExternal() const {
+        // an edge is external if in contact with a unvisible face. 
+        return !this->leftFace()->isVisible() || !this->rightFace()->isVisible();
+}
+
+
+
+
+/**
  * @return distance between the origin and destination Vertex
  */
 float Edge::length() const {
