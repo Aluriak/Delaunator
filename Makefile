@@ -31,10 +31,10 @@ gendoc:
 	doxygen Doxyfile
 
 updoc:
-	python3.2 setup.py upload_docs --upload-dir=doc/html/ --repository=https://pythonhosted.org/delaunator
+	python3.2 setup.py upload_docs --upload-dir=doc/code/html/ --repository=https://pythonhosted.org/delaunator
 
 zipdoc:
-	zip doc_zipped.zip doc/html/*
+	zip doc_zipped.zip doc/code/html/*
 
 clear:
 	- rm -r delaunator/libdelaunator_src/libdelaunator_wrap.cpp 
