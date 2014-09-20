@@ -37,20 +37,20 @@
 
 /**
  * Delaunay class definition.  
- * Main object manipulated by user/wrapper.  
+ * Main object manipulated by user/wrapper.
  * Provide iterators, access to Vertices, Faces, Edges,...  
  * Have all methods for add, delete and move Vertices.
  */
 class Delaunator {
 	public:
-        // INTERNAL CLASS TYPES
+        // INTERNAL CLASS TYPES
         /**
          * Finder mode for when triangulation looking for the Face that contain Coordinates 
          *   (notabily for Vertex adding).  
          * Random: random Edge in all existing in Delaunator instance
          * First: the first added Edge
          * Middle: the Edge in the middle of the Edge list
-         * Last: the last added Edge
+         * Last: the last added Edge (default value)
          * @note Last mode is certainly the better, especially in case where added Vertex are close to previous one
          */
         enum FinderInitial {

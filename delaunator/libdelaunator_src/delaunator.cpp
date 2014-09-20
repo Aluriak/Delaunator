@@ -384,8 +384,8 @@ void Delaunator::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
 
 
 /**
- * Return vertex found at given coords, around precision.
- * Return NULL if no vertex found.
+ * @return vertex found at given coords, around precision. or NULL iff no vertex found.
+ * @note never return the corners Vertex
  */
 Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
         Vertex *target = NULL, *current = NULL;
@@ -571,10 +571,6 @@ unsigned int Delaunator::getIndexOf(Vertex* v) const {
 
 
 
-
-
-
-
 /**
  * @return FinderInitial value, that described method used by this instance.
  */
@@ -610,6 +606,10 @@ void Delaunator::setFinderMode(Delaunator::FinderInitial m) {
                         break;
         }
 }
+
+
+
+
 
 
 
