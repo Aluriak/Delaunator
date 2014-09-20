@@ -59,6 +59,8 @@ class Delaunator {
                 FINDER_INITIAL_MIDDLE,
                 FINDER_INITIAL_LAST
         };
+        // define type for pointer to function that looking for initial Edge
+        typedef Edge* (Delaunator::*finderInitialEdge_mode)() const; 
 
 	// CONSTRUCTOR
 		Delaunator(const float, const float, 
@@ -85,8 +87,8 @@ class Delaunator {
                 float getYmin() const { return this->ymin; }
                 float getYmax() const { return this->ymax; }
                 float epsilon() const { return EPSILON; }
-                FinderInitial getFinderMode() const { return this->finder_mode; }
-                void setFinderMode(FinderInitial m) { this->finder_mode = m;    }
+                FinderInitial getFinderMode() const;
+                void setFinderMode(FinderInitial); 
 
         // PREDICATS
                 bool haveVertex(Vertex*) const;
@@ -124,12 +126,17 @@ class Delaunator {
 	private:
 	// ATTRIBUTES
                 float xmin, xmax, ymin, ymax;
-                FinderInitial finder_mode;
                 std::vector<Vertex*> vertices;
                 std::vector<Edge*> edges;
                 std::vector<Face*> faces;
+                finderInitialEdge_mode finderInitialEdge = NULL; // pointer to func that looking for initial Edge
 	// PRIVATE METHODS
                 Face* findContainerOf(Coordinates, Edge* = NULL) const;
+                // methods for choose initial Edges. The effectively used is pointed by finderInitialEdge.
+                Edge* finderInitial_random() const { return this->edges[randN(this->edges.size())]; }
+                Edge* finderInitial_middle() const { return this->edges[randN(this->edges.size()/2)]; }
+                Edge* finderInitial_first () const { return this->edges[0]; }
+                Edge* finderInitial_last  () const { return this->edges[this->edges.size()-1]; }
 #ifdef DEBUG
                 bool applyDelaunayCondition(Face*, unsigned int ttl = 0);
 #else

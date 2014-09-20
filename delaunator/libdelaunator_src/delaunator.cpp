@@ -16,13 +16,15 @@
  */
 Delaunator::Delaunator(const float xmin, const float xmax, 
                        const float ymin, const float ymax, const FinderInitial finder_mode) : 
-                                xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax), finder_mode(finder_mode) {
+                                xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax) {
+// Initialize some values
+        this->setFinderMode(finder_mode);
 // Creation of primitive mesh, with four points.
         this->vertices.push_back(new Vertex(xmin-1, ymin-1)); // NORTH-WEST
         this->vertices.push_back(new Vertex(xmax+1, ymin-1)); // NORTH-EAST
         this->vertices.push_back(new Vertex(xmax+1, ymax+1)); // SOUTH-EAST
         this->vertices.push_back(new Vertex(xmin-1, ymax+1)); // SOUTH-WEST
-        std::cout << this->vertices[0]->x() << ";" << this->vertices[0]->y() << std::endl;
+        //std::cout << this->vertices[0]->x() << ";" << this->vertices[0]->y() << std::endl;
 
 // Creation of Edges that rely vertices.
         this->edges.push_back(new Edge(this->vertices[0]));
@@ -573,6 +575,41 @@ unsigned int Delaunator::getIndexOf(Vertex* v) const {
 
 
 
+/**
+ * @return FinderInitial value, that described method used by this instance.
+ */
+Delaunator::FinderInitial Delaunator::getFinderMode() const { 
+        Delaunator::FinderInitial finder_mode = Delaunator::FINDER_INITIAL_RANDOM; 
+        // testing pointer with different values it can took is necessary for find the mode
+        if(this->finderInitialEdge == &Delaunator::finderInitial_middle)
+                finder_mode = Delaunator::FINDER_INITIAL_MIDDLE;
+        else if(this->finderInitialEdge == &Delaunator::finderInitial_first)
+                finder_mode = Delaunator::FINDER_INITIAL_FIRST;
+        else if(this->finderInitialEdge == &Delaunator::finderInitial_last)
+                finder_mode = Delaunator::FINDER_INITIAL_LAST;
+        return finder_mode;
+}
+
+/**
+ * @param m FinderInitial value, that tell which Edge this instance will used as first Edge for search
+ */
+void Delaunator::setFinderMode(Delaunator::FinderInitial m) { 
+        switch(m) {
+                case Delaunator::FINDER_INITIAL_RANDOM:
+                        this->finderInitialEdge = &Delaunator::finderInitial_random;
+                        break;
+                case Delaunator::FINDER_INITIAL_FIRST:
+                        this->finderInitialEdge = &Delaunator::finderInitial_first;
+                        break;
+                case Delaunator::FINDER_INITIAL_MIDDLE:
+                        this->finderInitialEdge = &Delaunator::finderInitial_middle;
+                        break;
+                case Delaunator::FINDER_INITIAL_LAST:
+                default:
+                        this->finderInitialEdge = &Delaunator::finderInitial_last;
+                        break;
+        }
+}
 
 
 
@@ -670,21 +707,7 @@ Face* Delaunator::findContainerOf(Coordinates target, Edge* edge_cur) const {
 
 // choose the initial Edge ( >edge> )
         if(edge_cur == NULL) {
-                switch(this->finder_mode) {
-                        case Delaunator::FINDER_INITIAL_RANDOM:
-                                edge_cur = this->edges[randN(this->edges.size())];
-                                break;
-                        case Delaunator::FINDER_INITIAL_FIRST:
-                                edge_cur = this->edges[0];
-                                break;
-                        case Delaunator::FINDER_INITIAL_MIDDLE:
-                                edge_cur = this->edges[this->edges.size() / 2];
-                                break;
-                        case Delaunator::FINDER_INITIAL_LAST:
-                        default:
-                                edge_cur = this->edges[this->edges.size() - 1];
-                                break;
-                }
+                edge_cur = (this->*finderInitialEdge)();
         }
 
 // while face not found, search face ( >edge>, container> , >counter> )
