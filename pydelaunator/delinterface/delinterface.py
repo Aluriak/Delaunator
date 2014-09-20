@@ -138,7 +138,7 @@ class Delinterface(Thread):
     def draw(self):
         """Print current state of engine"""
         #print("DRAWING")
-        for it in self.dt.allEdges():
+        for it in self.dt.iterEdges():
             p1 = it.originVertex()
             p2 = it.destinVertex()
             if it.isVisible():
