@@ -77,20 +77,21 @@ struct Coordinates {
 /**
  * Vertex are Coordinates with a unique ID and that is linked to an Edge.
  */
-struct Vertex : public Coordinates {
+class Vertex : public Coordinates {
         public:
         // CONSTRUCTOR
                 Vertex(const float = 0., const float = 0., Edge* = NULL);
                 Vertex(const Coordinates c, Edge* = NULL);
         // PUBLIC METHODS
                 unsigned int neighbourCount() const;
+                bool isNeighbourOf(Vertex*) const;
         // ACCESSORS
                 unsigned int getID()  const { return this->id; }
                 Edge* getEdge() const;
                 void setEdge(Edge* e);
+                bool isACorner() const;
         // OPERATORS
                 bool operator==(const Vertex&);
-        // ATTRIBUTES
         private:
         // ATTRIBUTES
                 Edge* edge; // edge has this Vertex as origin.
