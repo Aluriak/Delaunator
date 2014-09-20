@@ -15,6 +15,7 @@
 #include <cmath>
 #include <climits>
 #include <vector>
+#include <list>
 // LOCAL MODULES
 #include "utils.h"
 
