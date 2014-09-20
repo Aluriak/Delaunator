@@ -67,6 +67,25 @@ bool Vertex::isNeighbourOf(Vertex* v) const {
 
 
 
+/**
+ * @param v a Vertex that will receive all TrianguledObject of this
+ */
+void Vertex::giveTrianguledObjectsTo(Vertex* v) {
+        std::list<TrianguledObject*>::iterator it = v->objects.begin();
+        v->objects.insert(it, this->objects.begin(), this->objects.end());
+}
+
+
+
+/**
+ * @param trob a TrianguledObject that will be forgeted by this
+ * @note: if this have not trob in memory, nothing is done by that function.
+ */
+void Vertex::forget(TrianguledObject* trob) {
+        this->objects.remove(trob);
+}
+
+
 
 /***************************************************
  * OPERATORS
