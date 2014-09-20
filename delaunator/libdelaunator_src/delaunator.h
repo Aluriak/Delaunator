@@ -109,14 +109,29 @@ class Delaunator {
 
         // ITERATORS
                 IteratorVertexToNeighbourVertices getNeighbors(Vertex*);
-                IteratorOnAllEdges allEdges()           { return IteratorOnAllEdges(&this->edges); }
-                IteratorOnAllEdges_read allEdges_read() const
+                // edges necessary for user
+                IteratorOnEdges iterEdges()             { return IteratorOnEdges(&this->edges); }
+                IteratorOnEdges_read iterEdges_read() const
+                                                        { return IteratorOnEdges_read(&this->edges); }
+                // all edges, including the externals ones
+                IteratorOnAllEdges iterAllEdges()       { return IteratorOnAllEdges(&this->edges); }
+                IteratorOnAllEdges_read iterAllEdges_read() const
                                                         { return IteratorOnAllEdges_read(&this->edges); }
-                IteratorOnAllFaces allFaces()           { return IteratorOnAllFaces(&this->faces); }
-                IteratorOnAllFaces_read allFaces_read() const
+                // faces that are visible to user
+                IteratorOnFaces iterFaces()             { return IteratorOnFaces(&this->faces); }
+                IteratorOnFaces_read iterFaces_read() const
+                                                        { return IteratorOnFaces_read(&this->faces); }
+                // all faces, including the unvisible ones
+                IteratorOnAllFaces iterAllFaces()       { return IteratorOnAllFaces(&this->faces); }
+                IteratorOnAllFaces_read iterAllFaces_read() const
                                                         { return IteratorOnAllFaces_read(&this->faces); }
-                IteratorOnAllVertices allVertices()     { return IteratorOnAllVertices(&this->vertices); }
-                IteratorOnAllVertices_read allVertices_read() const 
+                // vertices placed by user
+                IteratorOnVertices iterVertices()       { return IteratorOnVertices(&this->vertices); }
+                IteratorOnVertices_read iterVertices_read() const 
+                                                        { return IteratorOnVertices_read(&this->vertices); }
+                // all vertices, including the 4 used for create and maintain the mesh
+                IteratorOnAllVertices iterAllVertices() { return IteratorOnAllVertices(&this->vertices); }
+                IteratorOnAllVertices_read iterAllVertices_read() const 
                                                         { return IteratorOnAllVertices_read(&this->vertices); }
 
 

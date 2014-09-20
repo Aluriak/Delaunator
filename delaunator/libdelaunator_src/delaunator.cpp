@@ -160,7 +160,7 @@ Vertex* Delaunator::addVertexAt(Coordinates p, Edge* first) {
 
 // find container of vertex ( container>, >p )
 #ifdef FOLLOW_SEARCH
-        for(IteratorOnAllEdges it = this->allEdges(); it != it.end(); it++) {
+        for(IteratorOnAllEdges it = this->iterAllEdges(); it != it.end(); it++) {
                 (*it)->passing = false;
         }
 #endif
@@ -389,7 +389,7 @@ void Delaunator::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
  */
 Vertex* Delaunator::vertexAt(float x, float y, float precision) const {
         Vertex *target = NULL, *current = NULL;
-        for(IteratorOnAllVertices_read it = this->allVertices_read(); target == NULL && it != it.end(); it++) {
+        for(IteratorOnVertices_read it = this->iterVertices_read(); target == NULL && it != it.end(); it++) {
                 current = *it;
                 if(fabs(x-current->x()) < (precision+EPSILON) && fabs(y-current->y()) < (precision+EPSILON))
                         target = current;
@@ -521,7 +521,7 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
  * DEBUG TESTS.
  */
 void Delaunator::DEBUG_tests() const {
-        for(IteratorOnAllEdges_read it = this->allEdges_read(); it != it.end(); it++) {
+        for(IteratorOnAllEdges_read it = this->iterAllEdges_read(); it != it.end(); it++) {
                 assert((*it)->originVertex() != NULL);
                 assert((*it)->oppositeEdge() != NULL);
                 assert((*it)->leftFace() != NULL);
@@ -533,10 +533,10 @@ void Delaunator::DEBUG_tests() const {
                         assert((*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == (*it));
                 }
         }
-        for(IteratorOnAllFaces_read it = this->allFaces_read(); it != it.end(); it++) {
+        for(IteratorOnAllFaces_read it = this->iterAllFaces_read(); it != it.end(); it++) {
                 assert((*it)->getEdge() != NULL);
         }
-        for(IteratorOnAllVertices_read it = this->allVertices_read(); it != it.end(); it++) {
+        for(IteratorOnAllVertices_read it = this->iterAllVertices_read(); it != it.end(); it++) {
                 assert((*it)->getEdge() != NULL);
                 assert((*it)->getEdge()->originVertex() == (*it));
                 assert((*it)->getEdge()->leftFace()->collideAt(*(*it)));
