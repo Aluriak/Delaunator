@@ -311,7 +311,7 @@ void Delaunator::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                         } else if(geometry::collisionBetweenSegmentAndSegment(
                                         *(*it)->destinVertex(), *(*it)->originVertex(),
                                         *mv_vrtx, new_position)
-                                && not this->isExternalEdge(*it)
+                                && not (*it)->isExternal()
                                 && not geometry::parallelsLines(
                                        *(*it)->destinVertex(), *(*it)->originVertex(),
                                        *mv_vrtx, new_position)
@@ -410,7 +410,7 @@ void Delaunator::delVertex(Vertex* del_vrtx) {
 #ifdef DEBUG
         assert(del_vrtx != NULL);
         assert(this->haveVertex(del_vrtx));
-        assert(!this->isCornerVertex(del_vrtx));
+        assert(!del_vrtx->isACorner());
 #endif
         bool modification = true; // false when no modification operate on triangulation
         // Creat some container
@@ -625,37 +625,6 @@ bool Delaunator::haveVertex(Vertex* v) const {
         for(unsigned int i = this->vertices.size() - 1; i >= 0 && not have; i--) 
                 have = (this->vertices[i] == v);
         return have;
-}
-
-
-
-
-/**
- * @param v tested Vertex 
- * @return true iff tested Vertex is referenced by triangulation and is one of the four corner vertice
- */
-bool Delaunator::isCornerVertex(Vertex* v) const {
-#ifdef DEBUG
-        assert(v != NULL);
-#endif
-        return v->getID() <= 4;
-}
-
-
-
-
-/**
- * An external Edge is an Edge that rely two corner Vertex.
- * @param e tested Edge
- * @return true iff tested Edge is referenced by triangulation and is one of the eight external Edge
- */
-bool Delaunator::isExternalEdge(Edge *e) const {
-#ifdef DEBUG
-        assert(e != NULL);
-#endif
-        //return e->getID() <= 12;
-        // an edge is external if in contact with a unvisible face. 
-        return !e->leftFace()->isVisible() || !e->rightFace()->isVisible();
 }
 
 

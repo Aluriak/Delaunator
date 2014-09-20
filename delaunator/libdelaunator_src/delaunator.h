@@ -92,8 +92,6 @@ class Delaunator {
 
         // PREDICATS
                 bool haveVertex(Vertex*) const;
-                bool isCornerVertex(Vertex*) const;
-                bool isExternalEdge(Edge*) const;
                 bool collideAt(Coordinates) const;
 #ifdef DEBUG
                 bool opt_isdebug()       const { return true; }
