@@ -738,7 +738,9 @@ Face* Delaunator::findContainerOf(Coordinates target, Edge* edge_cur) const {
 #endif
 
                 // Jump to next edge
+#ifdef FOLLOW_SEARCH
                 edge_cur->passing = true;
+#endif
                 edge_cur = edge_nxt->nextLeftEdge();
                 if(counter_left >= 3)   container = edge_cur->leftFace();
 

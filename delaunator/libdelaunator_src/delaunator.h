@@ -70,8 +70,8 @@ class Delaunator {
                 Vertex* addVertexAt(Coordinates, Edge* = NULL);
                 Vertex* addVertexAt(float x, float y, Edge* e = NULL) 
                         { return this->addVertexAt(Coordinates(x, y), e); }
-                Vertex* vertexAt(float, float, float) const;
-                Vertex* vertexAt(Coordinates c, float p) const { return this->vertexAt(c.x(), c.y(), p); }
+                Vertex* vertexAt(float, float, float=EPSILON) const;
+                Vertex* vertexAt(Coordinates c, float p=EPSILON) const { return this->vertexAt(c.x(), c.y(), p); }
                 void moveVertex(Vertex* v, float x, float y);
                 void moveVertexTo(Vertex* v, Coordinates c);
                 void delVertex(Vertex* v);
