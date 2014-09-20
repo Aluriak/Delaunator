@@ -31,14 +31,90 @@
 
 
 /******************************************************************
+ * ITERATORS ON VERTICES
+ ******************************************************************/
+class IteratorOnVertices {
+	public:
+	// CONSTRUCTOR
+		IteratorOnVertices(std::vector<Vertex*>* v) : vertices(v) {
+                        // ignore the vertices that are not asked by user
+                        this->it = this->vertices->begin()+4;
+                }
+	// PUBLIC METHODS
+                IteratorOnVertices& next() { 
+                        this->it++;
+                        return *this;
+                }
+	// OPERATORS
+                bool operator!=(const IteratorOnVertices& othr) const { 
+                        return this->it != othr.it;
+                }
+                bool operator!=(const std::vector<Vertex*>::iterator& ot) const{ 
+                        return this->it != ot;
+                }
+                IteratorOnVertices& operator++(int) { return this->next(); }
+                Vertex* operator*() { // pointer dereferences
+                        return *(this->it);
+                }
+	// ACCESSORS
+                std::vector<Vertex*>::iterator begin()  const { return this->vertices->begin(); }
+                std::vector<Vertex*>::iterator end()    const { return this->vertices->end(); }
+                std::vector<Vertex*>* getVertices()     const { return this->vertices; }
+        protected:
+	// ATTRIBUTES
+                std::vector<Vertex*>* vertices;
+                std::vector<Vertex*>::const_iterator it;
+	// PRIVATE METHODS
+};
+class IteratorOnVertices_read {
+	public:
+	// CONSTRUCTOR
+		IteratorOnVertices_read(const std::vector<Vertex*>* const v) : vertices(v) {
+                        // ignore the vertices that are not asked by user
+                        this->it = this->vertices->begin()+4;
+                }
+	// PUBLIC METHODS
+                IteratorOnVertices_read& next() { 
+                        this->it++;
+                        return *this;
+                }
+	// OPERATORS
+                bool operator!=(const IteratorOnVertices_read& othr) const { 
+                        return this->it != othr.it;
+                }
+                bool operator!=(const std::vector<Vertex*>::const_iterator& ot) const { 
+                        return this->it != ot;
+                }
+                IteratorOnVertices_read& operator++(int) { return this->next(); }
+                Vertex* operator*() { // pointer dereferences
+                        return *(this->it);
+                }
+	// ACCESSORS
+                std::vector<Vertex*>::const_iterator begin()  const { return this->vertices->begin(); }
+                std::vector<Vertex*>::const_iterator end()    const { return this->vertices->end(); }
+                const std::vector<Vertex*>* const getVertices()     const { return this->vertices; }
+        protected:
+	// ATTRIBUTES
+                const std::vector<Vertex*>* const vertices;
+                std::vector<Vertex*>::const_iterator it;
+	// PRIVATE METHODS
+};
+
+
+
+
+
+
+
+
+/******************************************************************
  * ITERATORS ON ALL VERTICES
  ******************************************************************/
 class IteratorOnAllVertices {
 	public:
 	// CONSTRUCTOR
 		IteratorOnAllVertices(std::vector<Vertex*>* v) : vertices(v) {
-                        // ignore the 4 first vertices, that are the external ones.
-                        this->it = this->vertices->begin()+4;
+                        this->it = this->vertices->begin();
                 }
 	// PUBLIC METHODS
                 IteratorOnAllVertices& next() { 
@@ -70,8 +146,7 @@ class IteratorOnAllVertices_read {
 	public:
 	// CONSTRUCTOR
 		IteratorOnAllVertices_read(const std::vector<Vertex*>* const v) : vertices(v) {
-                        // ignore the 4 first vertices, that are the external ones.
-                        this->it = this->vertices->begin()+4;
+                        this->it = this->vertices->begin();
                 }
 	// PUBLIC METHODS
                 IteratorOnAllVertices_read& next() { 

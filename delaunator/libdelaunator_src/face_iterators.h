@@ -32,6 +32,82 @@
 
 
 /******************************************************************
+ * ITERATORS ON FACES 
+ ******************************************************************/
+class IteratorOnFaces {
+	public:
+	// CONSTRUCTOR
+		IteratorOnFaces(std::vector<Face*>* v) : faces(v) {
+                        this->it = this->faces->begin();
+                        // ignore the faces that are not visible
+                        while(!(*this->it)->isVisible()) this->it++; 
+                }
+	// PUBLIC METHODS
+                IteratorOnFaces& next() { 
+                        this->it++;
+                        return *this;
+                }
+	// OPERATORS
+                bool operator!=(const IteratorOnFaces& othr) const { 
+                        return this->it != othr.it;
+                }
+                bool operator!=(const std::vector<Face*>::iterator& ot) const { 
+                        return this->it != ot;
+                }
+                IteratorOnFaces& operator++(int) { return this->next(); }
+                Face* operator*() { //pointer dereferences
+                        return *(this->it);
+                }
+	// ACCESSORS
+                std::vector<Face*>::iterator begin() const { return this->faces->begin(); }
+                std::vector<Face*>::iterator end()   const { return this->faces->end(); }
+                std::vector<Face*>* getFaces()       const { return this->faces; }
+        protected:
+	// ATTRIBUTES
+                std::vector<Face*>* faces;
+                std::vector<Face*>::iterator it;
+	// PRIVATE METHODS
+};
+class IteratorOnFaces_read {
+	public:
+	// CONSTRUCTOR
+		IteratorOnFaces_read(const std::vector<Face*>* const v) : faces(v) {
+                        this->it = this->faces->begin();
+                        // ignore the faces that are not visible
+                        while(!(*this->it)->isVisible()) this->it++; 
+                }
+	// PUBLIC METHODS
+                IteratorOnFaces_read& next() { 
+                        this->it++;
+                        return *this;
+                }
+	// OPERATORS
+                bool operator!=(const IteratorOnFaces_read& othr) const { 
+                        return this->it != othr.it;
+                }
+                bool operator!=(const std::vector<Face*>::const_iterator& ot) const { 
+                        return this->it != ot;
+                }
+                IteratorOnFaces_read& operator++(int) { return this->next(); }
+                Face* operator*() { //pointer dereferences
+                        return *(this->it);
+                }
+	// ACCESSORS
+                std::vector<Face*>::const_iterator begin() const { return this->faces->begin(); }
+                std::vector<Face*>::const_iterator end()   const { return this->faces->end(); }
+                const std::vector<Face*>* getFaces() const { return this->faces; }
+        protected:
+	// ATTRIBUTES
+                const std::vector<Face*>* const faces;
+                std::vector<Face*>::const_iterator it;
+	// PRIVATE METHODS
+};
+
+
+
+
+
+/******************************************************************
  * ITERATORS ON ALL FACES 
  ******************************************************************/
 class IteratorOnAllFaces {
