@@ -17,5 +17,5 @@ BUILTIN_STL_SUPPORT    = NO
 INPUT                  = delaunator/libdelaunator_src
 FILE_PATTERNS          = *.cpp *.h
 RECURSIVE              = YES
-OUTPUT_DIRECTORY       = doc/
+OUTPUT_DIRECTORY       = doc/code/
 EXCLUDE_PATTERNS       = *_wrap.*
