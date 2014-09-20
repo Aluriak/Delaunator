@@ -16,6 +16,9 @@ vsp	edge.cpp
 tabnew	geometry.h
 vsp	geometry.cpp
 
+tabnew  trianguledObject.h
+vsp     trianguledObject.cpp
+
 tabnew  utils.h
 vsp	commons.h
 
