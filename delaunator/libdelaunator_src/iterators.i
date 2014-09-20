@@ -19,6 +19,31 @@ static int Iterator_err = 0;
 
 
 /*************************/
+/* IteratorOnVertices */
+/*************************/
+%exception IteratorOnVertices::__getitem__ {
+        assert(!Iterator_err);
+        $action
+        if (Iterator_err) {
+                Iterator_err = 0; 
+                SWIG_exception(SWIG_IndexError, "Index out of bounds");
+        }
+}
+
+%extend IteratorOnVertices {
+        Vertex* __getitem__(size_t i) {
+                if (i >= $self->getVertices()->size()-4) {
+                        Iterator_err = 1;
+                        return NULL;
+                }
+                return (*$self->getVertices())[i+4];
+        }
+}
+
+
+
+
+/*************************/
 /* IteratorOnAllVertices */
 /*************************/
 %exception IteratorOnAllVertices::__getitem__ {
@@ -98,6 +123,32 @@ static int Iterator_err = 0;
 
 
 /**********************/
+/* IteratorOnFaces */
+/**********************/
+%exception IteratorOnFaces::__getitem__ {
+        assert(!Iterator_err);
+        $action
+        if (Iterator_err) {
+                Iterator_err = 0; 
+                SWIG_exception(SWIG_IndexError, "Index out of bounds");
+        }
+}
+
+%extend IteratorOnFaces {
+        Face* __getitem__(size_t i) {
+                if (i >= $self->getFaces()->size()) {
+                        Iterator_err = 1;
+                        return NULL;
+                }
+                return (*$self->getFaces())[i];
+        }
+}
+
+
+
+
+
+/**********************/
 /* IteratorOnAllFaces */
 /**********************/
 %exception IteratorOnAllFaces::__getitem__ {
@@ -144,6 +195,32 @@ static int Iterator_err = 0;
                         return NULL;
                 }
                 return $self->next();
+        }
+}
+
+
+
+
+
+/**********************/
+/* IteratorOnEdges    */
+/**********************/
+%exception IteratorOnEdges::__getitem__ {
+        assert(!Iterator_err);
+        $action
+        if (Iterator_err) {
+                Iterator_err = 0; 
+                SWIG_exception(SWIG_IndexError, "Index out of bounds");
+        }
+}
+
+%extend IteratorOnEdges {
+        Edge* __getitem__(size_t i) {
+                if (i >= $self->getEdges()->size()) {
+                        Iterator_err = 1;
+                        return NULL;
+                }
+                return (*$self->getEdges())[i];
         }
 }
 
