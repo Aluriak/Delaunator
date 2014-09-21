@@ -28,6 +28,8 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [ ] implement iterator on the N nearest neighbors of a vertex;  
 - [ ] implement iterator on the N nearest neighbors of a vertex that respect a predicat;  
 - [ ] permit to user to choose preprocessor options by config files or other useful way;  
+- [ ] write API documentation;
+- [ ] allow to TrianguledObject to be present in multiple Delaunator instances;
 
 
 ## MAYBE-A-DAY DO LIST
