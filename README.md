@@ -22,6 +22,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] permit to user to choose finder options at Delaunator instanciation;  
 - [ ] manage confunded Vertex;  
 - [ ] manage internal association between Vertex and associated user objects;
+- [ ] access in constant complexity to nearer neighbour;
 - [ ] manage groups of vertices that moves together;
 - [ ] optimize Vertex, Edge and Face containing;
 - [ ] use threads;  
@@ -47,20 +48,52 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 ## EXAMPLE OF USE
 See github repo, pydelaunator repertory, for built-in example.
 
-    from delaunator import Delaunator
+    from random import randint
+    from delaunator import Delaunator, TrianguledObject
 
-    dt = Delaunator(0, 600, 0, 600)
-    vtx = dt.addVertexAt(342, 23)
+    dt = Delaunator(0, 500, 0, 500)
+    class People(object):
+        def __init(self, vertex, name):
+            self.name = name
+            self.vertex = vertex
+
+        def __str__(self):
+            return self.name
+
+
+    objs = {}
+    michel = dt.addObject(randint(0, 600), randint(0, 600))
+    objs[michel] = People(michel, 'michel')
 
     for i in range(100):
-        dt.addVertexAt(randint(0,600), randint(0,600))
+        newobj = dt.addObject(randint(0,600), randint(0,600))
+        objs[newobj] = People(newobj, 'totoro')
 
-    dt.moveVertex(vtx, .5, -31)
+    print("My neighbors are " + ", ".join([str(objs[_]) for _ in michel.neighborsAt(100)]))
+
+
+
+    # useful class
+    class MyObject(TrianguledObject): 
+        def __init__(self, name):
+            self.name = str(name)
+        def __str__(self):
+            return self.name
+
+    dt = Delaunator(0, 600, 0, 600)
+    michel = MyObject('michel')
+    dt.addObjectAt(342, 123, michel)
+
+    for i in range(100):
+        dt.addObjectAt(randint(0,600), randint(0,600), MyObject('totoro'))
+
+    dt.moveObject(michel, 23.5, -31)
     
-    # print ID of all neighbour vertices
-    print(", ".join([str(_.getID()) for _ in self.dt.getNeighbors(vtx)]))
+    # print name of all neighbors that are to a distance at most 100
+    print("My neighbors are " + ", ".join([str(_) for _ in michel.neighborsAt(100)]))
     
-    dt.delVertex(vtx)
+    dt.delObject(michel)
+    dt.delAllObjects()
 
 API will be improved with time and ideas.
 
