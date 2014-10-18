@@ -6,16 +6,14 @@ static int IteratorOnAllEdges_myErr = 0;
 %}
 
 %include "std_string.i"
+%include "std_list.i"
 %include "std_vector.i"
 %include "exception.i"
-%exception std::vector::getitem {
-        try {
-                $action
-        } catch (std::out_of_range& e) {
-                SWIG_exception(SWIG_IndexError,const_cast<char*>(e.what()));
-        }
+%include "typemaps.i"
+
+namespace std {
+        %template(TrianguledObjectList) list<TrianguledObject*>;
 }
-/* Parse the header file to generate wrappers */
 
 %include "utils.h"
 %include "commons.h"
@@ -39,5 +37,9 @@ static int IteratorOnAllEdges_myErr = 0;
 %include "face.h"
 
 %include "iterators.i"
+
+%include "trianguledObject.h"
+
+%include "triangulation.h"
 
 %include "delaunator.h"
