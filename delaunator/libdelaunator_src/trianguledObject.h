@@ -22,6 +22,7 @@
 /*
  * PREDECLARATIONS
  */
+class Coordinates;
 class Vertex;
 
 
@@ -36,10 +37,15 @@ class TrianguledObject {
                 TrianguledObject(Vertex* = NULL);
                 ~TrianguledObject();
 	// PUBLIC METHODS
+        // PREDICATS
+                bool confoundedWithAnotherObject() const;
 	// ACCESSORS
                 // getter
                 Vertex* getVertex() const;
-                std::list<TrianguledObject> neighborsAt(float) const;
+                Coordinates getCoordinates() const;
+                std::list<TrianguledObject*> directNeighbors() const;
+                std::list<TrianguledObject*> neighborsAt(float) const;
+                //TrianguledObject* nearerNeighbour() const;
                 // setters
                 void setVertex(Vertex*);
 	private:
