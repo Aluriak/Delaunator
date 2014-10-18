@@ -4,6 +4,9 @@ vsp	main.cpp
 tabnew	delaunator.h
 vsp	delaunator.cpp
 
+tabnew	triangulation.h
+vsp	triangulation.cpp
+
 tabnew	vertex.h
 vsp	vertex.cpp
 
