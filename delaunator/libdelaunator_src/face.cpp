@@ -13,7 +13,7 @@ unsigned int Face::last_id = 1;
  * @param visible necessary for quad-edge representation, and be only set to true if user know exactly what he do
  * @return a new and well initialized Face
  */
-Face::Face(Edge* e, bool visible) : visible(visible), edge(e) {
+Face::Face(Edge* e, bool visible) : edge(e), visible(visible) {
         this->id = this->last_id++;
         if(e != NULL) {
                 this->computeInternalValues();

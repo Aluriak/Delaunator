@@ -62,8 +62,8 @@ class Face {
                 void setVisibility(bool v)      { this->visible = v; }
 	private:
 	// ATTRIBUTES
-                bool visible; // in a graphical representation
                 Edge* edge; // any edge that describe that face
+                bool visible; // in a graphical representation
                 Coordinates centroid, circumcenter_;
                 unsigned int id;
                 static unsigned int last_id;
