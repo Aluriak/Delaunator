@@ -100,7 +100,7 @@ bool Edge::coordOnTheLeft(Coordinates c)        const { return dot_product(this,
  */
 bool Edge::isExternal() const {
         // an edge is external if in contact with a unvisible face. 
-        return !this->leftFace()->isVisible() || !this->rightFace()->isVisible();
+        return (!this->leftFace()->isVisible()) || (!this->rightFace()->isVisible());
 }
 
 
