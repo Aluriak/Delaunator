@@ -87,10 +87,14 @@ class Vertex : public Coordinates {
         // PUBLIC METHODS
                 unsigned int neighbourCount() const;
                 bool isNeighbourOf(Vertex*) const;
+                void take(TrianguledObject*);
                 void giveTrianguledObjectsTo(Vertex*);
                 void forget(TrianguledObject*);
         // ACCESSORS
-                unsigned int getID()  const { return this->id; }
+                unsigned int getID()            const { return this->id; }
+                unsigned int getObjectCount()   const { return this->objects.size(); }
+                std::list<TrianguledObject*> getObjects() const;
+                TrianguledObject* getFirstObject()        const;
                 Edge* getEdge() const;
                 void setEdge(Edge* e);
                 bool isACorner() const;

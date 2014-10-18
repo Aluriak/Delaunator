@@ -78,12 +78,27 @@ void Vertex::giveTrianguledObjectsTo(Vertex* v) {
 
 
 /**
+ * @param trob a TrianguledObject that will be added in list of this
+ */
+void Vertex::take(TrianguledObject* trob) {
+        this->objects.push_back(trob);
+}
+
+
+
+/**
  * @param trob a TrianguledObject that will be forgeted by this
  * @note: if this have not trob in memory, nothing is done by that function.
  */
 void Vertex::forget(TrianguledObject* trob) {
         this->objects.remove(trob);
 }
+
+
+
+
+
+
 
 
 
@@ -101,9 +116,33 @@ bool Vertex::operator==(const Vertex& othr) {
 
 
 
+
+
+
+
 /***************************************************
  * ACCESSORS
  ***************************************************/
+/**
+ * Access to all TrianguledObjects of this instance.
+ * @return a std::list of TrianguledObject pointers
+ */
+std::list<TrianguledObject*> Vertex::getObjects() const {
+        std::list<TrianguledObject*> l(this->objects); // recopy
+        return l;
+}
+
+
+/**
+ * Access to one TrianguledObject of this instance.
+ * @return a TrianguledObject pointer, or NULL if no Object referenced
+ */
+TrianguledObject* Vertex::getFirstObject() const {
+        return this->objects.front() != NULL ? this->objects.front() : NULL;
+}
+
+
+
 /**
  * @return an Edge that had this Vertex for origin
  */
