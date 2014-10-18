@@ -1,5 +1,5 @@
-#ifndef DELAUNATOR_TRIANGULATION_H_INCLUDED
-#define DELAUNATOR_TRIANGULATION_H_INCLUDED
+#ifndef DELAUNATOR_MAIN_INTERFACE_H_INCLUDED
+#define DELAUNATOR_MAIN_INTERFACE_H_INCLUDED
 
 
 
@@ -8,11 +8,7 @@
  */
 // LOCAL MODULES
 #include "commons.h"
-#include "geometry.h"
-#include "vertex.h"
-#include "face.h"
-#include "edge.h"
-#include "iterators.h"
+#include "triangulation.h"
 
 
 
@@ -26,10 +22,6 @@
  * PREDECLARATIONS
  */
 
-/*
- * For some explanations on quad-edge implementation :
- * http://totologic.blogspot.fr/2013/11/core-quad-edge-implementation-explained.html
-*/
 
 
 
@@ -37,59 +29,39 @@
 
 /**
  * Delaunay class definition.  
- * Main object manipulated by user/wrapper.
- * Provide iterators, access to Vertices, Faces, Edges,...  
- * Have all methods for add, delete and move Vertices.
+ * Provide iterators, access to TrianguledObjects…
+ * Have all methods for add, delete and move Objects.
  */
 class Delaunator {
 	public:
-        // INTERNAL CLASS TYPES
-        /**
-         * Finder mode for when triangulation looking for the Face that contain Coordinates 
-         *   (notabily for Vertex adding).  
-         * Random: random Edge in all existing in Delaunator instance
-         * First: the first added Edge
-         * Middle: the Edge in the middle of the Edge list
-         * Last: the last added Edge (default value)
-         * @note Last mode is certainly the better, especially in case where added Vertex are close to previous one
-         */
-        enum FinderInitial {
-                FINDER_INITIAL_RANDOM,
-                FINDER_INITIAL_FIRST,
-                FINDER_INITIAL_MIDDLE,
-                FINDER_INITIAL_LAST
-        };
-        // define type for pointer to function that looking for initial Edge
-        typedef Edge* (Delaunator::*finderInitialEdge_mode)() const; 
-
 	// CONSTRUCTOR
 		Delaunator(const float, const float, 
-                           const float, const float, const FinderInitial = FINDER_INITIAL_LAST);
+                           const float, const float, 
+                           const VertexFinderMode = 
+                                   VERTEX_FINDER_MODE_LAST);
 		~Delaunator();
 	// PUBLIC METHODS
-                Vertex* addVertexAt(Coordinates, Edge* = NULL);
-                Vertex* addVertexAt(float x, float y, Edge* e = NULL) 
-                        { return this->addVertexAt(Coordinates(x, y), e); }
-                Vertex* vertexAt(float, float, float=EPSILON) const;
-                Vertex* vertexAt(Coordinates c, float p=EPSILON) const { return this->vertexAt(c.x(), c.y(), p); }
-                void moveVertex(Vertex* v, float x, float y);
-                void moveVertexTo(Vertex* v, Coordinates c);
-                void delVertex(Vertex* v);
-                void mergeVertex(Vertex* v, Vertex* v_destroyed);
-#ifdef DEBUG // some tests with assertions
-                void DEBUG_tests() const;
-#endif
+                // modify triangulation
+                TrianguledObject* addObject(TrianguledObject*, Coordinates);
+                TrianguledObject* addObject(TrianguledObject*, float, float);
+                TrianguledObject* delObject(TrianguledObject*);
+                TrianguledObject* movObject(TrianguledObject*, Coordinates);
+                TrianguledObject* movObject(TrianguledObject*, float, float);
+                // object probing
+                TrianguledObject* objectAt(Coordinates,  float=EPSILON) const;
+                TrianguledObject* objectAt(float, float, float=EPSILON) const;
+                std::list<TrianguledObject*> objectsAt(Coordinates,  float=EPSILON) const;
+                std::list<TrianguledObject*> objectsAt(float, float, float=EPSILON) const;
 	// ACCESSORS
-                unsigned int getIndexOf(Vertex*) const;
-                std::vector<Edge*> getEdges()  const { return this->edges; }
-                unsigned int getVerticeCount() const { return this->vertices.size(); }
-                float getXmin() const { return this->xmin; }
-                float getXmax() const { return this->xmax; }
-                float getYmin() const { return this->ymin; }
-                float getYmax() const { return this->ymax; }
+                /** @return total number of TrianguledObject in Delaunator */
+                unsigned int getObjectCount() const { return this->object_count; }
+                float getXmin() const { return this->triangulation->getXmin(); }
+                float getXmax() const { return this->triangulation->getXmax(); }
+                float getYmin() const { return this->triangulation->getYmin(); }
+                float getYmax() const { return this->triangulation->getYmax(); }
                 float epsilon() const { return EPSILON; }
-                FinderInitial getFinderMode() const;
-                void setFinderMode(FinderInitial); 
+                //TriangulationVertexFinderMode getFinderMode() const;
+                //void setFinderMode(TriangulationVertexFinderMode); 
 
         // PREDICATS
                 bool haveVertex(Vertex*) const;
@@ -107,31 +79,32 @@ class Delaunator {
 
 
         // ITERATORS
-                IteratorVertexToNeighbourVertices getNeighbors(Vertex*);
-                // edges necessary for user
-                IteratorOnEdges iterEdges()             { return IteratorOnEdges(&this->edges); }
-                IteratorOnEdges_read iterEdges_read() const
-                                                        { return IteratorOnEdges_read(&this->edges); }
-                // all edges, including the externals ones
-                IteratorOnAllEdges iterAllEdges()       { return IteratorOnAllEdges(&this->edges); }
-                IteratorOnAllEdges_read iterAllEdges_read() const
-                                                        { return IteratorOnAllEdges_read(&this->edges); }
-                // faces that are visible to user
-                IteratorOnFaces iterFaces()             { return IteratorOnFaces(&this->faces); }
-                IteratorOnFaces_read iterFaces_read() const
-                                                        { return IteratorOnFaces_read(&this->faces); }
-                // all faces, including the unvisible ones
-                IteratorOnAllFaces iterAllFaces()       { return IteratorOnAllFaces(&this->faces); }
-                IteratorOnAllFaces_read iterAllFaces_read() const
-                                                        { return IteratorOnAllFaces_read(&this->faces); }
-                // vertices placed by user
-                IteratorOnVertices iterVertices()       { return IteratorOnVertices(&this->vertices); }
-                IteratorOnVertices_read iterVertices_read() const 
-                                                        { return IteratorOnVertices_read(&this->vertices); }
-                // all vertices, including the 4 used for create and maintain the mesh
-                IteratorOnAllVertices iterAllVertices() { return IteratorOnAllVertices(&this->vertices); }
-                IteratorOnAllVertices_read iterAllVertices_read() const 
-                                                        { return IteratorOnAllVertices_read(&this->vertices); }
+                std::list<TrianguledObject*> objects() const;
+                //IteratorVertexToNeighbourVertices getNeighbors(Vertex*);
+                //// edges necessary for user
+                //IteratorOnEdges iterEdges()             { return IteratorOnEdges(&this->edges); }
+                //IteratorOnEdges_read iterEdges_read() const
+                                                        //{ return IteratorOnEdges_read(&this->edges); }
+                //// all edges, including the externals ones
+                //IteratorOnAllEdges iterAllEdges()       { return IteratorOnAllEdges(&this->edges); }
+                //IteratorOnAllEdges_read iterAllEdges_read() const
+                                                        //{ return IteratorOnAllEdges_read(&this->edges); }
+                //// faces that are visible to user
+                //IteratorOnFaces iterFaces()             { return IteratorOnFaces(&this->faces); }
+                //IteratorOnFaces_read iterFaces_read() const
+                                                        //{ return IteratorOnFaces_read(&this->faces); }
+                //// all faces, including the unvisible ones
+                //IteratorOnAllFaces iterAllFaces()       { return IteratorOnAllFaces(&this->faces); }
+                //IteratorOnAllFaces_read iterAllFaces_read() const
+                                                        //{ return IteratorOnAllFaces_read(&this->faces); }
+                //// vertices placed by user
+                //IteratorOnVertices iterVertices()       { return IteratorOnVertices(&this->vertices); }
+                //IteratorOnVertices_read iterVertices_read() const 
+                                                        //{ return IteratorOnVertices_read(&this->vertices); }
+                //// all vertices, including the 4 used for create and maintain the mesh
+                //IteratorOnAllVertices iterAllVertices() { return IteratorOnAllVertices(&this->vertices); }
+                //IteratorOnAllVertices_read iterAllVertices_read() const 
+                                                        //{ return IteratorOnAllVertices_read(&this->vertices); }
 
 
 
@@ -139,77 +112,9 @@ class Delaunator {
 // PRIVATE
 	private:
 	// ATTRIBUTES
-                float xmin, xmax, ymin, ymax;
-                std::vector<Vertex*> vertices;
-                std::vector<Edge*> edges;
-                std::vector<Face*> faces;
-                finderInitialEdge_mode finderInitialEdge = NULL; // pointer to func that looking for initial Edge
+                Triangulation* triangulation;
+                unsigned int object_count;
 	// PRIVATE METHODS
-                Face* findContainerOf(Coordinates, Edge* = NULL) const;
-                // methods for choose initial Edges. The effectively used is pointed by finderInitialEdge.
-                Edge* finderInitial_random() const { return this->edges[randN(this->edges.size())]; }
-                Edge* finderInitial_middle() const { return this->edges[randN(this->edges.size()/2)]; }
-                Edge* finderInitial_first () const { return this->edges[0]; }
-                Edge* finderInitial_last  () const { return this->edges[this->edges.size()-1]; }
-#ifdef DEBUG
-                bool applyDelaunayCondition(Face*, unsigned int ttl = 0);
-#else
-                bool applyDelaunayCondition(Face*);
-#endif
-                void operateFlip(Edge*);
-                // Methods for manipulate lists of components
-                inline void removeVertexFromVertices(Vertex* v) {
-                        for(std::vector<Vertex*>::iterator it = this->vertices.begin(); 
-                                        it != this->vertices.end(); it++) {
-                                if((*it) == v) {
-                                        this->vertices.erase(it);
-                                        delete v;
-                                        it = this->vertices.end()-1;
-                                }
-                        }
-                }
-                inline void removeEdgeFromEdges(Edge* e) {
-                        for(std::vector<Edge*>::iterator it = this->edges.begin(); 
-                                        it != this->edges.end(); it++) {
-                                if((*it) == e) {
-                                        this->edges.erase(it);
-                                        delete e;
-                                        it = this->edges.end()-1;
-                                }
-                        }
-                }
-                inline void removeFaceFromFaces(Face* f) {
-                        for(std::vector<Face*>::iterator it = this->faces.begin(); 
-                                        it != this->faces.end(); it++) {
-                                if((*it) == f) {
-                                        this->faces.erase(it);
-                                        delete f;
-                                        it = this->faces.end()-1;
-                                }
-                        }
-                }
-                /*
-                 * Replace given vertex coords by given values.
-                 */
-                inline void moveVertex_pure(Vertex* v, Coordinates new_p) {
-                // Move the vertex
-                        v->setX(new_p.x());
-                        v->setY(new_p.y());
-                // Apply Delaunay Condition
-                        std::vector<Face*> nei_faces;
-                        Edge* edge = v->getEdge();
-                        do {
-                                nei_faces.push_back(edge->leftFace());
-                                edge = edge->rotLeftEdge();
-                        } while(edge != v->getEdge());
-
-                        for(Face* f : nei_faces) {
-#ifdef DEBUG
-                                assert(f != NULL);
-#endif
-                                this->applyDelaunayCondition(f);
-                        }
-                }
 };
 
 
