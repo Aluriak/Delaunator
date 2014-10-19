@@ -55,28 +55,6 @@ See github repo, pydelaunator repertory, for built-in example.
     from random import randint
     from delaunator import Delaunator, TrianguledObject
 
-    dt = Delaunator(0, 500, 0, 500)
-    class People(object):
-        def __init(self, vertex, name):
-            self.name = name
-            self.vertex = vertex
-
-        def __str__(self):
-            return self.name
-
-
-    objs = {}
-    michel = dt.addObject(randint(0, 600), randint(0, 600))
-    objs[michel] = People(michel, 'michel')
-
-    for i in range(100):
-        newobj = dt.addObject(randint(0,600), randint(0,600))
-        objs[newobj] = People(newobj, 'totoro')
-
-    print("My neighbors are " + ", ".join([str(objs[_]) for _ in michel.neighborsAt(100)]))
-
-
-
     # useful class
     class Student(TrianguledObject): 
         def __init__(self, name):
