@@ -39,24 +39,22 @@ Delaunator::~Delaunator() {
  ***************************************************/
 /**
  * Place an object in the triangulation, at the given coords
- * @param obj an object that is not already in Delaunator instance
  * @param coords place where object will be
  * @return obj, just for facilitate functionnal approach
  * @note object is not free or moved in memory
  */
-TrianguledObject* Delaunator::addObject(TrianguledObject* obj, Coordinates coords) {
-        return this->addObject(obj, coords.x(), coords.y());
+VirtualVertex* Delaunator::addVirtualVertex(Coordinates coords) {
+        return this->addVirtualVertex(coords.x(), coords.y());
 }
 
 
 
 /**
  * Place an object in the triangulation, at the given coords
- * @param obj an object that is not already in Delaunator instance
  * @param x coordinate in x-axis
  * @param y coordinate in y-axis
- * @return obj, just for facilitate functionnal approach
- * @note object is not, modified, free or moved in memory
+ * @return new VirtualVertex object address, or NULL if invalid coords
+ * @note no modifications if given coords are invalids (out of bounds)
  */
 TrianguledObject* Delaunator::addObject(TrianguledObject* obj, float x, float y) {
         Vertex* new_vtx = this->triangulation->addVertexAt(x, y);
@@ -69,7 +67,7 @@ TrianguledObject* Delaunator::addObject(TrianguledObject* obj, float x, float y)
 
 /**
  * Remove given object of the triangulation.
- * @param obj a TrianguledObject that have been added before
+ * @param obj a VirtualVertex that have been added before
  * @return obj, just for facilitate functionnal approach
  * @note object is not free or moved in memory, its just forgeted by Triangulation
  */
@@ -83,20 +81,20 @@ TrianguledObject* Delaunator::delObject(TrianguledObject* obj) {
 
 /**
  * Move given object by given values. (relative move)
- * @param obj a TrianguledObject that have been added before
+ * @param obj a VirtualVertex that have been added before
  * @param relative_move used for movement
  * @return obj, just for facilitate functionnal approach
  * @note object is not free or moved in memory
  */
-TrianguledObject* Delaunator::movObject(TrianguledObject* obj, Coordinates relative_move) {
+VirtualVertex* Delaunator::movVirtualVertex(VirtualVertex* obj, Coordinates relative_move) {
 #if DEBUG
         assert(obj->getVertex() != NULL);
 #endif
         // if another object is referenced by obj Vertex, a new Vertex will be creat
         if(obj->confoundedWithAnotherObject()) {
                 Vertex* new_vtx = this->triangulation->addVertexAt(
-                                obj->getCoordinates() + relative_move, // vertex is creat at the right place
-                                obj->getVertex()->getEdge() // this edge will be used by Finder
+                                obj->coordinates() + relative_move, // vertex is creat at the right place
+                                obj->vertex()->getEdge() // this edge will be used by Finder
                 );
                 // obj will be add to new Vertex and forget by the ancient one
                 obj->setVertex(new_vtx);
@@ -111,14 +109,14 @@ TrianguledObject* Delaunator::movObject(TrianguledObject* obj, Coordinates relat
 
 /**
  * Move given object by given values. (relative move)
- * @param obj a TrianguledObject that have been added before
+ * @param obj a VirtualVertex that have been added before
  * @param rel_x relative move in x-axis
  * @param rel_y relative move in y-axis
  * @return obj, just for facilitate functionnal approach
  * @note object is not free or moved in memory
  */
-TrianguledObject* Delaunator::movObject(TrianguledObject* obj, float rel_x, float rel_y) {
-        return this->movObject(obj, Coordinates(rel_x, rel_y));
+VirtualVertex* Delaunator::movVirtualVertex(VirtualVertex* obj, float rel_x, float rel_y) {
+        return this->movVirtualVertex(obj, Coordinates(rel_x, rel_y));
 }
 
 
@@ -130,10 +128,10 @@ TrianguledObject* Delaunator::movObject(TrianguledObject* obj, float rel_x, floa
 
 /**
  * @param coords Coordinates where looking for
- * @return TrianguledObject found at given coords, or NULL if nothing found
+ * @return VirtualVertex found at given coords, or NULL if nothing found
  */
-TrianguledObject* Delaunator::objectAt(Coordinates coords, float precision) const {
-        return this->objectAt(coords.x(), coords.y(), precision);
+VirtualVertex* Delaunator::virtualVertexAt(Coordinates coords, float precision) const {
+        return this->virtualVertexAt(coords.x(), coords.y(), precision);
 }
 
 
@@ -141,9 +139,9 @@ TrianguledObject* Delaunator::objectAt(Coordinates coords, float precision) cons
 /**
  * @param x coord in x-axis where looking for
  * @param y coord in y-axis where looking for
- * @return TrianguledObject found at given coords, or NULL if nothing found
+ * @return VirtualVertex found at given coords, or NULL if nothing found
  */
-TrianguledObject* Delaunator::objectAt(float x, float y, float precision) const {
+VirtualVertex* Delaunator::virtualVertexAt(float x, float y, float precision) const {
         Vertex* target = this->triangulation->vertexAt(x, y, precision);
         return target != NULL ? target->getFirstObject() : NULL;
 }
@@ -153,10 +151,10 @@ TrianguledObject* Delaunator::objectAt(float x, float y, float precision) const 
 
 /**
  * @param coords Coordinates where looking for
- * @return TrianguledObject list, found at given coords
+ * @return VirtualVertex list, found at given coords
  */
-std::list<TrianguledObject*> Delaunator::objectsAt(Coordinates coords, float precision) const {
-        return this->objectsAt(coords.x(), coords.y(), precision);
+std::list<VirtualVertex*> Delaunator::virtualVerticesAt(Coordinates coords, float precision) const {
+        return this->virtualVerticesAt(coords.x(), coords.y(), precision);
 }
 
 
@@ -164,11 +162,11 @@ std::list<TrianguledObject*> Delaunator::objectsAt(Coordinates coords, float pre
 /**
  * @param x coord in x-axis where looking for
  * @param y coord in y-axis where looking for
- * @return TrianguledObject list, found at given coords
+ * @return VirtualVertex list, found at given coords
  */
-std::list<TrianguledObject*> Delaunator::objectsAt(float x, float y, float precision) const {
+std::list<VirtualVertex*> Delaunator::virtualVerticesAt(float x, float y, float precision) const {
         Vertex* target = this->triangulation->vertexAt(x, y, precision);
-        return target != NULL ? target->getObjects() : std::list<TrianguledObject*>();
+        return target != NULL ? target->getObjects() : std::list<VirtualVertex*>();
 }
 
 
@@ -213,12 +211,12 @@ bool Delaunator::collideAt(Coordinates c) const {
 /***************************************************
  * ITERATORS
  ***************************************************/
-std::list<TrianguledObject*> Delaunator::objects() const {
-        std::list<TrianguledObject*> lret;
+std::list<VirtualVertex*> Delaunator::virtualVertices() const {
+        std::list<VirtualVertex*> lret;
         // for each Vertex of Triangulation
         IteratorOnVertices_read it = this->triangulation->iterVertices_read();
         while(it != it.end()) {
-                // add TrianguledObject of Vertex to lret
+                // add VirtualVertex of Vertex to lret
                 lret.splice(lret.end(), (*it)->getObjects());
                 it++;
         }

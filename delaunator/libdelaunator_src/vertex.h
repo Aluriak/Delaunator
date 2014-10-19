@@ -8,7 +8,7 @@
  */
 // LOCAL MODULES
 #include "commons.h"
-#include "trianguledObject.h"
+#include "virtualVertex.h"
 
 
 
@@ -23,7 +23,7 @@
  * PREDECLARATIONS
  */
 class Edge;
-class TrianguledObject;
+class VirtualVertex;
 
 
 
@@ -87,14 +87,14 @@ class Vertex : public Coordinates {
         // PUBLIC METHODS
                 unsigned int neighbourCount() const;
                 bool isNeighbourOf(Vertex*) const;
-                void take(TrianguledObject*);
-                void giveTrianguledObjectsTo(Vertex*);
-                void forget(TrianguledObject*);
+                void take(VirtualVertex*);
+                void giveVirtualVertexsTo(Vertex*);
+                void forget(VirtualVertex*);
         // ACCESSORS
                 unsigned int getID()            const { return this->id; }
                 unsigned int getObjectCount()   const { return this->objects.size(); }
-                std::list<TrianguledObject*> getObjects() const;
-                TrianguledObject* getFirstObject()        const;
+                std::list<VirtualVertex*> getObjects() const;
+                VirtualVertex* getFirstObject()        const;
                 Edge* getEdge() const;
                 void setEdge(Edge* e);
                 bool isACorner() const;
@@ -105,7 +105,7 @@ class Vertex : public Coordinates {
                 Edge* edge; // edge has this Vertex as origin.
                 unsigned int id;
                 static unsigned int last_id;
-                std::list<TrianguledObject*> objects;
+                std::list<VirtualVertex*> objects;
 };
 
 

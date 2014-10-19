@@ -353,10 +353,10 @@ void Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                                         //);
                         // Collision detected !
                         // - add vertex at the right place
-                        // - give all TrianguledObject of mv_vrtx to new vertex
+                        // - give all VirtualVertex of mv_vrtx to new vertex
                         // - delete mv_vrtx
                         Vertex* new_vrtx = this->addVertexAt(new_position, col_edge);
-                        mv_vrtx->giveTrianguledObjectsTo(new_vrtx);
+                        mv_vrtx->giveVirtualVertexsTo(new_vrtx);
                         this->delVertex(mv_vrtx);
                         
                 } 
@@ -534,7 +534,7 @@ void Triangulation::mergeVertex(Vertex* v, Vertex* v_destroyed) {
         assert(v->isNeighbourOf(v_destroyed));
 #endif
         // Transmission of objects of v_destroyed to v
-        v_destroyed->giveTrianguledObjectsTo(v);
+        v_destroyed->giveVirtualVertexsTo(v);
         // Deletion of v_destroyed
         this->delVertex(v_destroyed);
 }
