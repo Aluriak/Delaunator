@@ -33,7 +33,27 @@ class TrianguledObject(object):
 
 # ACCESSORS ###################################################################
         def directNeighbors(self):
+                """
+                @return list of direct neighbors of self
+                @note direct neighbors have no sense out of mathematical definition of delaunay triangulation, because its just objects that are directly connected to self by an edge.
+                """
                 return self.virtual_vertex.directNeighbors()
+
+
+        def nearerNeighbors(self, nb_neighbors):
+                """
+                @param nb_neighbors a positiv integer
+                @return list that contain the nb_neighbors neighbors in nearer-first order
+                """
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors))
+
+
+        def neighborsAt(self, max_distance):
+                """
+                @param max_distance number that give the limit distance 
+                @return list that contain the TrianguledObject that are at max_distance at most of self 
+                """
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.neighborsAt(max_distance))
 
 
 
