@@ -53,8 +53,8 @@ class Delaunator {
                 std::list<VirtualVertex*> virtualVerticesAt(Coordinates,  float=EPSILON) const;
                 std::list<VirtualVertex*> virtualVerticesAt(float, float, float=EPSILON) const;
 	// ACCESSORS
-                /** @return total number of TrianguledObject in Delaunator */
-                unsigned int getObjectCount() const { return this->object_count; }
+                /** @return total number of VirtualVertex in Delaunator */
+                unsigned int objectCount() const { return this->object_count; }
                 float getXmin() const { return this->triangulation->getXmin(); }
                 float getXmax() const { return this->triangulation->getXmax(); }
                 float getYmin() const { return this->triangulation->getYmin(); }

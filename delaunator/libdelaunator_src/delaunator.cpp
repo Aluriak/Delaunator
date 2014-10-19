@@ -18,6 +18,7 @@ Delaunator::Delaunator(const float xmin, const float xmax,
                        const float ymin, const float ymax, 
                        const VertexFinderMode finder_mode) {
         this->triangulation = new Triangulation(xmin, xmax, ymin, ymax, finder_mode);
+        object_count = 0;
 }
 
 
