@@ -33,13 +33,18 @@ namespace std {
 };
 
 %include "edge.h"
-
 %include "face.h"
-
 %include "iterators.i"
-
-%include "trianguledObject.h"
-
+%include "virtualVertex.h"
 %include "triangulation.h"
-
 %include "delaunator.h"
+
+/* Create TrianguledObject interface class */
+#if SWIGPYTHON
+%include "python_trianguledObject.i"
+#endif
+
+
+
+
+
