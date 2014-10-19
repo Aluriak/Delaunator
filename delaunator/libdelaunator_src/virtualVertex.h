@@ -1,5 +1,5 @@
-#ifndef TRIANGULED_OBJECT_H_INCLUDED
-#define TRIANGULED_OBJECT_H_INCLUDED
+#ifndef VIRTUAL_VERTEX_H_INCLUDED
+#define VIRTUAL_VERTEX_H_INCLUDED
 
 
 
@@ -29,28 +29,31 @@ class Vertex;
 
 
 /**
- * TRIANGULED OBJECT CLASS
+ * VIRTUAL VERTEX CLASS
  */
-class TrianguledObject {
+class VirtualVertex {
 	public:
 	// CONSTRUCTOR
-                TrianguledObject(Vertex* = NULL);
-                ~TrianguledObject();
+                VirtualVertex(Vertex* = NULL);
+                ~VirtualVertex();
 	// PUBLIC METHODS
         // PREDICATS
                 bool confoundedWithAnotherObject() const;
 	// ACCESSORS
                 // getter
-                Vertex* getVertex() const;
-                Coordinates getCoordinates() const;
-                std::list<TrianguledObject*> directNeighbors() const;
-                std::list<TrianguledObject*> neighborsAt(float) const;
-                //TrianguledObject* nearerNeighbour() const;
+                Vertex* vertex() const;
+                unsigned int id() const { return this->_id; }
+                Coordinates coordinates() const;
+                std::list<VirtualVertex*> directNeighbors() const;
+                std::list<VirtualVertex*> neighborsAt(float) const;
+                //VirtualVertex* nearerNeighbour() const;
                 // setters
                 void setVertex(Vertex*);
 	private:
 	// ATTRIBUTES
-                Vertex* vertex;
+                Vertex* ref_vertex;
+                unsigned int _id;
+                static unsigned int last_id;
 	// PRIVATE METHODS
 };
 

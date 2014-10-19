@@ -1,25 +1,27 @@
-#include "trianguledObject.h"
+#include "virtualVertex.h"
 #include "edge.h"
 
+unsigned int VirtualVertex::last_id = 1;
 
 
 /***************************************************
  * CONSTRUCTOR
  ***************************************************/
 /**
- * @return a new and well initialized TrianguledObject
+ * @return a new and well initialized VirtualVertex
  */
-TrianguledObject::TrianguledObject(Vertex* vtx) {
-        this->vertex = vtx;
+VirtualVertex::VirtualVertex(Vertex* vtx) {
+        this->_id = this->last_id++;
+        this->ref_vertex = vtx;
 }
 
 /**
  * Frees.
  */
-TrianguledObject::~TrianguledObject() {
+VirtualVertex::~VirtualVertex() {
         // Just in case that is not done :
-        if(this->vertex != NULL) {
-                this->vertex->forget(this);
+        if(this->ref_vertex != NULL) {
+                this->ref_vertex->forget(this);
         }
 }
 
@@ -38,10 +40,10 @@ TrianguledObject::~TrianguledObject() {
  * PREDICATS
  ***************************************************/
 /**
- * @return true iff another TrianguledObject is attach to this vertex
+ * @return true iff another VirtualVertex is attach to this vertex
  */
-bool TrianguledObject::confoundedWithAnotherObject() const {
-        return this->getVertex()->getObjectCount() > 1;
+bool VirtualVertex::confoundedWithAnotherObject() const {
+        return this->vertex()->getObjectCount() > 1;
 }
 
 
@@ -55,8 +57,8 @@ bool TrianguledObject::confoundedWithAnotherObject() const {
 /**
  * @return Vertex referenced by this
  */
-Vertex* TrianguledObject::getVertex() const {
-        return this->vertex;
+Vertex* VirtualVertex::vertex() const {
+        return this->ref_vertex;
 }
 
 
@@ -64,21 +66,21 @@ Vertex* TrianguledObject::getVertex() const {
 /**
  * @return Coordinates where this is
  */
-Coordinates TrianguledObject::getCoordinates() const {
-        Coordinates c(*this->vertex);
+Coordinates VirtualVertex::coordinates() const {
+        Coordinates c(*this->ref_vertex);
         return c;
 }
 
 
 
 /**
- * @return list of TrianguledObject that are directly connected to this instance.
+ * @return list of VirtualVertex that are directly connected to this instance.
  */
-std::list<TrianguledObject*> TrianguledObject::directNeighbors() const {
-        std::list<TrianguledObject*> find_nei;
-        Edge* edge_cur = this->getVertex()->getEdge();
+std::list<VirtualVertex*> VirtualVertex::directNeighbors() const {
+        std::list<VirtualVertex*> find_nei;
+        Edge* edge_cur = this->vertex()->getEdge();
         Edge* edge_ref = edge_cur;
-        std::list<TrianguledObject*> l; // container of finded objects
+        std::list<VirtualVertex*> l; // container of finded objects
         // walk to directs neighbors
         do {
                 l = edge_cur->destinVertex()->getObjects();
@@ -92,13 +94,13 @@ std::list<TrianguledObject*> TrianguledObject::directNeighbors() const {
 
 /**
  * @param dist_max the maximum distance 
- * @return list of TrianguledObject that are at dist_max distance to this instance.
+ * @return list of VirtualVertex that are at dist_max distance to this instance.
  */
-std::list<TrianguledObject*> TrianguledObject::neighborsAt(float dist_max) const {
-        std::list<TrianguledObject*> find_nei;
+std::list<VirtualVertex*> VirtualVertex::neighborsAt(float dist_max) const {
+        std::list<VirtualVertex*> find_nei;
         //TODO
         logs("NEED TO BE IMPLEMENTED: ");
-        logs("std::list<TrianguledObject> TrianguledObject::neighborsAt(float dist_max) const\n");
+        logs("std::list<VirtualVertex> VirtualVertex::neighborsAt(float dist_max) const\n");
         //TODO
         return find_nei;
 }
@@ -107,14 +109,14 @@ std::list<TrianguledObject*> TrianguledObject::neighborsAt(float dist_max) const
 
 /**
  * Change place of this by change Vertex reference
- * @param vtx the Vertex that will references this TrianguledObject
+ * @param vtx the Vertex that will references this VirtualVertex
  */
-void TrianguledObject::setVertex(Vertex* vtx) {
-        if(this->vertex != NULL) 
-                this->vertex->forget(this);
-        this->vertex = vtx;
-        if(this->vertex != NULL) 
-                this->vertex->take(this);
+void VirtualVertex::setVertex(Vertex* vtx) {
+        if(this->ref_vertex != NULL) 
+                this->ref_vertex->forget(this);
+        this->ref_vertex = vtx;
+        if(this->ref_vertex != NULL) 
+                this->ref_vertex->take(this);
 }
 
 
