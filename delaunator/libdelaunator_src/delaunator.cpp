@@ -93,7 +93,7 @@ VirtualVertex* Delaunator::delVirtualVertex(VirtualVertex* obj) {
  */
 VirtualVertex* Delaunator::movVirtualVertex(VirtualVertex* obj, Coordinates relative_move) {
 #if DEBUG
-        assert(obj->getVertex() != NULL);
+        assert(obj->vertex() != NULL);
 #endif
         // if another object is referenced by obj Vertex, a new Vertex will be creat
         if(obj->confoundedWithAnotherObject()) {
@@ -105,7 +105,7 @@ VirtualVertex* Delaunator::movVirtualVertex(VirtualVertex* obj, Coordinates rela
                 obj->setVertex(new_vtx);
         // Else, we can just move Vertex at the new place
         } else {
-                this->triangulation->moveVertex(obj->getVertex(), relative_move);
+                this->triangulation->moveVertex(obj->vertex(), relative_move);
         }
         return obj;
 }
