@@ -29,7 +29,7 @@
 
 /**
  * Delaunay class definition.  
- * Provide iterators, access to TrianguledObjects…
+ * Provide iterators, access to VirtualVertexs…
  * Have all methods for add, delete and move Objects.
  */
 class Delaunator {
@@ -42,16 +42,16 @@ class Delaunator {
 		~Delaunator();
 	// PUBLIC METHODS
                 // modify triangulation
-                TrianguledObject* addObject(TrianguledObject*, Coordinates);
-                TrianguledObject* addObject(TrianguledObject*, float, float);
-                TrianguledObject* delObject(TrianguledObject*);
-                TrianguledObject* movObject(TrianguledObject*, Coordinates);
-                TrianguledObject* movObject(TrianguledObject*, float, float);
+                VirtualVertex* addVirtualVertex(Coordinates);
+                VirtualVertex* addVirtualVertex(float, float);
+                VirtualVertex* delVirtualVertex(VirtualVertex*);
+                VirtualVertex* movVirtualVertex(VirtualVertex*, Coordinates);
+                VirtualVertex* movVirtualVertex(VirtualVertex*, float, float);
                 // object probing
-                TrianguledObject* objectAt(Coordinates,  float=EPSILON) const;
-                TrianguledObject* objectAt(float, float, float=EPSILON) const;
-                std::list<TrianguledObject*> objectsAt(Coordinates,  float=EPSILON) const;
-                std::list<TrianguledObject*> objectsAt(float, float, float=EPSILON) const;
+                VirtualVertex* virtualVertexAt(Coordinates,  float=EPSILON) const;
+                VirtualVertex* virtualVertexAt(float, float, float=EPSILON) const;
+                std::list<VirtualVertex*> virtualVerticesAt(Coordinates,  float=EPSILON) const;
+                std::list<VirtualVertex*> virtualVerticesAt(float, float, float=EPSILON) const;
 	// ACCESSORS
                 /** @return total number of TrianguledObject in Delaunator */
                 unsigned int getObjectCount() const { return this->object_count; }
@@ -79,7 +79,7 @@ class Delaunator {
 
 
         // ITERATORS
-                std::list<TrianguledObject*> objects() const;
+                std::list<VirtualVertex*> virtualVertices() const;
                 //IteratorVertexToNeighbourVertices getNeighbors(Vertex*);
                 //// edges necessary for user
                 //IteratorOnEdges iterEdges()             { return IteratorOnEdges(&this->edges); }

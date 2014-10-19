@@ -56,11 +56,15 @@ VirtualVertex* Delaunator::addVirtualVertex(Coordinates coords) {
  * @return new VirtualVertex object address, or NULL if invalid coords
  * @note no modifications if given coords are invalids (out of bounds)
  */
-TrianguledObject* Delaunator::addObject(TrianguledObject* obj, float x, float y) {
-        Vertex* new_vtx = this->triangulation->addVertexAt(x, y);
-        obj->setVertex(new_vtx);
-        this->object_count++;
-        return obj;
+VirtualVertex* Delaunator::addVirtualVertex(float x, float y) {
+        Vertex* new_vtx = this->triangulation->addVertexAt(x, y);       // create or get a vertex
+        VirtualVertex* obj = NULL;
+        if(new_vtx != NULL) {
+                obj = new VirtualVertex(new_vtx);                       // create a virtual vertex
+                new_vtx->take(obj);                                     // link it to real vertex
+                this->object_count++;                                   // one object more !
+        }
+        return obj;                                                     // give virtual vertex ref to user
 }
 
 
@@ -71,7 +75,7 @@ TrianguledObject* Delaunator::addObject(TrianguledObject* obj, float x, float y)
  * @return obj, just for facilitate functionnal approach
  * @note object is not free or moved in memory, its just forgeted by Triangulation
  */
-TrianguledObject* Delaunator::delObject(TrianguledObject* obj) {
+VirtualVertex* Delaunator::delVirtualVertex(VirtualVertex* obj) {
         obj->setVertex(NULL);
         this->object_count--;
         return obj;
