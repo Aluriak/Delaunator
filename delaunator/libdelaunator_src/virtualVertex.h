@@ -44,11 +44,12 @@ class VirtualVertex {
                 Vertex* vertex() const;
                 unsigned int id() const { return this->_id; }
                 Coordinates coordinates() const;
-                std::list<VirtualVertex*> directNeighbors() const;
-                std::list<VirtualVertex*> neighborsAt(float) const;
-                //VirtualVertex* nearerNeighbour() const;
                 // setters
                 void setVertex(Vertex*);
+        // GRAPH EXPLORATION
+                std::list<VirtualVertex*> directNeighbors() const;
+                std::list<VirtualVertex*> neighborsAt(float) const;
+                std::list<VirtualVertex*> nearerNeighbors(unsigned int) const;
 	private:
 	// ATTRIBUTES
                 Vertex* ref_vertex;

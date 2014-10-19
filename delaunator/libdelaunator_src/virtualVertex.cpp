@@ -74,6 +74,35 @@ Coordinates VirtualVertex::coordinates() const {
 
 
 /**
+ * Change place of this by change Vertex reference
+ * @param vtx the Vertex that will references this VirtualVertex
+ */
+void VirtualVertex::setVertex(Vertex* vtx) {
+        if(this->ref_vertex != NULL) 
+                this->ref_vertex->forget(this);
+        this->ref_vertex = vtx;
+        if(this->ref_vertex != NULL) 
+                this->ref_vertex->take(this);
+}
+
+
+
+
+
+/***************************************************
+ * PRIVATE METHODS
+ ***************************************************/
+
+
+
+
+
+
+
+/***************************************************
+ * GRAPH EXPLORATION
+ ***************************************************/
+/**
  * @return list of VirtualVertex that are directly connected to this instance.
  */
 std::list<VirtualVertex*> VirtualVertex::directNeighbors() const {
@@ -108,24 +137,17 @@ std::list<VirtualVertex*> VirtualVertex::neighborsAt(float dist_max) const {
 
 
 /**
- * Change place of this by change Vertex reference
- * @param vtx the Vertex that will references this VirtualVertex
+ * @param nb_nei the number of neighbors
+ * @return list of VirtualVertex that are the closer of this. List size is equal to nb_nei at the most.
  */
-void VirtualVertex::setVertex(Vertex* vtx) {
-        if(this->ref_vertex != NULL) 
-                this->ref_vertex->forget(this);
-        this->ref_vertex = vtx;
-        if(this->ref_vertex != NULL) 
-                this->ref_vertex->take(this);
+std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(unsigned int nb_nei) const {
+        std::list<VirtualVertex*> find_nei;
+        //TODO
+        logs("NEED TO BE IMPLEMENTED: ");
+        logs("std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(unsigned int nb_nei) const\n");
+        //TODO
+        return find_nei;
 }
-
-
-
-
-
-/***************************************************
- * PRIVATE METHODS
- ***************************************************/
 
 
 
