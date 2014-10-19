@@ -19,8 +19,8 @@ vsp	edge.cpp
 tabnew	geometry.h
 vsp	geometry.cpp
 
-tabnew  trianguledObject.h
-vsp     trianguledObject.cpp
+tabnew  virtualVertex.h
+vsp     virtualVertex.cpp
 
 tabnew  utils.h
 vsp	commons.h
@@ -36,3 +36,5 @@ vsp     edge_iterators.h
 
 tabnew  libdelaunator.i
 vsp     iterators.i
+
+tabnew  python_trianguledObject.i
