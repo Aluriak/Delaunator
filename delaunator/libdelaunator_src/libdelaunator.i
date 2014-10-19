@@ -12,7 +12,7 @@ static int IteratorOnAllEdges_myErr = 0;
 %include "typemaps.i"
 
 namespace std {
-        %template(TrianguledObjectList) list<TrianguledObject*>;
+        %template(VirtualVertexList) list<VirtualVertex*>;
 }
 
 %include "utils.h"
