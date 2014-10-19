@@ -68,29 +68,29 @@ bool Vertex::isNeighbourOf(Vertex* v) const {
 
 
 /**
- * @param v a Vertex that will receive all TrianguledObject of this
+ * @param v a Vertex that will receive all VirtualVertex of this
  */
-void Vertex::giveTrianguledObjectsTo(Vertex* v) {
-        std::list<TrianguledObject*>::iterator it = v->objects.begin();
+void Vertex::giveVirtualVertexsTo(Vertex* v) {
+        std::list<VirtualVertex*>::iterator it = v->objects.begin();
         v->objects.insert(it, this->objects.begin(), this->objects.end());
 }
 
 
 
 /**
- * @param trob a TrianguledObject that will be added in list of this
+ * @param trob a VirtualVertex that will be added in list of this
  */
-void Vertex::take(TrianguledObject* trob) {
+void Vertex::take(VirtualVertex* trob) {
         this->objects.push_back(trob);
 }
 
 
 
 /**
- * @param trob a TrianguledObject that will be forgeted by this
+ * @param trob a VirtualVertex that will be forgeted by this
  * @note: if this have not trob in memory, nothing is done by that function.
  */
-void Vertex::forget(TrianguledObject* trob) {
+void Vertex::forget(VirtualVertex* trob) {
         this->objects.remove(trob);
 }
 
@@ -124,20 +124,20 @@ bool Vertex::operator==(const Vertex& othr) {
  * ACCESSORS
  ***************************************************/
 /**
- * Access to all TrianguledObjects of this instance.
- * @return a std::list of TrianguledObject pointers
+ * Access to all VirtualVertexs of this instance.
+ * @return a std::list of VirtualVertex pointers
  */
-std::list<TrianguledObject*> Vertex::getObjects() const {
-        std::list<TrianguledObject*> l(this->objects); // recopy
+std::list<VirtualVertex*> Vertex::getObjects() const {
+        std::list<VirtualVertex*> l(this->objects); // recopy
         return l;
 }
 
 
 /**
- * Access to one TrianguledObject of this instance.
- * @return a TrianguledObject pointer, or NULL if no Object referenced
+ * Access to one VirtualVertex of this instance.
+ * @return a VirtualVertex pointer, or NULL if no Object referenced
  */
-TrianguledObject* Vertex::getFirstObject() const {
+VirtualVertex* Vertex::getFirstObject() const {
         return this->objects.front() != NULL ? this->objects.front() : NULL;
 }
 
