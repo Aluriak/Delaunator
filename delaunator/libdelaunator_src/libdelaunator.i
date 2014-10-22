@@ -2,7 +2,6 @@
 %{
 /* Includes the header in the wrapper code */
 #include "delaunator.h"
-static int IteratorOnAllEdges_myErr = 0;
 %}
 
 %include "std_string.i"
@@ -43,8 +42,4 @@ namespace std {
 #if SWIGPYTHON
 %include "python_trianguledObject.i"
 #endif
-
-
-
-
 
