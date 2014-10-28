@@ -1,0 +1,210 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% PACKAGES              %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass{report}
+
+\usepackage[utf8x]{inputenc}  % accents
+\usepackage{geometry}         % marges
+\usepackage[francais]{babel}  % langue
+\usepackage{graphicx}         % images
+\usepackage{verbatim}         % texte préformaté
+\usepackage{fancyhdr}         % fancy
+\usepackage{listings}         % source code 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% PRÉAMBULE             %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Delaunator Architecture and basic Specifications} 
+\author{}
+% laisser vide pour date de compilation
+\date{} 
+
+% FORMAT PAGES         
+%\pagestyle{fancy} % nom du rendu (définit les lignes suivantes)
+        %\lhead{} % left head
+        %\chead{} % center head
+        %\rhead{} % right head
+        %\lfoot{} % left foot
+        %\cfoot{} % center foot
+        %\rfoot{} % right foot
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% BEGIN                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+        \maketitle
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 1             %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Introduction}
+    \paragraph*{}
+    Delaunator is a python module designed for one main objective: provide in quick time a reference to neighbors objects in a 2D world.
+    There is a lots of way to do that, and the importants one are implemented, notabily access on all objects away from a certain distance, 
+    or the N closer objects.
+
+    \paragraph*{}
+    Delaunator follow some way for do its job:
+    \begin{enumerate}
+        \item[\textbf{Efficient:}] implementing solutions with minimal algorithmic complexity and critical parts coded in low-level language.
+        \item[\textbf{Pythonic:}] support both of Python 2 and 3, and provide a simple and elegant API as Python module.
+        \item[\textbf{Strong:}] robust management of limit cases and \textit{good ideas} of user.
+        \item[\textbf{Non-invasive:}] don't need complicated initialisation by user and don't asking questions; its just give answers.
+    \end{enumerate}
+    \newpage
+    \begin{lstlisting}[language=python]
+    from random import randint
+    from delaunator import Delaunator, TrianguledObject
+
+    # useful class
+    class Student(TrianguledObject): 
+        def __init__(self, name):
+            super().__init__()
+            self.name = str(name)
+        def __str__(self):
+            return self.name
+
+    # bounds
+    xmin, xmax, ymin, ymax = 0, 600, 0, 600
+
+    # creat delaunator and data
+    dt = Delaunator(xmin, xmax, ymin, ymax)
+    michel = Student('michel')
+    dt.addTrianguledObject(michel, 342, 123)
+
+    for i in range(100):
+        dt.addTrianguledObject(
+            randint(xmin, xmax), 
+            randint(ymin, ymax), 
+            Student('totoro')
+        )
+
+    # movement
+    dt.moveTrianguledObject(michel, randint(xmin, xmax) / 2, randint(ymin, ymax) / 2)
+    
+    # print name of all neighbors that are to a distance at most 100
+    print("My neighbors are " + ", ".join([str(_) for _ in michel.neighborsAt(100)]))
+    
+    # frees
+    dt.delTrianguledObject(michel)
+    dt.delAllObjects()
+    \end{lstlisting}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 2             %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Global Architecture - low level part}
+This part is coded in C++, for rapidity and object oriented feature support.
+
+\section{Delaunay triangulation}
+    \paragraph*{}
+    Delaunay Triangulation, as a mathematical object implemented in quad-edge implementation, is defined mainly in \textbf{Triangulation}, \textbf{Vertex}, \textbf{Edge} and \textbf{Face} classes.
+    \begin{itemize}
+        \item[\textbf{Triangulation:}] manager of delaunay triangulation and Vertex, Edge and Face classes.
+        \item[\textbf{Vertex:}] node of the graph, where data can be found.
+        \item[\textbf{Edge:}] link between vertices of graph, main object of quad-edge implementation.
+        \item[\textbf{Face:}] triangulary surface, useless for final user but have lots of useful low-level methods.
+    \end{itemize}
+
+
+
+\section{Technical Overlay}
+    \paragraph*{}
+    Additionnal objects are used for involve management of limit cases: \textbf{Delaunator} and \textbf{VirtualVertex}.
+    Basically, Delaunator manage VirtualVertex like Triangulation manage Vertex. Difference come where a VirtualVertex instance references a unique Vertex instance, and all is as if a VirtualVertex is placed in a Triangulation
+    instance. Moreover, each Vertex have a list of VirtualVertex that references it. 
+    \paragraph*{}
+    These links allow Delaunator to manage a triangulation where cunfunding data is not a problem, without touch to commons graph exploration algorithms.
+    Delaunator is important in module API. (see chapter on API)
+    \paragraph*{}
+    \begin{itemize}
+        \item[\textbf{Delaunator:}] object where VirtualVertex are placed. Provides many methods for managing objects globally.
+        \item[\textbf{VirtualVertex:}] managed by Delaunator, referenced by an id that allow a quick association to TrianguledObject.
+    \end{itemize}
+
+
+
+\section{Other C/C++ modules}
+    \paragraph*{}
+    \begin{itemize}
+        \item[\textbf{Geometry:}] C++ namespace where lots of functions useful for answer to geometric problems.
+        \item[\textbf{Utils:}] contain lots of useful functions, templates and declarations for logging, terminal managing, operation shorcuts and optimizations.
+    \end{itemize}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 3             %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Global Architecture - high level part}
+    \paragraph*{}
+    This part is probably coded in Python, for usability. By an unbelievable chance, this code is not yet implemented, so its to user to do something.
+    Author of Delaunator module want to let user define its own projects. (and had just enough time for code Delaunator)
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 4             %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Global Architecture - link level part}
+Where C++ and Python run together for merge efficiency of C++ and usability of Python.
+Its performed with SWIG, python code and additionnal Cpp-like code. 
+The main class of this level is \textbf{Trianguled Object}, and important code is written in all interface files (.i extension).
+
+\section{Trianguled Object}
+    \paragraph*{}
+    Maybe the most important class for user, Trianguled Object is the final and abstract object of API. 
+    In normal case, user defined a class than inherit from TrianguledObject, then add it to a Delaunator class.
+    After that, the user have just to use Trianguled Objects methods and code his project.
+
+
+\section{Delaunator extending}
+    \paragraph*{}
+    Delaunator C++ class is extended in interface files, with definitions of Trianguled Object. 
+    These methods allow API to manage efficiently Trianguled Object.
+
+
+\section{Interface files}
+    \paragraph*{}
+    Specifications for SWIG, where low level part accessible by Python will be defined.
+    TrianguledObject is defined in interface file, as declarations of shortcuts for help python users. (iteration on C++ lists, accessors as property)
+    \paragraph*{}
+    By a totally non-professionnal choice, all methods of all objects are accessible from Python.
+    Maybe its better to hide low level parts that are not directly in official API. It will be the goal of a next update, maybe.
+    
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER 4             %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{API}
+\section{Delaunator object}
+    \paragraph*{}
+    the main object of API is Delaunator class. Each instance of Delaunator class describe an independant mesh.
+    After definition, the only usecases of a delaunator instance is adding and deleting TrianguledObject.
+    \paragraph*{}
+
+
+
+
+\end{document}
+% END
