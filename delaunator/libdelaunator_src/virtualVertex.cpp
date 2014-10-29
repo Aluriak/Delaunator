@@ -103,6 +103,17 @@ void VirtualVertex::setVertex(Vertex* vtx) {
  * GRAPH EXPLORATION
  ***************************************************/
 /**
+ * @return list of VirtualVertex that share the same Vertex.
+ */
+std::list<VirtualVertex*> VirtualVertex::confundedNeighbors() const {
+        std::list<VirtualVertex*> find_nei(this->ref_vertex->getObjects());
+        find_nei.erase(std::find(find_nei.begin(), find_nei.end(), this));
+        return find_nei;
+}
+
+
+
+/**
  * @return list of VirtualVertex that are directly connected to this instance.
  */
 std::list<VirtualVertex*> VirtualVertex::directNeighbors() const {
@@ -148,6 +159,7 @@ std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(unsigned int nb_nei) co
         //TODO
         return find_nei;
 }
+
 
 
 

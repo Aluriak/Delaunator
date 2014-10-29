@@ -47,6 +47,7 @@ class VirtualVertex {
                 // setters
                 void setVertex(Vertex*);
         // GRAPH EXPLORATION
+                std::list<VirtualVertex*> confundedNeighbors() const;
                 std::list<VirtualVertex*> directNeighbors() const;
                 std::list<VirtualVertex*> neighborsAt(float) const;
                 std::list<VirtualVertex*> nearerNeighbors(unsigned int) const;
