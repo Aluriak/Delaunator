@@ -63,18 +63,24 @@ See github repo, pydelaunator repertory, for built-in example.
         def __str__(self):
             return self.name
 
-    dt = Delaunator(0, 600, 0, 600)
+    # bounds
+    xmin, xmax, ymin, ymax = 0, 600, 0, 600
+
+    # creat delaunator and data
+    dt = Delaunator(xmin, xmax, ymin, ymax)
     michel = Student('michel')
     dt.addTrianguledObject(michel, 342, 123)
 
     for i in range(100):
-        dt.addTrianguledObject(randint(0,600), randint(0,600), Student('totoro'))
+        dt.addTrianguledObject(randint(xmin, xmax), randint(ymin, ymax), Student('totoro'))
 
-    dt.moveTrianguledObject(michel, 23.5, -31)
+    # movement
+    dt.moveTrianguledObject(michel, randint(xmin, xmax) / 2, randint(ymin, ymax) / 2)
     
     # print name of all neighbors that are to a distance at most 100
     print("My neighbors are " + ", ".join([str(_) for _ in michel.neighborsAt(100)]))
     
+    # frees
     dt.delTrianguledObject(michel)
     dt.delAllObjects()
 
