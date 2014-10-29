@@ -51,23 +51,6 @@ unsigned int Vertex::neighbourCount() const {
 
 
 /**
- * @param v a Vertex
- * return true iff an edge have for origin this and for destination v
- */
-bool Vertex::isNeighbourOf(Vertex* v) const {
-        Edge* finder = this->edge;
-        bool isNei = false;
-        do {
-                if(finder->destinVertex() == v)
-                        isNei = true;
-                finder = finder->rotLeftEdge();
-        } while(!isNei && finder != this->edge);
-        return isNei;
-}
-
-
-
-/**
  * @param v a Vertex that will receive all VirtualVertex of this
  */
 void Vertex::giveVirtualVertexsTo(Vertex* v) {
@@ -151,6 +134,32 @@ Edge* Vertex::getEdge() const { return this->edge; }
  * @param e the reference to an Edge, the new Edge that have this Vertex for origin
  */
 void Vertex::setEdge(Edge* e) { this->edge = e; }
+
+
+
+
+
+
+
+
+/***************************************************
+ * PREDICATS
+ ***************************************************/
+/**
+ * @param v a Vertex
+ * return true iff an edge have for origin this and for destination v
+ */
+bool Vertex::isNeighbourOf(Vertex* v) const {
+        Edge* finder = this->edge;
+        bool isNei = false;
+        do {
+                if(finder->destinVertex() == v)
+                        isNei = true;
+                finder = finder->rotLeftEdge();
+        } while(!isNei && finder != this->edge);
+        return isNei;
+}
+
 
 
 /**
