@@ -10,7 +10,7 @@ class TrianguledObject(object):
         This is like an abstract class : no real code need to have pure Trianguled Object defined.
         Correct use is to use objects that inherits from this class.
         """
-        VRTL_VRTX_TO_TRNGLD_OBJCT = {}
+        VRTL_VRTX_TO_TRNGLD_OBJCT = {None:None}
 
 
 # CONSTRUCTOR #################################################################
