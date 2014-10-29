@@ -69,7 +69,7 @@ class TrianguledObject(object):
 # CLASS METHOD ################################################################
         @staticmethod
         def of(virtual_vertex):
-                return TrianguledObject.VRTL_VRTX_TO_TRNGLD_OBJCT[virtual_vertex.id()]
+                return TrianguledObject.VRTL_VRTX_TO_TRNGLD_OBJCT[virtual_vertex.id()] if virtual_vertex is not None else None
 
 
 
