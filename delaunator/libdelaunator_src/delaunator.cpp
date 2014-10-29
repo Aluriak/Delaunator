@@ -74,12 +74,17 @@ VirtualVertex* Delaunator::addVirtualVertex(float x, float y) {
  * Remove given object of the triangulation.
  * @param obj a VirtualVertex that have been added before
  * @return obj, just for facilitate functionnal approach
- * @note object is not free or moved in memory, its just forgeted by Triangulation
+ * @note given VirtualVertex is deleted
  */
-VirtualVertex* Delaunator::delVirtualVertex(VirtualVertex* obj) {
-        obj->setVertex(NULL);
+void Delaunator::delVirtualVertex(VirtualVertex* obj) {
+        Vertex* vtx = obj->vertex();
+        if(vtx != NULL) {
+                obj->setVertex(NULL);
+                if(vtx->getObjectCount() == 0) 
+                        this->triangulation->delVertex(vtx);
+        }
+        delete obj;
         this->object_count--;
-        return obj;
 }
 
 
