@@ -16,8 +16,68 @@ void geometry::unit_tests() {
                 0,0, 1,1, 1,2
         )); 
         assert(abs(d-1.) < EPSILON);
+        // PointInCircumcircle is ok !
+
+
+        assert(pointInsideCircle(Coordinates(0, 0.9999), Coordinates(0, 0), 1));
+        assert(pointInsideCircle(Coordinates(0, 0), Coordinates(0, 0), 1));
+        assert(pointOnCircle(Coordinates(1, 0), Coordinates(0, 0), 1));
+        assert(pointOnCircle(Coordinates(0, -1), Coordinates(0, 0), 1));
+        // PointInsideCircle is ok !
+
+        
         //assert();
-        //assert();
+
+
+        // study Circle {C; 3} and Line (A;B) with A (-7;7) and B(5;7) and C (3;6)
+        Coordinates inter1, inter2, A = Coordinates(-7, 7), B = Coordinates(5, 7), C = Coordinates(3, 6);
+        float radius = 3, square_radius = radius*radius;
+        assert(geometry::intersectionsBetweenLineAndCircle(
+                                A, B, // segment [AB]
+                                C, square_radius, // circle center and squared radius
+                                &inter1, &inter2  // solutions
+                ) == 2
+        );
+        // horizontal lines are ok !
+
+
+        // study Circle {C; 2} and Line (A;B) with A (6;8) and B (6;2) and C (4;6)
+        A = Coordinates(6, 8);
+        B = Coordinates(6, 2);
+        C = Coordinates(4, 6);
+        radius = 2; 
+        square_radius = radius*radius;
+        assert(square_radius == 4);
+        assert(geometry::intersectionsBetweenLineAndCircle(
+                                A, B, // the line
+                                C, square_radius, // circle center and square radius (2^2)
+                                &inter1, &inter2
+                ) == 1
+        );
+        // vertical lines are ok !
+
+
+        // only one intersection between Cirle and segment [C;inter1]
+        assert(geometry::intersectionsBetweenSegmentAndCircle(
+                                C, inter1, // segment [circle center; intersection of Circle and (AB)]
+                                C, square_radius,
+                                &inter1, &inter2
+                ) == 1
+        );
+        // behinder is inside the circle
+        Coordinates behinder = geometry::behindIntersectionOfLines(
+                        C, inter1, // the line where behinder will be
+                        A, B       // behinder will be behind this line
+        );
+        assert(geometry::pointInsideCircle(behinder, C, radius));
+        // no intersection between Cirle and segment [C;behinder]
+        assert(geometry::intersectionsBetweenSegmentAndCircle(
+                                C, behinder, // segment [circle center; behinder]
+                                C, square_radius,
+                                &inter2, &inter2
+                ) == 0
+        );
+        // behinder computing is ok !
 }
 
 
@@ -42,6 +102,15 @@ void geometry::unit_tests() {
  */
 float geometry::squareDistanceBetweenPoints(float x1, float y1, float x2, float y2) {
         return (x1-x2) * (x1-x2) + (y1-y2) * (y1-y2);
+}
+/**
+ * @param A Coordinates of a point of triangle
+ * @param B Coordinates of a point of triangle
+ * @return square distance between the two points
+ * @warning return value is square of distance, not real distance
+ */
+float geometry::squareDistanceBetweenPoints(Coordinates A, Coordinates B) {
+        return squareDistanceBetweenPoints(A.x(), A.y(), B.x(), B.y());
 }
 
 
@@ -244,9 +313,14 @@ float geometry::squareDistanceBetweenSegmentAndPoint(float x1, float y1, float x
  * @param C Coordinates of a line point
  * @param D Coordinates of another line point
  * @return true if lines are parallels
+ * @warning if A == B or C == D, lines are parallel
  */
-bool geometry::parallelsLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
+bool geometry::parallelLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
         // source: https://en.wikipedia.org/wiki/Line-line_intersection#Mathematics
+        //if(A == B) 
+                //logs("A(%f;%f) == B(%f;%f)\n", A.x(), A.y(), B.x(), B.y());
+        //if(C == D) 
+                //logs("C(%f;%f) == D(%f;%f)\n", C.x(), C.y(), D.x(), D.y());
         return fabs((A.x()-B.x()) * (C.y()-D.y())  -  (A.y()-B.y()) * (C.x()-D.x())) < EPSILON;
 }
 
@@ -266,10 +340,10 @@ bool geometry::parallelsLines(Coordinates A, Coordinates B, Coordinates C, Coord
  * @param C Coordinates of a line point
  * @param D Coordinates of another line point
  * @return Coordinates of intersection of the lines
- * @warning if lines are parallels, result is false
+ * @assert lines are not parallel
  */
 Coordinates geometry::intersectionOfLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
-        assert(!geometry::parallelsLines(A,B,C,D));
+        assert(!geometry::parallelLines(A,B,C,D));
         Coordinates intersec;
         float det = (A.x()-B.x()) * (C.y()-D.y())  -  (A.y()-B.y()) * (C.x()-D.x());
         float fA = A.x()*B.y() - A.y()*B.x();
@@ -277,6 +351,37 @@ Coordinates geometry::intersectionOfLines(Coordinates A, Coordinates B, Coordina
         intersec.setX((fA*(C.x()-D.x()) - (A.x()-B.x())*fB) / det);
         intersec.setY((fA*(C.y()-D.y()) - (A.y()-B.y())*fB) / det);
         return intersec;
+}
+
+
+
+
+
+
+/***************************************************
+ * BEHIND INTERSECTION OF LINES
+ ***************************************************/
+/**
+ * @param A Coordinates of a line point
+ * @param B Coordinates of another line point
+ * @param C Coordinates of a line point
+ * @param D Coordinates of another line point
+ * @return Coordinates of a point that is behind the intersection of the lines, and on (A;B)
+ * @note distance between returned point and intersection of lines is equal to EPSILON
+ * @note returned point is nearer of A than B; difference is about EPSILON
+ * @assert lines are not parallel
+ */
+Coordinates geometry::behindIntersectionOfLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
+        Coordinates intersec = intersectionOfLines(A, B, C, D), behinder(0, 0);
+        // behinder is the intersection of the segment [AB] and circle of center A and
+        //      radius equal to |AB| - EPSILON
+        float circle_radius = A.distanceTo(intersec) - EPSILON*1;
+        intersectionsBetweenSegmentAndCircle(
+                        A, B, // segment
+                        A, circle_radius*circle_radius, // circle center and radius
+                        &behinder, &intersec // solution in behinder, and intersec is like a /dev/null
+        );
+        return behinder;
 }
 
 
@@ -295,17 +400,22 @@ Coordinates geometry::intersectionOfLines(Coordinates A, Coordinates B, Coordina
  * @param A Coordinates of a line point
  * @param B Coordinates of another line point
  * @return true if [OP] segment cross with (AB) line
+ * @return 0 if [OP] and (AB) don't cross, 1 if ]OP[ cross (AB) or 2 if O or P are on (AB)
  */
 bool geometry::collisionBetweenSegmentAndLine(Coordinates O, Coordinates P, Coordinates A, Coordinates B) {
         // 0,1    1,0   0,0     2,2
-        float AB_x = B.x() - A.x();  // 2
-        float AB_y = B.y() - A.y();  // 2
-        float AP_x = P.x() - A.x();  // 1
-        float AP_y = P.y() - A.y();  // 0
-        float AO_x = O.x() - A.x();  // 0
-        float AO_y = O.y() - A.y();  // 1
+        float AB_x = B.x() - A.x();  // 2  
+        float AB_y = B.y() - A.y();  // 2  
+        float AP_x = P.x() - A.x();  // 1  
+        float AP_y = P.y() - A.y();  // 0  
+        float AO_x = O.x() - A.x();  // 0  
+        float AO_y = O.y() - A.y();  // 1  
         // -2 * 2
-        return (AB_x*AP_y - AB_y*AP_x)*(AB_x*AO_y - AB_y*AO_x) <= 0;
+        float tmp = (AB_x*AP_y - AB_y*AP_x)*(AB_x*AO_y - AB_y*AO_x);
+        if(fabs(tmp - 0.) < EPSILON)    tmp = 2;
+        else if(tmp < 0.)               tmp = 1;
+        else                            tmp = 0;
+        return tmp;
 }
 
 
@@ -363,16 +473,37 @@ bool geometry::collisionBetweenLineAndCircle(Coordinates A, Coordinates B, Coord
 
 
 /***************************************************
- * POINT IN CIRCLE
+ * POINT INSIDE CIRCLE
  ***************************************************/
 /**
  * @param A Coordinates of tested point
  * @param C Coordinates of circle's center 
  * @param radius of the circle
- * @return true if tested point is in circle
+ * @return true if tested point is inside circle
+ * @note return false if point is exactly on circle
  */
-bool geometry::pointInCircle(Coordinates A, Coordinates C, float radius) {
-        return (A.x()-C.x())*(A.x()-C.x()) + (A.y()-C.y())*(A.y()-C.y()) > radius*radius;
+bool geometry::pointInsideCircle(Coordinates A, Coordinates C, float radius) {
+        return (A.x()-C.x())*(A.x()-C.x()) + (A.y()-C.y())*(A.y()-C.y()) < radius*radius;
+}
+
+
+
+
+
+
+
+
+/***************************************************
+ * POINT ON CIRCLE
+ ***************************************************/
+/**
+ * @param A Coordinates of tested point
+ * @param C Coordinates of circle's center 
+ * @param radius of the circle
+ * @return true if tested point is on circle, false if tested point is inside or outside the circle
+ */
+bool geometry::pointOnCircle(Coordinates A, Coordinates C, float radius) {
+        return fabs((A.x()-C.x())*(A.x()-C.x()) + (A.y()-C.y())*(A.y()-C.y()) - radius*radius) < EPSILON;
 }
 
 
@@ -405,8 +536,8 @@ bool geometry::collisionBetweenSegmentAndCircle(Coordinates A, Coordinates B, Co
                 float scal2 = (-AB_x)*BC_x + (-AB_y)*BC_y;  // scalar product
                 // I is between A and B, or A or B is in the circle
                 collision = (scal1 >= 0 && scal2 >= 0) 
-                          || geometry::pointInCircle(A, C, radius)
-                          || geometry::pointInCircle(B, C, radius);
+                          || geometry::pointInsideCircle(A, C, radius)
+                          || geometry::pointInsideCircle(B, C, radius);
         }
         return collision;
 }
@@ -451,51 +582,95 @@ Coordinates geometry::projectionOfPointOnLine(Coordinates A, Coordinates B, Coor
  * @param A Coordinates of a point on the line
  * @param B Coordinates of another point on the line
  * @param C Coordinates of center of circle
- * @param radius of the circle 
+ * @param square_radius of the circle 
  * @param S1 reference to Coordinates of the first find point of intersection between cricle and line
  * @param S2 reference to Coordinates of the second find point
  * @return number of solution, 0, 1 or 2
  * @note if return 0, S1 and S2 are not modified, if 1, S1 only is modifed, else, both modified
  */
 unsigned int geometry::intersectionsBetweenLineAndCircle(Coordinates A, Coordinates B, Coordinates C, 
-                float radius, Coordinates* S1, Coordinates* S2) {
+                float square_radius, Coordinates* S1, Coordinates* S2) {
 #if DEBUG
         assert(S1 != NULL);
         assert(S2 != NULL);
 #endif
-        float coef, ordn, delta;
+/* EQUATIONS *//*
+                r^2  =  (px - cx)^2 + (py - cy)^2
+                with P(px;py) and C(cx;cy) as P a point on the circle of center C and radius R.
+
+                we want to know coordinates (i1x;i1y) and (i2x;i2y) of intersections between
+                circle and a (AB) line, with A(ax;ay) and B(bx;by).
+
+                First case : line is defined by y = coef*x + ordn
+                intersections coordinates can be found by:
+                      R^2 = (px - cx)^2 + (py - cy)^2
+
+                      replacing py by line equation:
+                      R^2 = (px - cx)^2 + (coef*px + ordn - cy)^2
+
+                      developped:
+                      (1 + coeff^2) * px^2
+                      + (-2*cx + 2*coef*ordn - 2*coef*cy) * px
+                      + -R^2 + cx^2 + cy^2 + ordn^2 - 2*ordn*cy
+
+                      Resolve this second degre equation lead to coordinates of intersections.
+
+                Second case : line is vertical and defined by x = ordn
+                intersections coordinates can be found by:
+                      R^2 = (px - cx)^2 + (py - cy)^2
+
+                      replacing py by line equation:
+                      R^2 = (ordn - cx)^2 + (py - cy)^2
+
+                      developped:
+                      py^2
+                      + (-2*cy) * py
+                      + ordn^2 - 2*ordn*cx + cx^2 + cy^2 - R^2
+
+                      Resolve this second degre equation lead to coordinates of intersections.
+                      …
+
+
+                      But its false, so we admit this solution :
+                      y = cy +- sqrt(R^2 - (K - cx)^2)
+
+                        
+*/
+        float coef, ordn;
+        double delta;
         unsigned int nb_solution = 0;
         if(coeffAndOrdnOfLine(A, B, &coef, &ordn)) {
                 // line is not vertical
-                float cA = 1 + coef*coef; 
-                float cB = -2*C.x() + 2*coef*ordn - 2*coef*C.y();
-                float cC = -radius*radius + C.x()*C.x() + ordn*ordn + C.y()*C.y() - 2*ordn*C.y();
-                delta = cB*cB - 4*cA*cC;
+                double cA = 1 + coef*coef; 
+                double cB = -2*C.x() + 2*coef*ordn - 2*coef*C.y();
+                double cC = -square_radius + C.x()*C.x() + ordn*ordn + C.y()*C.y() - 2*ordn*C.y();
+                double sqrt_delta = sqrt(cB*cB - 4*cA*cC); // sqrt(bb - 4ac)
 
-                if(delta >= 0) {
-                        S1->setX(((-cB + sqrt(delta)) / (2*cA)));
+                if(sqrt_delta >= 0) {
+                        S1->setX(((-cB + sqrt_delta) / (2.*cA)));
                         S1->setY(S1->x() * coef + ordn);
                         nb_solution++;
                 }
-                if(delta > 0) {
-                        S2->setX(((-cB + sqrt(delta)) / (2*cA)));
-                        S2->setY(S1->x() * coef + ordn);
+                if(sqrt_delta > 0) {
+                        S2->setX(((-cB - sqrt_delta) / (2.*cA)));
+                        S2->setY(S2->x() * coef + ordn);
                         nb_solution++;
                 }
         } else {
                 // line is vertical
-                float cB = -2*C.y();
-                float cC = -radius*radius + (ordn - C.x())*(ordn - C.x()) + C.y();
-                delta = cB*cB - 4*cC;
+                //float cB = -2*C.y();
+                //float cC = -square_radius - 2*ordn*C.x() + C.x()*C.x() + C.y()*C.y();
+                //delta = cB*cB - 4*cC;
+                delta = sqrt(square_radius - (ordn - C.x())*(ordn - C.x()));
 
-                if(delta >= 0) {
+                if(delta >= 0) { // at least one solution
                         S1->setX(ordn);
-                        S1->setY(((-cB + sqrt(delta)) / 2));
+                        S1->setY(C.y() + delta);
                         nb_solution++;
                 }
-                if(delta > 0) {
+                if(delta > 0) {  // second solution 
                         S2->setX(ordn);
-                        S2->setY(((-cB - sqrt(delta)) / 2));
+                        S2->setY(C.y() - delta);
                         nb_solution++;
                 }
         }
@@ -516,16 +691,17 @@ unsigned int geometry::intersectionsBetweenLineAndCircle(Coordinates A, Coordina
  * @param A Coordinates of extremity of [AB]
  * @param B Coordinates of extremity of [AB]
  * @param C Coordinates of center of circle
- * @param radius of the circle 
+ * @param square_radius of the circle 
  * @param S1 reference to Coordinates of the first find point of intersection between cricle and [AB]
  * @param S2 reference to Coordinates of the second find point
  * @return number of solution, 0, 1 or 2
  * @note if return 2, S1 and S2 are modified, if 1, S1 is modified and maybe S2, else both can be modified
  */
 unsigned int geometry::intersectionsBetweenSegmentAndCircle(Coordinates A, Coordinates B, Coordinates C, 
-                float radius, Coordinates* S1, Coordinates* S2) {
-        unsigned int nb_solution = intersectionsBetweenLineAndCircle(A, B, C, radius, S1, S2);
+                float square_radius, Coordinates* S1, Coordinates* S2) {
+        unsigned int nb_solution = geometry::intersectionsBetweenLineAndCircle(A, B, C, square_radius, S1, S2);
         float distance_AB = A.squareDistanceTo(B);
+
         // RETRACT solutions that aren't on [AB]
         if(nb_solution == 2) {
                 if(S2->squareDistanceTo(A) > distance_AB || S2->squareDistanceTo(B) > distance_AB) {
@@ -539,6 +715,7 @@ unsigned int geometry::intersectionsBetweenSegmentAndCircle(Coordinates A, Coord
         if(nb_solution == 1) {
                 if(S1->squareDistanceTo(A) > distance_AB || S1->squareDistanceTo(B) > distance_AB) {
                         nb_solution--;
+                        *S1 = *S2;
                 }
         }
         // END
