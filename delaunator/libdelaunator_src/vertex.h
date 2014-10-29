@@ -86,7 +86,6 @@ class Vertex : public Coordinates {
                 Vertex(const Coordinates c, Edge* = NULL);
         // PUBLIC METHODS
                 unsigned int neighbourCount() const;
-                bool isNeighbourOf(Vertex*) const;
                 void take(VirtualVertex*);
                 void giveVirtualVertexsTo(Vertex*);
                 void forget(VirtualVertex*);
@@ -97,9 +96,12 @@ class Vertex : public Coordinates {
                 VirtualVertex* getFirstObject()        const;
                 Edge* getEdge() const;
                 void setEdge(Edge* e);
-                bool isACorner() const;
         // OPERATORS
                 bool operator==(const Vertex&);
+        // PREDICATS
+                bool isNeighbourOf(Vertex*) const;
+                bool isACorner() const;
+                bool have(VirtualVertex*) const;
         private:
         // ATTRIBUTES
                 Edge* edge; // edge has this Vertex as origin.
