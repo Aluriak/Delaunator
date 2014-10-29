@@ -171,10 +171,20 @@ bool Vertex::isACorner() const {
 
 
 
+/**
+ * @param vv a VirtualVertex address
+ * @return true iff this have vv in objects list
+ */
+bool Vertex::have(VirtualVertex* vv) const {
+        bool bRet = false;
+        std::list<VirtualVertex*>::const_iterator it = this->objects.begin();
+        for(; bRet == false && it != this->objects.end(); it++) {
+                if((*it) == vv)
+                        bRet = true;
+        }
+        return bRet;
+}
 
-/***************************************************
- * PRIVATE METHODS
- ***************************************************/
 
 
 
