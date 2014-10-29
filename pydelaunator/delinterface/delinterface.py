@@ -30,7 +30,7 @@ class Point(TrianguledObject):
 
 
 #########################
-# CLASS                 #
+# DELINTERFACE          #
 #########################
 class Delinterface(Thread):
     """"""
@@ -95,9 +95,9 @@ class Delinterface(Thread):
                         self.addPointToDT(x, y)
                     # delete point
                     elif event.key == pygame.K_DELETE: 
-                        vertex = self.getPointAt(*pygame.mouse.get_pos())
-                        if vertex is not None:
-                            self.delPoint(vertex)
+                        point = self.getPointAt(*pygame.mouse.get_pos())
+                        if point is not None:
+                            self.delPoint(point)
 
                     # ARROW HITING
                     elif event.key == pygame.K_UP:      self.movePoint(0,    -500, self.dragged_point)
@@ -207,6 +207,7 @@ class Delinterface(Thread):
             mx = choice([-0.01,0.01])
             my = choice([-0.01,0.01])
             self.dt.movVirtualVertices(v, (mx, my))
+
 
 
 
