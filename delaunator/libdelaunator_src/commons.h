@@ -15,7 +15,9 @@
 #include <cmath>
 #include <climits>
 #include <vector>
+#include <unordered_map>
 #include <list>
+#include <algorithm>
 // LOCAL MODULES
 #include "utils.h"
 
