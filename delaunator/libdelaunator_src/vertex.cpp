@@ -32,6 +32,17 @@ Vertex::Vertex(const Coordinates c, Edge* edge) : Coordinates(c), edge(edge) {
 
 
 
+/**
+ * Destructor
+ * Forget all VirtualVertex
+ */
+Vertex::~Vertex() {
+        this->objects.clear();
+}
+
+
+
+
 /***************************************************
  * PUBLIC METHODS
  ***************************************************/

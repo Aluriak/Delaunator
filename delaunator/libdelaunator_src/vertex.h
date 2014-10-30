@@ -85,6 +85,7 @@ class Vertex : public Coordinates {
         // CONSTRUCTOR
                 Vertex(const float = 0., const float = 0., Edge* = NULL);
                 Vertex(const Coordinates c, Edge* = NULL);
+                ~Vertex();
         // PUBLIC METHODS
                 unsigned int neighbourCount() const;
                 void take(VirtualVertex*);
