@@ -512,7 +512,7 @@ void Triangulation::mergeVertex(Vertex* v, Vertex* v_destroyed) {
         assert(v->isNeighbourOf(v_destroyed));
 #endif
         // Transmission of objects of v_destroyed to v
-        v_destroyed->giveVirtualVertexsTo(v);
+        v_destroyed->giveVirtualVerticesTo(v);
         // Deletion of v_destroyed
         this->delVertex(v_destroyed);
 }
