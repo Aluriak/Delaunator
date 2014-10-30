@@ -79,7 +79,7 @@ VirtualVertex* Delaunator::addVirtualVertex(float x, float y) {
 void Delaunator::delVirtualVertex(VirtualVertex* obj) {
         Vertex* vtx = obj->vertex();
         if(vtx != NULL) {
-                obj->setVertex(NULL);
+                vtx->forget(obj);
                 if(vtx->getObjectCount() == 0) 
                         this->triangulation->delVertex(vtx);
         }
@@ -97,7 +97,7 @@ void Delaunator::delVirtualVertex(VirtualVertex* obj) {
  * @note object is not free or moved in memory
  */
 VirtualVertex* Delaunator::movVirtualVertex(VirtualVertex* obj, Coordinates relative_move) {
-#if DEBUG
+#ifdef DEBUG
         assert(obj->vertex() != NULL);
 #endif
         // if another object is referenced by obj Vertex, a new Vertex will be creat
@@ -107,7 +107,11 @@ VirtualVertex* Delaunator::movVirtualVertex(VirtualVertex* obj, Coordinates rela
                                 obj->vertex()->getEdge() // this edge will be used by Finder
                 );
                 // obj will be add to new Vertex and forget by the ancient one
-                obj->setVertex(new_vtx);
+                new_vtx->take(obj, obj->vertex());
+#ifdef DEBUG
+                assert(new_vtx->getObjectCount() > 0); // not == 1, because new_vtx can be an pre-existing vertex
+                assert(obj->vertex()->getObjectCount() > 0);
+#endif
         // Else, we can just move Vertex at the new place
         } else {
                 this->triangulation->moveVertex(obj->vertex(), relative_move);
