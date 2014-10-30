@@ -97,8 +97,6 @@ class Vertex : public Coordinates {
                 VirtualVertex* getFirstObject()        const;
                 Edge* getEdge() const;
                 void setEdge(Edge* e);
-        // OPERATORS
-                bool operator==(const Vertex&);
         // PREDICATS
                 bool isNeighbourOf(Vertex*) const;
                 bool isACorner() const;

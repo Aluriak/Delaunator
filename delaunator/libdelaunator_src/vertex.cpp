@@ -86,24 +86,6 @@ void Vertex::forget(VirtualVertex* trob) {
 
 
 /***************************************************
- * OPERATORS
- ***************************************************/
-/**
- * @param othr other Vertex that equality is tested
- * @return true iff given vertex have the same coordinates of this
- */
-bool Vertex::operator==(const Vertex& othr) {
-        return Coordinates::operator==(othr) && this->edge == othr.edge;
-}
-
-
-
-
-
-
-
-
-/***************************************************
  * ACCESSORS
  ***************************************************/
 /**
