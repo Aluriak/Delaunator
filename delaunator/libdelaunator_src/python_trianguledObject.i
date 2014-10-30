@@ -32,6 +32,25 @@ class TrianguledObject(object):
 
 
 # ACCESSORS ###################################################################
+        @property
+        def virtualConfundedNeighbors(self):
+                """
+                @return list of VirtualVertex, that are confunded neighbors of self
+                @note confunded neighbors share the same Vertex instance.
+                """
+                return self.virtual_vertex.confundedNeighbors()
+
+
+        @property
+        def confundedNeighbors(self):
+                """
+                @return list of TrianguledObject, that are confunded neighbors of self
+                @note confunded neighbors share the same Vertex instance.
+                """
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.confundedNeighbors())
+
+
+        @property
         def directNeighbors(self):
                 """
                 @return list of direct neighbors of self
@@ -136,8 +155,10 @@ def movTrianguledObject(self, tri_obj, coords):
         @param tri_obj the TrianguledObject that will be moved
         @param coords that will be added to current tri_obj coordinates
         """
+        # transform user coords into Coordinates object
         if not isinstance(coords, Coordinates):
                 coords = Coordinates(*coords)
+        # do the move
         self.movVirtualVertex(tri_obj.virtual_vertex, coords)
 Delaunator.movTrianguledObject = movTrianguledObject
 
