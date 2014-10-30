@@ -78,11 +78,16 @@ Coordinates VirtualVertex::coordinates() const {
  * @param vtx the Vertex that will references this VirtualVertex
  */
 void VirtualVertex::setVertex(Vertex* vtx) {
-        if(this->ref_vertex != NULL) 
-                this->ref_vertex->forget(this);
-        this->ref_vertex = vtx;
+        //NB: order is important; do the forget before the take will set this in the 
+        //      sight of the Garbage Collector…
+        // this case can appear because VirtualVertices manage their own container.
+        // this is a dangerous way to do
+        // Need to be reorganized.
         if(this->ref_vertex != NULL) 
                 this->ref_vertex->take(this);
+        this->ref_vertex = vtx;
+        if(this->ref_vertex != NULL) 
+                this->ref_vertex->forget(this);
 }
 
 
