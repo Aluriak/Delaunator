@@ -53,9 +53,12 @@ unsigned int Vertex::neighbourCount() const {
 /**
  * @param v a Vertex that will receive all VirtualVertex of this
  */
-void Vertex::giveVirtualVertexsTo(Vertex* v) {
-        std::list<VirtualVertex*>::iterator it = v->objects.begin();
-        v->objects.insert(it, this->objects.begin(), this->objects.end());
+void Vertex::giveVirtualVerticesTo(Vertex* v) {
+        std::list<VirtualVertex*>::iterator it = this->objects.begin();
+        // assign each object of this to v
+        for(; it != this->objects.end(); it++) {
+                (*it)->setVertex(v);
+        }
 }
 
 

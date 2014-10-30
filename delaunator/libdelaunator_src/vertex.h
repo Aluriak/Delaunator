@@ -88,7 +88,7 @@ class Vertex : public Coordinates {
         // PUBLIC METHODS
                 unsigned int neighbourCount() const;
                 void take(VirtualVertex*);
-                void giveVirtualVertexsTo(Vertex*);
+                void giveVirtualVerticesTo(Vertex*);
                 void forget(VirtualVertex*);
         // ACCESSORS
                 unsigned int getID()            const { return this->id; }
