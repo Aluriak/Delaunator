@@ -246,9 +246,11 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
  * @param mv_vrtx the Vertex to move
  * @param vec_x move in x axis
  * @param vec_y move in y axis
+ * @return address of the Vertex, or of a new Vertex if given was freed
+ * @note given Vertex can be deleted, but data is keeped in returned Vertex.
  */
-void Triangulation::moveVertex(Vertex* v, float x, float y) { 
-        this->moveVertexTo(v, Coordinates(v->x()+x, v->y()+y)); 
+Vertex* Triangulation::moveVertex(Vertex* mv_vrtx, float x, float y) { 
+        return this->moveVertexTo(mv_vrtx, Coordinates(mv_vrtx->x()+x, mv_vrtx->y()+y)); 
 }
 
 
@@ -259,129 +261,94 @@ void Triangulation::moveVertex(Vertex* v, float x, float y) {
  * Vertex can't pass over the mesh bounds.
  * @param mv_vrtx the Vertex to move
  * @param new_position of the Vertex
+ * @return address of the Vertex, or of a new Vertex if given was freed
+ * @note given Vertex can be deleted, but data is keeped in returned Vertex.
  */
-void Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
+Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
+        // ALGORITHM:
+        //      - detect collision with limiter edges/Vertex
+        //              - if edge is too short to be divide:
+        //                      - create new vertex, and delete mv_vrtx
+        //              - else:
+        //                      - move to middle of the edge, and recursiv recall
+        //
 // INIT
-        Edge* col_edge = NULL;
-        Coordinates circumcenter, collision_coord;
-        float distance = FLT_MAX;
-        // some containers
-        std::vector<Edge*> limiter_edges;
+        Edge* col_edge = NULL; // collision edge
+        Edge* cur_edge = NULL; // currently studied edge
+        Edge* lmt_edge = NULL; // limiter edge accessed from cur_edge
+        Coordinates next_step;
+        Vertex* returned_vertex = mv_vrtx;
 
         if((*mv_vrtx) != new_position) {
 // LIMIT MOVE
-                //logs("LIMIT MOVE\n");
-                if(new_position.x() < this->xmin)  new_position.setX(this->xmin);
-                if(new_position.x() > this->xmax)  new_position.setX(this->xmax);
-                if(new_position.y() < this->ymin)  new_position.setY(this->ymin);
-                if(new_position.y() > this->ymax)  new_position.setY(this->ymax);
+        //logs("LIMIT MOVE\n");
+        if(new_position.x() < this->xmin)  new_position.setX(this->xmin);
+        if(new_position.x() > this->xmax)  new_position.setX(this->xmax);
+        if(new_position.y() < this->ymin)  new_position.setY(this->ymin);
+        if(new_position.y() > this->ymax)  new_position.setY(this->ymax);
 
-// FIND LIMITER EDGES 
-                //logs("FIND LIMITER EDGES\n");
-                // limiter edges are the next left edges of all edge that have mv_vrtx as origin.
-                col_edge = mv_vrtx->getEdge();
-                do {
-                        limiter_edges.push_back(col_edge->nextLeftEdge());
-                        col_edge = col_edge->rotLeftEdge();
-                } while(col_edge != mv_vrtx->getEdge());
-
-// DETECT COLLISION WITH LIMITER EDGES
-                //logs("DETECT COLLISION WITH %i LIMITER EDGES", limiter_edges.size());
-                col_edge = NULL; // will contain the edge that will be illegal, or be NULL if no collision
-                // Detect collision with each limiter edge
-                // the nearer collision of mv_vrtx will be kept as col_edge
-                for(std::vector<Edge*>::iterator it = limiter_edges.begin(); it != limiter_edges.end(); it++) {
-                        // if point is already on another point
-                        if(*mv_vrtx == *(*it)->originVertex()) {
-                                assert(false); // we will find a better idea later
-                        } 
-                        // if limiter vertex is on the way to new_position, there is collision !
-                        else if(geometry::squareDistanceBetweenSegmentAndPoint(
-                                                //Way to new_position coords
-                                                mv_vrtx->x(), mv_vrtx->y(),
-                                                new_position.x(), new_position.y(),
-                                                //Limiter vertex coords
-                                                (*it)->originVertex()->x(), (*it)->originVertex()->y()
-                                ) <= EPSILON) {
-                                        //logs(":");
-                                        // Collision with a vertex !
-                                        // if distance to the vertex is lower
-                                        if(distance > (*it)->originVertex()->squareDistanceTo(*mv_vrtx)) {
-                                                // col_edge will be the edge between with it and mv_vrtx
-                                                col_edge = (*it);
-                                                while(col_edge->destinVertex() != mv_vrtx) 
-                                                        col_edge = col_edge->rotLeftEdge();
-                                                // distance updated
-                                                distance = col_edge->length();
-#if DEBUG
-                                                assert((*it)->originVertex() == col_edge->originVertex());
-#endif
-                                        }
-                        // collision with limiter edge
-                        } else if(geometry::collisionBetweenSegmentAndSegment(
-                                        *(*it)->destinVertex(), *(*it)->originVertex(),
-                                        *mv_vrtx, new_position)
-                                && not (*it)->isExternal()
-                                && not geometry::parallelsLines(
-                                       *(*it)->destinVertex(), *(*it)->originVertex(),
-                                       *mv_vrtx, new_position)
-                                  ) {
-                                        //logs(".");
-                                        // get intersection of way to new_position and tested Edge
-                                        collision_coord = geometry::intersectionOfLines(
-                                                        *mv_vrtx, new_position,
-                                                        *(*it)->originVertex(), *(*it)->destinVertex()
-                                                        );
-                                        if(distance > collision_coord.squareDistanceTo(*mv_vrtx)) {
-                                                distance = collision_coord.squareDistanceTo(*mv_vrtx);
-                                                col_edge = (*it);
-                                        }
-                        }
+// FIND COLLISION WITH A LIMITER EDGES 
+        //logs("FIND COLLISION WITH A LIMITER EDGES\n");
+        // limiter edges are the next left edges of all edge that have mv_vrtx as origin.
+        cur_edge = mv_vrtx->getEdge();
+        do {
+                cur_edge = cur_edge->rotLeftEdge();
+                lmt_edge = cur_edge->nextLeftEdge();
+                // if collision, col_edge is finded !
+                if(geometry::collisionBetweenSegmentAndSegment(
+                                        *lmt_edge->originVertex(), 
+                                        *lmt_edge->destinVertex(),
+                                        *mv_vrtx, new_position)) {
+                        col_edge = lmt_edge;
+                        //logs("COLLISION: (%f;%f);", lmt_edge->originVertex()->x(), 
+                                                        //lmt_edge->originVertex()->y());
+                        //logs("(%f;%f) and ", lmt_edge->destinVertex()->x(),
+                                                        //lmt_edge->destinVertex()->y());
+                        //logs("(%f;%f);", mv_vrtx->x(), mv_vrtx->y());
+                        //logs("(%f;%f)\n", new_position.x(), new_position.y());
                 }
+        } while(col_edge == NULL && cur_edge != mv_vrtx->getEdge());
 
-// OPERATE MOVING
-                //logs("\nOPERATE MOVING BY %p, at %u\n", col_edge, distance);
-                // Verify collision with a Vertex
-                if(col_edge != NULL && (*col_edge->originVertex()) == (*mv_vrtx)) {
-                        //logs("\tCONFUNDING: %x, %x, %x\n\t", mv_vrtx->getID(), 
-                                        //col_edge->originVertex()->getID(), 
-                                        //col_edge->destinVertex()->getID()
-                                        //);
-                        //logs("(%f;%f), (%f;%f), (%f;%f)\n\t", mv_vrtx->x(), mv_vrtx->y(), 
-                                        //col_edge->originVertex()->x(), col_edge->originVertex()->y(), 
-                                        //col_edge->destinVertex()->x(), col_edge->destinVertex()->y()
-                                        //);
+// MOVE MV_VRTX TO NEW LOCATION
+        //logs("MOVE MV_VRTX TO NEW LOCATION\n");
+        if(col_edge == NULL) {
+                // next step is the end
+                next_step = new_position;
+        } else if(col_edge->length() > 2*EPSILON) { // must be dividable
+                // get current middle of collision edge as the next step
+                next_step = col_edge->middle();
+                // operate flip on collsion edge (can break Delaunay condition)
+                this->operateFlip(col_edge);
+        } else { // hard way
+                // add new vertex
+                Vertex* new_vrtx = this->addVertexAt(new_position, col_edge);
+                // give all VirtualVertices to it
+                mv_vrtx->giveVirtualVertexsTo(new_vrtx);
+                // del the asked to move Vertex
+                this->delVertex(mv_vrtx);
+                // and finally break recursiv recall
+                mv_vrtx = new_vrtx; 
+        }
+        // go in the next step (Delaunay condition repaired)
+        this->moveVertex_pure(mv_vrtx, next_step);
+        
+// REDO THE MOVE TO TARGET
+        //logs("REDO THE MOVE TO TARGET\n");
+        returned_vertex = this->moveVertexTo(mv_vrtx, new_position);
+
                         // Collision detected !
                         // - add vertex at the right place
                         // - give all VirtualVertex of mv_vrtx to new vertex
                         // - delete mv_vrtx
-                        Vertex* new_vrtx = this->addVertexAt(new_position, col_edge);
-                        mv_vrtx->giveVirtualVertexsTo(new_vrtx);
-                        this->delVertex(mv_vrtx);
+                        // Get collision coordinates
+                        //collision_coord = geometry::intersectionOfLines(
+                                        //*mv_vrtx, new_position,
+                                        //*col_edge->destinVertex(), *col_edge->originVertex()
+                                        //);
                         
-                } 
-                // No collision : we just move vertex and verify Delaunay condition
-                else if(col_edge == NULL) {
-                        this->moveVertex_pure(mv_vrtx, new_position);
-                // Collision with an Edge
-                } else {
-                        // get collision coords
-                        collision_coord = geometry::intersectionOfLines(
-                                        *mv_vrtx, new_position,
-                                        *col_edge->destinVertex(), *col_edge->originVertex()
-                                        );
-                        // prevent collision by breaking Delaunay condition
-                        this->operateFlip(col_edge);
-                        // apply move in two steps
-                        if((*mv_vrtx) != collision_coord && collision_coord != new_position) {
-                                // first go to the collision coordinates
-                                this->moveVertex_pure(mv_vrtx, collision_coord);
-                                // redo a movement
-                                this->moveVertexTo(mv_vrtx, new_position);
-                        }
-                }
 // ENDING
         }
+        return returned_vertex;
 }
 
 

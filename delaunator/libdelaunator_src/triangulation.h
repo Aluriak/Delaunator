@@ -74,9 +74,9 @@ class Triangulation {
                         { return this->addVertexAt(Coordinates(x, y), e); }
                 Vertex* vertexAt(float, float, float=EPSILON) const;
                 Vertex* vertexAt(Coordinates c, float p=EPSILON) const { return this->vertexAt(c.x(), c.y(), p); }
-                void moveVertex(Vertex* v, Coordinates c) { this->moveVertex(v, c.x(), c.y()); }
-                void moveVertex(Vertex* v, float x, float y);
-                void moveVertexTo(Vertex* v, Coordinates c);
+                Vertex* moveVertex(Vertex* v, Coordinates c) { return this->moveVertex(v, c.x(), c.y()); }
+                Vertex* moveVertex(Vertex* v, float x, float y);
+                Vertex* moveVertexTo(Vertex* v, Coordinates c);
                 void delVertex(Vertex* v);
                 void mergeVertex(Vertex* v, Vertex* v_destroyed);
 #ifdef DEBUG // some tests with assertions
