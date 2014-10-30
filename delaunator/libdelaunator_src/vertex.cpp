@@ -72,18 +72,25 @@ void Vertex::giveVirtualVerticesTo(Vertex* v) {
         std::list<VirtualVertex*>::iterator it = this->objects.begin();
         // assign each object of this to v
         for(; it != this->objects.end(); it++) {
-                (*it)->setVertex(v);
+                v->take(*it);
         }
+        this->objects.clear();
 }
 
 
 
 /**
  * @param trob a VirtualVertex that will be added in list of this
+ * @param ancient the Vertex that have trob, and that will forget it, or NULL (default value)
  * @note trob is modified by a call to setVertex(this)
  */
-void Vertex::take(VirtualVertex* trob) {
+void Vertex::take(VirtualVertex* trob, Vertex* ancient) {
         this->objects.push_back(trob);
+        trob->setVertex(this);
+
+        if(ancient != NULL) { // forget it !
+                ancient->forget(trob);
+        }
 }
 
 
