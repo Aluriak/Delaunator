@@ -153,10 +153,16 @@ class Delinterface(Thread):
             if self.print_neighbors and obj == self.dragged_point: 
                 line_color = (255, 0, 0) 
                 line_width = 2
+            
+            # print confunded neighbors circle, only if its id is lower
+            for cnei in obj.confundedNeighbors:
+                p1 = cnei.coordinates()
+                pygame.draw.circle(self.screen, cnei.color, (int(p1.x), int(p1.y)), int(diameter), circle_width)
+
 
             # printing !
             pygame.draw.circle(self.screen, obj.color, (int(p2.x), int(p2.y)), int(diameter/2), circle_width)
-            for nei in obj.directNeighbors():
+            for nei in obj.directNeighbors:
                 p1 = nei.coordinates()
                 pygame.draw.line(self.screen, line_color, (p1.x, p1.y), (p2.x, p2.y), line_width)
 
@@ -206,7 +212,7 @@ class Delinterface(Thread):
         for v in self.dt.virtualVertices():
             mx = choice([-0.01,0.01])
             my = choice([-0.01,0.01])
-            self.dt.movVirtualVertices(v, (mx, my))
+            self.dt.movVirtualVertex(v, mx, my)
 
 
 
