@@ -330,9 +330,12 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
 #endif
                 // give all to this existant Vertex
                 mv_vrtx->giveVirtualVerticesTo(col_edge->originVertex());
+#ifdef DEBUG
+                assert(mv_vrtx->getObjectCount() == 0);
+#endif
                 // del mv_vrtx, because we don't need it anymore
                 this->delVertex(mv_vrtx);
-                // the mv_vrtx is now the existant one
+                // the mv_vrtx is now the existant one (and don't need to be moved anymore)
                 mv_vrtx = col_edge->originVertex();
 
         } else if(col_edge->length() > 2*EPSILON) { // must be dividable
@@ -354,6 +357,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                 this->delVertex(mv_vrtx);
                 // and finally break recursiv recall
                 mv_vrtx = new_vrtx; 
+                // no anymore move required !
         }
         
 // ENDING
