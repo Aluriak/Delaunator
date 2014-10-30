@@ -10,6 +10,11 @@
  * @warning: assertion fail if detected problem
  */
 void geometry::unit_tests() {
+        Coordinates A = Coordinates(1, 3), B = Coordinates(3, 3), C = Coordinates(3, 1);
+        assert(geometry::collisionBetweenSegmentAndSegment(B, A, B, C));
+        // segment x segment collision ok !
+
+
         assert(pointInCircumcircleOf(Coordinates(1,0), Coordinates(0,1), 
                                 Coordinates(1,2), Coordinates(2-EPSILON,1)));
         float d = sqrt(squareDistanceBetweenSegmentAndPoint(
@@ -30,7 +35,10 @@ void geometry::unit_tests() {
 
 
         // study Circle {C; 3} and Line (A;B) with A (-7;7) and B(5;7) and C (3;6)
-        Coordinates inter1, inter2, A = Coordinates(-7, 7), B = Coordinates(5, 7), C = Coordinates(3, 6);
+        Coordinates inter1, inter2;
+        A = Coordinates(-7, 7);
+        B = Coordinates(5, 7);
+        C = Coordinates(3, 6);
         float radius = 3, square_radius = radius*radius;
         assert(geometry::intersectionsBetweenLineAndCircle(
                                 A, B, // segment [AB]
