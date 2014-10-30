@@ -80,6 +80,8 @@ class Edge {
                 unsigned int getID()    const { return this->id; }
                 float length()          const;
                 float squareLength()    const;
+
+                Coordinates middle()    const;
                 // setters
                 void setOriginVertex(Vertex* v) { this->origin_vertex = v; v->setEdge(this); }
                 void setOppositeEdge(Edge* e)   { this->opposite_edge = e; }

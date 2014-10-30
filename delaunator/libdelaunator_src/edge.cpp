@@ -120,6 +120,12 @@ float Edge::squareLength() const {
         return this->origin_vertex->squareDistanceTo(*this->opposite_edge->origin_vertex);
 }
 
+/**
+ * @return Coordinates of the middle of this Edge.
+ */
+Coordinates Edge::middle() const {
+        return (*this->originVertex() + *this->destinVertex()) / 2;
+}
 /***************************************************
  * PRIVATE METHODS
  ***************************************************/
