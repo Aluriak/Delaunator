@@ -276,7 +276,6 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         Edge* col_edge = NULL; // collision edge
         Edge* cur_edge = NULL; // currently studied edge
         Edge* lmt_edge = NULL; // limiter edge accessed from cur_edge
-        Vertex* returned_vertex = mv_vrtx;
 
         if((*mv_vrtx) != new_position) {
 // LIMIT MOVE
@@ -344,7 +343,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                 // go in the next step (Delaunay condition repaired)
                 this->moveVertex_pure(mv_vrtx, next_step);
                 // recursiv call, lets go to the next step !
-                returned_vertex = this->moveVertexTo(mv_vrtx, new_position);
+                mv_vrtx = this->moveVertexTo(mv_vrtx, new_position);
 
         } else { // hard way
                 // add new vertex
@@ -359,7 +358,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         
 // ENDING
         }
-        return returned_vertex;
+        return mv_vrtx;
 }
 
 
