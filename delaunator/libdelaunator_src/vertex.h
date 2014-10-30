@@ -57,15 +57,16 @@ struct Coordinates {
                         return fabs(othr._x - this->_x) < EPSILON && fabs(othr._y - this->_y) < EPSILON;
                 }
                 bool operator!=(const Coordinates& othr) {
-                        return !(*this == othr);
+                        return not (*this == othr);
                 }
                 Coordinates operator+(const Coordinates& c) {
-                        Coordinates r(this->_x + c._x, this->_y + c._y);
-                        return r;
+                        return Coordinates(this->_x + c._x, this->_y + c._y);
                 }
                 Coordinates operator-(const Coordinates& c) {
-                        Coordinates r(this->_x - c._x, this->_y - c._y);
-                        return r;
+                        return Coordinates(this->_x - c._x, this->_y - c._y);
+                }
+                Coordinates operator/(const float value) {
+                        return Coordinates(this->_x / value, this->_y / value);
                 }
                 Coordinates operator+=(const Coordinates& c) {
                         return *this + c;
