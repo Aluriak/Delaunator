@@ -18,10 +18,9 @@ import os, re
 # find a better way to do that is necessary
 d = sysconfig.get_config_vars()
 for k, v in d.items():
-    if str(v).find('-Wstrict-prototypes') != -1:
-        v = d[k] = str(v).replace('-Wstrict-prototypes', '')
-    if str(v).find('-DNDEBUG') != -1:
-        v = d[k] = str(v).replace('-DNDEBUG', '')
+    for unwanted in ('-Wstrict-prototypes', '-DNDEBUG'): # can add '-O2', if no optimizations expected
+        if str(v).find(unwanted) != -1:
+            v = d[k] = str(v).replace(unwanted, '')
 
 
 
