@@ -276,7 +276,6 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         Edge* col_edge = NULL; // collision edge
         Edge* cur_edge = NULL; // currently studied edge
         Edge* lmt_edge = NULL; // limiter edge accessed from cur_edge
-        Coordinates next_step;
         Vertex* returned_vertex = mv_vrtx;
 
         if((*mv_vrtx) != new_position) {
@@ -309,43 +308,55 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                 }
         } while(col_edge == NULL && cur_edge != mv_vrtx->getEdge());
 
+        // if targeted position is exactly a Vertex, next algorithm step need to manage that.
+        // Help it: garantee that the targeted Vertex is the origin vertex of lmt_edge
+        // For do that, just get opposite edge of lmt_edge if lmt_edge's destination vertex is
+        //  at new_position
+        if(col_edge != NULL && *col_edge->destinVertex() == new_position) {
+                col_edge = col_edge->oppositeEdge();
+#ifdef DEBUG
+                assert(*col_edge->originVertex() == new_position);
+#endif
+        }
+
 // MOVE MV_VRTX TO NEW LOCATION
         //logs("MOVE MV_VRTX TO NEW LOCATION\n");
         if(col_edge == NULL) {
                 // next step is the end
-                next_step = new_position;
+                this->moveVertex_pure(mv_vrtx, new_position);
+
+        } else if(*col_edge->originVertex() == new_position) { // if target place is already habited
+#ifdef DEBUG
+                assert(mv_vrtx != col_edge->originVertex());
+#endif
+                // give all to this existant Vertex
+                mv_vrtx->giveVirtualVerticesTo(col_edge->originVertex());
+                // del mv_vrtx, because we don't need it anymore
+                this->delVertex(mv_vrtx);
+                // the mv_vrtx is now the existant one
+                mv_vrtx = col_edge->originVertex();
+
         } else if(col_edge->length() > 2*EPSILON) { // must be dividable
                 // get current middle of collision edge as the next step
-                next_step = col_edge->middle();
-                // operate flip on collsion edge (can break Delaunay condition)
+                Coordinates next_step = col_edge->middle();
+                // operate flip on collision edge (can break Delaunay condition)
                 this->operateFlip(col_edge);
+                // go in the next step (Delaunay condition repaired)
+                this->moveVertex_pure(mv_vrtx, next_step);
+                // recursiv call, lets go to the next step !
+                returned_vertex = this->moveVertexTo(mv_vrtx, new_position);
+
         } else { // hard way
                 // add new vertex
                 Vertex* new_vrtx = this->addVertexAt(new_position, col_edge);
                 // give all VirtualVertices to it
-                mv_vrtx->giveVirtualVertexsTo(new_vrtx);
+                mv_vrtx->giveVirtualVerticesTo(new_vrtx);
                 // del the asked to move Vertex
                 this->delVertex(mv_vrtx);
                 // and finally break recursiv recall
                 mv_vrtx = new_vrtx; 
         }
-        // go in the next step (Delaunay condition repaired)
-        this->moveVertex_pure(mv_vrtx, next_step);
         
-// REDO THE MOVE TO TARGET
-        //logs("REDO THE MOVE TO TARGET\n");
-        returned_vertex = this->moveVertexTo(mv_vrtx, new_position);
-
-                        // Collision detected !
-                        // - add vertex at the right place
-                        // - give all VirtualVertex of mv_vrtx to new vertex
-                        // - delete mv_vrtx
-                        // Get collision coordinates
-                        //collision_coord = geometry::intersectionOfLines(
-                                        //*mv_vrtx, new_position,
-                                        //*col_edge->destinVertex(), *col_edge->originVertex()
-                                        //);
-                        
 // ENDING
         }
         return returned_vertex;
