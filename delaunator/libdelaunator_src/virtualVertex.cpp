@@ -64,30 +64,20 @@ Vertex* VirtualVertex::vertex() const {
 
 
 /**
- * @return Coordinates where this is
+ * Change place of this by change Vertex reference
+ * @param vtx the Vertex that will references this VirtualVertex
  */
-Coordinates VirtualVertex::coordinates() const {
-        Coordinates c(*this->ref_vertex);
-        return c;
+void VirtualVertex::setVertex(Vertex* vtx) {
+        this->ref_vertex = vtx;
 }
 
 
 
 /**
- * Change place of this by change Vertex reference
- * @param vtx the Vertex that will references this VirtualVertex
+ * @return Coordinates where this is
  */
-void VirtualVertex::setVertex(Vertex* vtx) {
-        //NB: order is important; do the forget before the take will set this in the 
-        //      sight of the Garbage Collector…
-        // this case can appear because VirtualVertices manage their own container.
-        // this is a dangerous way to do
-        // Need to be reorganized.
-        if(this->ref_vertex != NULL) 
-                this->ref_vertex->take(this);
-        this->ref_vertex = vtx;
-        if(this->ref_vertex != NULL) 
-                this->ref_vertex->forget(this);
+Coordinates VirtualVertex::coordinates() const {
+        return Coordinates(*this->vertex());
 }
 
 
