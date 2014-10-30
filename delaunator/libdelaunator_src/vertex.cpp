@@ -15,9 +15,13 @@ unsigned int Vertex::last_id = 1;
  * @return a new and well initialized Vertex
  */
 Vertex::Vertex(const float x, const float y, Edge* edge) : Coordinates(x,y), edge(edge) {
+#ifdef DEBUG
+        assert(this->getObjectCount() == 0);
+#endif
         this->id = this->last_id++;
         if(this->edge != NULL)  this->edge->setOriginVertex(this);
 }
+
 
 /**
  * Creat a new Vertex.
@@ -76,6 +80,7 @@ void Vertex::giveVirtualVerticesTo(Vertex* v) {
 
 /**
  * @param trob a VirtualVertex that will be added in list of this
+ * @note trob is modified by a call to setVertex(this)
  */
 void Vertex::take(VirtualVertex* trob) {
         this->objects.push_back(trob);
@@ -85,7 +90,8 @@ void Vertex::take(VirtualVertex* trob) {
 
 /**
  * @param trob a VirtualVertex that will be forgeted by this
- * @note: if this have not trob in memory, nothing is done by that function.
+ * @note if this have not trob in memory, nothing is done by that function.
+ * @note trob is not modified
  */
 void Vertex::forget(VirtualVertex* trob) {
         this->objects.remove(trob);
