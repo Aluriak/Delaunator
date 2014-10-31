@@ -67,12 +67,13 @@ class TrianguledObject(object):
                 return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors))
 
 
-        def neighborsAt(self, max_distance):
+        def neighborsAt(self, max_distance, min_distance = 0):
                 """
                 @param max_distance number that give the limit distance 
+                @param min_distance number that give the low limit. No low limit if equal to zero (default value is zero)
                 @return list that contain the TrianguledObject that are at max_distance at most of self 
                 """
-                return (TrianguledObject.of(_) for _ in self.virtual_vertex.neighborsAt(max_distance))
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.neighborsAt(max_distance, min_distance))
 
 
 
