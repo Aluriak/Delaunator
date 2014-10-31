@@ -149,15 +149,23 @@ class Delinterface(Thread):
             diameter = 20
             p2 = obj.coordinates()
 
-            # print neighbors case
+            # print neighbors when obj is dragged point
             if self.print_neighbors and obj == self.dragged_point: 
                 line_color = (255, 0, 0) 
                 line_width = 2
+                # print all points that are between 200 and 150 px of distance
+                pygame.draw.circle(self.screen, (0, 0, 0), (int(p2.x), int(p2.y)), 200, circle_width)
+                pygame.draw.circle(self.screen, (0, 0, 0), (int(p2.x), int(p2.y)), 150, circle_width)
+                for cnei in obj.neighborsAt(200, 150):
+                    p1 = cnei.coordinates()
+                    pygame.draw.circle(self.screen, (0, 0, 0), (int(p1.x), int(p1.y)), 20, circle_width*2)
+
             
             # print confunded neighbors circle, only if its id is lower
             for cnei in obj.confundedNeighbors:
                 p1 = cnei.coordinates()
                 pygame.draw.circle(self.screen, cnei.color, (int(p1.x), int(p1.y)), int(diameter), circle_width)
+
 
 
             # printing !
