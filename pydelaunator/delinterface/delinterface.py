@@ -218,8 +218,9 @@ class Delinterface(Thread):
         # use of virtual vertice in place of trianguled vertice
         # because don't need trianguled objects data, and this is a little quicker to deal with VirtualVertex directly
         for v in self.dt.virtualVertices():
-            mx = choice([-0.01,0.01])
-            my = choice([-0.01,0.01])
+            eps = self.dt.epsilon()
+            mx = choice([-eps,eps])
+            my = choice([-eps,eps])
             self.dt.movVirtualVertex(v, mx, my)
 
 
