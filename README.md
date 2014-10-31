@@ -22,23 +22,25 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] permit to user to choose finder options at Delaunator instanciation;  
 - [x] manage confunded Vertex;  
 - [x] manage internal association between Vertex and associated user objects;
-- [ ] access in constant complexity to nearer neighbour; [Soon]
-- [ ] manage groups of vertices that moves together; [One day]
+- [x] write API documentation;  
+- [x] write spec file;  
+- [ ] manage groups of vertices that moves together; [Next goal]
+- [ ] support constraints; [Next goal]
+- [ ] built in collision management; [Next goal]
+- [ ] access in constant complexity to nearer neighbour; [In progress]
 - [ ] optimize Vertex, Edge and Face containing; [One day]
 - [ ] use threads; [One day]  
 - [ ] implement iterator on the N nearest neighbors of a vertex;  [In progress] 
 - [ ] implement iterator on the N nearest neighbors of a vertex that respect a predicat; [In progress]  
 - [ ] implement iterator on the neighbors that are away from a max distance; [In progress]  
 - [ ] permit to user to choose preprocessor options by config files or other useful way;  [One day] 
-- [ ] write API documentation; [In progress]
-- [ ] implement MultiTrianguledObject, that can be present in multiple Delaunator instances; [Soon]
-- [ ] write spec file; [In progress]
+- [ ] improve API documentation; [One day]
+- [ ] improve spec file; [One day]
+- [ ] implement MultiTrianguledObject, that can be present in multiple Delaunator instances; [One day]
 - [ ] find a way to retract Face class (because its useless for user); [One day]
 
 
 ## MAYBE-A-DAY DO LIST
-- support constraints;
-- built-in collision API;
 - support the third dimension;  
 - implements pure python version of this module & do benchmarks between it and current implementation;
 - be brave and keep the pure python version if its quicker;
