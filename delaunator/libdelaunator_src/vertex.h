@@ -38,10 +38,10 @@ struct Coordinates {
                         this->setCoord(x, y);
                 }
 	// PUBLIC METHODS
-                float squareDistanceTo(const Coordinates& othr) {
+                float squareDistanceTo(const Coordinates& othr) const {
                         return (this->_x - othr._x)*(this->_x - othr._x)+(this->_y - othr._y)*(this->_y - othr._y);
                 }
-                float distanceTo(const Coordinates& othr) {
+                float distanceTo(const Coordinates& othr) const {
                         return sqrt(
                                 (this->_x - othr._x)*(this->_x - othr._x)+(this->_y - othr._y)*(this->_y - othr._y)
                                 );
@@ -54,7 +54,7 @@ struct Coordinates {
                 void setCoord(float x, float y) { this->setX(x); this->setY(y); }
         // OPERATORS
                 bool operator==(const Coordinates& othr) {
-                        return fabs(othr._x - this->_x) < EPSILON && fabs(othr._y - this->_y) < EPSILON;
+                        return (fabs(othr._x - this->_x) < EPSILON) && (fabs(othr._y - this->_y) < EPSILON);
                 }
                 bool operator!=(const Coordinates& othr) {
                         return not (*this == othr);
