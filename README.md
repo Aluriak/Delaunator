@@ -27,7 +27,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [ ] manage groups of vertices that moves together; [Next goal]
 - [ ] support constraints; [Next goal]
 - [ ] built in collision management; [Next goal]
-- [ ] access in constant complexity to nearer neighbour; [In progress]
+- [ ] access in constant complexity to nearer neighbour; [PoC on a branch]
 - [ ] optimize Vertex, Edge and Face containing; [One day]
 - [ ] use threads; [One day]  
 - [ ] implement iterator on the N nearest neighbors of a vertex;  [In progress] 
