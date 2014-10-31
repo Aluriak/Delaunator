@@ -112,11 +112,51 @@ class Vertex : public Coordinates {
 
 
 
-// EXTERNAL METHODS
 #if !SWIG
+
+// EXTERNAL METHODS
         std::ostream& operator<<(std::ostream&, Coordinates const &);
         std::ostream& operator<<(std::ostream&, Vertex const &);
+
+
+
+// EXTERNAL TYPES
+/**
+ * Compare Vertex by distance with reference Coordinates.
+ * The nearer of reference is the better.
+ */
+class VertexComparison {
+        public:
+	// CONSTRUCTOR
+                VertexComparison(const Coordinates c) : reference(c) {}
+        // PREDICATS
+                bool operator()(const Vertex* left, const Vertex* right) {
+                        // STL structures wait generally for the strict weak order (<).
+                        // In a case of a priority_queue, its for found the greater object.
+                        // But we want to minimize distance to reference, so we use > operator instead of <.
+                        return left->squareDistanceTo(this->reference) > right->squareDistanceTo(this->reference);
+                }
+        private:
+	// ATTRIBUTES
+                const Coordinates reference;
+};
+
+/**
+ * Get a hash from a Vertex* value.
+ * Used by sets and maps of STL.
+ */
+struct VertexHash {
+          inline size_t operator()(const Vertex* o) const { return (size_t)o; }
+};
+/**
+ * Type of priority queue that compare two Vertex instance, according to their distances to reference Coordinates.
+ */
+typedef std::priority_queue<const Vertex*, std::vector<Vertex*>, VertexComparison> vertex_comparator;
+
+
 #endif
+
+
 
 
 #endif
