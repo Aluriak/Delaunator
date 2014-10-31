@@ -85,11 +85,14 @@ void Vertex::giveVirtualVerticesTo(Vertex* v) {
  * @note trob is modified by a call to setVertex(this)
  */
 void Vertex::take(VirtualVertex* trob, Vertex* ancient) {
-        this->objects.push_back(trob);
-        trob->setVertex(this);
+        // don't need changes in this case
+        if(ancient != this) {
+                this->objects.push_back(trob);
+                trob->setVertex(this);
 
-        if(ancient != NULL) { // forget it !
-                ancient->forget(trob);
+                if(ancient != NULL) { // forget it !
+                        ancient->forget(trob);
+                }
         }
 }
 
