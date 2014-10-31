@@ -49,8 +49,8 @@ class VirtualVertex {
         // GRAPH EXPLORATION
                 std::list<VirtualVertex*> confundedNeighbors() const;
                 std::list<VirtualVertex*> directNeighbors() const;
-                std::list<VirtualVertex*> neighborsAt(float) const;
-                std::list<VirtualVertex*> nearerNeighbors(unsigned int) const;
+                std::list<VirtualVertex*> neighborsAt(const float, const float = 0) const;
+                std::list<VirtualVertex*> nearerNeighbors(const unsigned int) const;
 	private:
 	// ATTRIBUTES
                 Vertex* ref_vertex;
@@ -58,6 +58,8 @@ class VirtualVertex {
                 static unsigned int last_id;
 	// PRIVATE METHODS
 };
+
+
 
 
 #endif

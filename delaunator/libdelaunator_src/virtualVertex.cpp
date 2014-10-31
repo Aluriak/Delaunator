@@ -146,7 +146,7 @@ std::list<VirtualVertex*> VirtualVertex::neighborsAt(float dist_max) const {
  * @param nb_nei the number of neighbors
  * @return list of VirtualVertex that are the closer of this. List size is equal to nb_nei at the most.
  */
-std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(unsigned int nb_nei) const {
+std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(const unsigned int nb_nei) const {
         std::list<VirtualVertex*> find_nei;
         //TODO
         logs("NEED TO BE IMPLEMENTED: ");
