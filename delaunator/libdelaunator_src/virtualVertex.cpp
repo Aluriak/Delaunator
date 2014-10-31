@@ -128,15 +128,57 @@ std::list<VirtualVertex*> VirtualVertex::directNeighbors() const {
 
 
 /**
- * @param dist_max the maximum distance 
- * @return list of VirtualVertex that are at dist_max distance to this instance.
+ * @param distance_max the maximum distance 
+ * @param distance_min the minimum distance. Optionnal. Default, Zero or less mean no minimum.
+ * @return list of VirtualVertex that are at dist_max and dist_min included distances to this instance. 
+ * @note VirtualVertex are returned in distance increasing order. (nearer first)
  */
-std::list<VirtualVertex*> VirtualVertex::neighborsAt(float dist_max) const {
-        std::list<VirtualVertex*> find_nei;
-        //TODO
-        logs("NEED TO BE IMPLEMENTED: ");
-        logs("std::list<VirtualVertex> VirtualVertex::neighborsAt(float dist_max) const\n");
-        //TODO
+std::list<VirtualVertex*> VirtualVertex::neighborsAt(const float distance_max, const float distance_min) const {
+// INITIALIZING
+        std::list<VirtualVertex*> find_nei(this->confundedNeighbors());
+        vertex_comparator vertices(VertexComparison(*this->ref_vertex));
+        std::unordered_set<Vertex*, VertexHash> walked;
+        float dist_cur;
+        const float dist_max = distance_max*distance_max; // work with square distances
+        const float dist_min = distance_min*distance_min;
+
+        // first element
+        vertices.push(this->ref_vertex);
+        walked.insert(this->ref_vertex);
+
+// TREATMENTS
+        while(not vertices.empty()) {
+                Vertex* vertex = vertices.top(); // get nearer Vertex
+                vertices.pop(); // delete nearer Vertex of vertices exploration
+                // for each edge
+                Edge* edge_cur = vertex->getEdge();
+                Edge* edge_ref = edge_cur;
+                do {
+                        Vertex* nei = edge_cur->destinVertex();
+                        dist_cur = nei->squareDistanceTo(*this->ref_vertex);
+                        // if not already walked 
+                        if(not walked.count(nei)) {
+                                walked.insert(nei); // now its marked
+                                if(dist_cur <= dist_max) {
+                                        // we will walk this one later
+                                        // because maybe it have link to unwalked vertices
+                                        vertices.push(nei);
+                                        // if its also under low limit
+                                        if(dist_cur >= dist_min) {
+                                                // add Virtual Vertices to list of finded neighbors
+                                                find_nei.splice(find_nei.end(), nei->getObjects());
+                                        }
+                                }
+                        }
+
+                        // go next neighbour
+                        edge_cur = edge_cur->rotLeftEdge();
+                } while(edge_ref != edge_cur);
+                // redo for nearer Vertex !
+        }
+
+
+// ENDING
         return find_nei;
 }
 
