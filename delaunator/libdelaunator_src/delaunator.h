@@ -60,6 +60,7 @@ class Delaunator {
                 float getYmin() const { return this->triangulation->getYmin(); }
                 float getYmax() const { return this->triangulation->getYmax(); }
                 float epsilon() const { return EPSILON; }
+                float distanceMax() const;
                 //TriangulationVertexFinderMode getFinderMode() const;
                 //void setFinderMode(TriangulationVertexFinderMode); 
 

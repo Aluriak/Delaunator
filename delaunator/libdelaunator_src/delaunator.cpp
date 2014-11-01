@@ -214,6 +214,15 @@ bool Delaunator::collideAt(Coordinates c) const {
 }
 
 
+/**
+ * @return the maximum distance reachable in triangulation
+ * @note that distance is equal to distance between (xmin;ymin) and (xmax;ymax)
+ */
+float Delaunator::distanceMax() const {
+        return Coordinates(this->getXmin(), this->getYmin()).distanceTo(
+                        Coordinates(this->getXmax(), this->getYmax())
+                );
+} 
 
 
 
