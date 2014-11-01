@@ -2,7 +2,7 @@
 
 
 __name__ = "delaunator"
-__version__ = "0.0.5"
+__version__ = "1.0.0"
 
 
 
