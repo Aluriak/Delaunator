@@ -161,7 +161,7 @@ class Delinterface(Thread):
                     pygame.draw.circle(self.screen, (0, 0, 0), (int(p1.x), int(p1.y)), 20, circle_width*2)
 
                 # print the 7 nearer neighbors
-                for cnei in obj.nearerNeighbors(7):
+                for cnei in obj.nearerNeighbors(7, confounded=True): # if confounded objects, they count for only one
                     p1 = cnei.coordinates()
                     pygame.draw.circle(self.screen, (0, 0, 255), (int(p1.x), int(p1.y)), 20, circle_width*1)
 
