@@ -54,6 +54,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 ## EXAMPLE OF USE
 See github repo, pydelaunator repertory, for built-in example.
 
+
     from random import randint
     from delaunator import Delaunator, TrianguledObject
 
@@ -62,8 +63,13 @@ See github repo, pydelaunator repertory, for built-in example.
         def __init__(self, name):
             super().__init__()
             self.name = str(name)
-        def __str__(self):
-            return self.name
+
+        def presentation(self, othr=None):
+            if othr is not None:
+                d = str(othr.distanceTo(self)) 
+                return self.name + " " + "("+d+")"
+            else:
+                return self.name
 
     # bounds
     xmin, xmax, ymin, ymax = 0, 600, 0, 600
@@ -73,18 +79,19 @@ See github repo, pydelaunator repertory, for built-in example.
     michel = Student('michel')
     dt.addTrianguledObject(michel, (342, 123))
 
-    for i in range(100):
+    for i in range(3):
         dt.addTrianguledObject(Student('totoro'), (randint(xmin, xmax), randint(ymin, ymax)))
 
     # movement
-    dt.movTrianguledObject(michel, randint(xmin, xmax) / 2, randint(ymin, ymax) / 2)
-    
+    dt.movTrianguledObject(michel, (randint(xmin, xmax) / 2, randint(ymin, ymax) / 2))
+
     # print name of all neighbors that are to a distance at most 100
-    print("My neighbors are " + ", ".join([str(_) for _ in michel.neighborsAt(100)]))
-    
+    print("My neighbors are " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(300)]))
+    print("The others are   " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(dt.distanceMax(), 300)]))
+    print("All are          " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(dt.distanceMax())]))
+
     # frees
     dt.delTrianguledObject(michel)
-
 
 API will be improved with time and ideas.
 
