@@ -30,6 +30,22 @@ class TrianguledObject(object):
                 return self.virtual_vertex.coordinates()
 
 
+        def squareDistanceTo(self, tri_obj):
+                """
+                @param tri_obj a trianguled object instance
+                @return square distance to this object, according to coordinates of self and tri_obj
+                @warning the distance returned is the squared distance. Useful for compare distances without slow call to sqrt()
+                """
+                return self.coordinates().squareDistanceTo(tri_obj.coordinates())
+
+
+        def distanceTo(self, tri_obj):
+                """
+                @param tri_obj a trianguled object instance
+                @return distance to this object, according to coordinates of self and tri_obj
+                """
+                return self.coordinates().distanceTo(tri_obj.coordinates())
+
 
 # ACCESSORS ###################################################################
         @property
