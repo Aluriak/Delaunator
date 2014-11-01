@@ -54,7 +54,7 @@ setup(
     version = __version__,
     ext_modules = [swig_extension],
     py_modules = ['info', 'delaunator', 'delaunator.libdelaunator_src', 'delaunator.libdelaunator_src._libdelaunator'],
-    packages = find_packages(exclude=['pydelaunator/', 't/']), 
+    packages = find_packages(exclude=['pydelaunator/']), 
     package_data = {
         __name__ : ['README.md', 'LICENSE.txt']
     },
