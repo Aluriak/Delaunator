@@ -7,9 +7,8 @@
 #########################
 # IMPORTS               #
 #########################
-from libdelaunator.libdelaunator import Delaunator, Vertex, Coordinates, Edge
-from libdelaunator.libdelaunator import IteratorOnAllEdges, IteratorFaceToNeighbourFaces, IteratorVertexToNeighbourVertices
-from commons.commons import INTERFACE_TIME_SPEED, VIDEO_MODE_X, VIDEO_MODE_Y, PROGRAM_NAME, OFFSET, MOUSE_PRECISION
+from delaunator import Delaunator, Coordinates, TrianguledObject
+from commons.commons import INTERFACE_TIME_SPEED, VIDEO_MODE_X, VIDEO_MODE_Y, PROGRAM_NAME, MOUSE_PRECISION
 from random import randint, choice
 from threading import Thread
 import pygame
@@ -23,11 +22,15 @@ import math
 #########################
 # PRE-DECLARATIONS      #
 #########################
+class Point(TrianguledObject):
+    def __init__(self, color):
+        super().__init__()
+        self.color = color
 
 
 
 #########################
-# CLASS                 #
+# DELINTERFACE          #
 #########################
 class Delinterface(Thread):
     """"""
@@ -35,18 +38,24 @@ class Delinterface(Thread):
 # CONSTRUCTOR #################################################################
     def __init__(self, dt):
         """"""
+        # delaunay triangulation
+        self.dt = dt
+
+        # states
+        self.finish = False
+        self.auto_add = False
+        self.print_neighbors = True
+        self.dragging = False
+        self.dragged_point = None
+
+        # pygame
         Thread.__init__(self)
         pygame.display.init()
-        self.dt = dt
-        self.finish = False
-        self.pause  = False
-        self.auto_add = False
-        self.print_neighbors = False
-        self.print_triangles = True
-        self.dragging = False
+
         self.screen = pygame.display.set_mode((VIDEO_MODE_X, VIDEO_MODE_Y), pygame.DOUBLEBUF | pygame.HWSURFACE)
         pygame.display.set_caption(PROGRAM_NAME)
         self.start()
+
 
     def __del__(self):
         pygame.display.quit()
@@ -57,176 +66,170 @@ class Delinterface(Thread):
     def run(self):
         """Start priniting of engine simulation"""
         print("WANDA JACKSON")
+
         while not self.finish:
+            # auto adding
             if self.auto_add:
                 self.addPointToDT()
-            if not self.pause:
-                self.screen.fill((255,255,255))
-                self.draw()
-                pygame.display.flip()
-            # wait some time: graphical FPS
+            # printing
+            self.screen.fill((255,255,255))
+            self.draw()
+            pygame.display.flip()
+            # waiting
             time.sleep(INTERFACE_TIME_SPEED)
+
+            # event looping
             for event in pygame.event.get():
+
+                # END CASE
                 if event.type == pygame.QUIT:
                     self.finishing()
+
+                # KEYDOWN
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        self.finishing()
-                    elif event.key == pygame.K_RETURN:
+                    # SPECIAL KEY HITING
+                    if event.key == pygame.K_ESCAPE:    self.finishing()
+                    # add new point
+                    elif event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                         x, y = pygame.mouse.get_pos()
-                        self.addPointToDT(x-OFFSET, y-OFFSET)
-                    elif event.key == pygame.K_SPACE:
-                        self.togglePause()
-                    elif event.key == pygame.K_UP:
-                        self.movePoint(0,-10)
-                    elif event.key == pygame.K_RIGHT:
-                        self.movePoint(10,0)
-                    elif event.key == pygame.K_DOWN:
-                        self.movePoint(0,10)
-                    elif event.key == pygame.K_LEFT:
-                        self.movePoint(-10,0)
-                    elif event.key == pygame.K_a:
-                        self.auto_add = not self.auto_add
-                    elif event.key == pygame.K_n:
-                        self.print_neighbors = not self.print_neighbors
-                    elif event.key == pygame.K_t:
-                        self.print_triangles = not self.print_triangles
-                    elif event.key == pygame.K_i:
-                        self.moveAllVertices()
+                        self.addPointToDT(x, y)
+                    # delete point
+                    elif event.key == pygame.K_DELETE: 
+                        point = self.getPointAt(*pygame.mouse.get_pos())
+                        if point is not None:
+                            self.delPoint(point)
+
+                    # ARROW HITING
+                    elif event.key == pygame.K_UP:      self.movePoint(0,    -500, self.dragged_point)
+                    elif event.key == pygame.K_RIGHT:   self.movePoint(500,  0,    self.dragged_point)
+                    elif event.key == pygame.K_DOWN:    self.movePoint(0,    500,  self.dragged_point)
+                    elif event.key == pygame.K_LEFT:    self.movePoint(-500, 0,    self.dragged_point)
+                    # OPTIONS HITING
+                    elif event.key == pygame.K_a:       self.auto_add = not self.auto_add
+                    elif event.key == pygame.K_n:       self.print_neighbors = not self.print_neighbors
+                    elif event.key == pygame.K_i:       self.moveAllPoints()
+
+                # MOUSE BUTTON
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.dragged_point = self.getPointAt(*pygame.mouse.get_pos())
-                    if self.dragged_point is not None:
-                        self.dragging = True
+                    if self.dragged_point is not None: self.dragging = True
+
                 elif event.type == pygame.MOUSEBUTTONUP:
                     self.dragging = False
                     self.dragged_point = None
+
+                # MOUSE MOTION
                 elif event.type == pygame.MOUSEMOTION:
                     x,y = pygame.mouse.get_rel()
                     if self.dragging:
                         self.movePoint(x, y, self.dragged_point)
+
         print("WANDA JACKSOFF")
+
+
+
+
+    ################# END METHODS #################
+    def finishing(self):
+        """turn off simulation"""
+        self.finish = True
+
+
+
+
+    ################# DRAW METHODS #################
+    def draw(self):
+        """Print current state of engine"""
+        #print("DRAWING")
+        for obj in self.dt.trianguledObjects():
+
+            # shortcuts
+            line_width, circle_width = 1, 2
+            line_color, circle_color = (0, 255, 0), obj.color
+            diameter = 20
+            p2 = obj.coordinates()
+
+            # print neighbors when obj is dragged point
+            if self.print_neighbors and obj == self.dragged_point: 
+                line_color = (255, 0, 0) 
+                line_width = 2
+                # print all points that are between 200 and 150 px of distance
+                pygame.draw.circle(self.screen, (0, 0, 0), (int(p2.x), int(p2.y)), 200, circle_width)
+                pygame.draw.circle(self.screen, (0, 0, 0), (int(p2.x), int(p2.y)), 150, circle_width)
+                for cnei in obj.neighborsAt(200, 150):
+                    p1 = cnei.coordinates()
+                    pygame.draw.circle(self.screen, (0, 0, 0), (int(p1.x), int(p1.y)), 20, circle_width*2)
+
+                # print the 7 nearer neighbors
+                for cnei in obj.nearerNeighbors(7, confounded=True): # if confounded objects, they count for only one
+                    p1 = cnei.coordinates()
+                    pygame.draw.circle(self.screen, (0, 0, 255), (int(p1.x), int(p1.y)), 20, circle_width*1)
+
+            
+            # print confunded neighbors circle, only if its id is lower
+            for cnei in obj.confundedNeighbors:
+                p1 = cnei.coordinates()
+                pygame.draw.circle(self.screen, cnei.color, (int(p1.x), int(p1.y)), int(diameter), circle_width)
+
+
+
+            # printing !
+            pygame.draw.circle(self.screen, obj.color, (int(p2.x), int(p2.y)), int(diameter/2), circle_width)
+            for nei in obj.directNeighbors:
+                p1 = nei.coordinates()
+                pygame.draw.line(self.screen, line_color, (p1.x, p1.y), (p2.x, p2.y), line_width)
+
+
+
+
+
+    
+    ################# POINT METHODS #################
+    def addPointToDT(self, x = None, y = None):
+        """Add a random point in DT"""
+        # creat Coordinates
+        coords = None
+        if x is None or y is None:
+            coords = Coordinates(randint(self.dt.getXmin(), self.dt.getXmax()), randint(self.dt.getYmin(), self.dt.getYmax()))
+        else:
+            coords = Coordinates(x, y)
+        # creat color
+        color = (randint(1, 255), randint(1, 255), randint(1, 255))
+        # creat object
+        self.dt.addTrianguledObject(Point(color), coords)
+
+
+    def delPoint(self, point):
+        """Delete given Point"""
+        if self.dragged_point == point:
+            self.dragged_point = None
+            self.dragging = False
+        self.dt.delTrianguledObject(point)
 
 
     def getPointAt(self, x, y):
         """Return point that is at given coordinates (about MOUSE_PRECISION)"""
-        return self.dt.vertexAt(x, y, MOUSE_PRECISION)
-
-    
-    def togglePause(self, activePause=None):
-        """activePause : bool
-        return : new state of pause
-        If ommitted argument, pause is toggle, else its set to given value"""
-        if activePause is None: self.pause = not self.pause
-        else:                   self.pause = activePause
-        return self.pause
-
-
-    def setpause(self): self.togglePause(True)
-    def unpause(self): self.togglePause(False)
-
-
-    def finishing(self):
-        """turn off simulation"""
-        self.setpause()
-        self.finish = True
-
-
-    def draw(self):
-        """Print current state of engine"""
-        #print("DRAWING")
-        for it in self.dt.allEdges():
-            p1 = it.originVertex()
-            p2 = it.destinVertex()
-            if it.isVisible():
-                if self.dragging and self.dragged_point == p1:
-                    color = (255,0,0)
-                    width = 3
-                elif self.dt.opt_follow_search() and  it.passing:
-                    color = (0,0,255)
-                    width = 4
-                else:
-                    color = (0,255,0)
-                    width = 1
-            else:
-                color = (0,0,200)
-                width = 1
-            pygame.draw.line(self.screen, color, (p1.x+OFFSET, p1.y+OFFSET), (p2.x+OFFSET, p2.y+OFFSET), width)
-            pygame.draw.circle(self.screen, color, (int(p2.x+OFFSET), int(p2.y+OFFSET)), 10, width)
-        #for it in self.dt.allFaces():
-            #p1 = it.getP1()
-            #p2 = it.getP2()
-            #p3 = it.getP3()
-            #if self.dragging and self.dragged_point in (p1, p2, p3):
-                #pygame.draw.line(self.screen, (255,0,0), (p1.x()+OFFSET, p1.y()+OFFSET), (p2.x()+OFFSET, p2.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (255,0,0), (p2.x()+OFFSET, p2.y()+OFFSET), (p3.x()+OFFSET, p3.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (255,0,0), (p3.x()+OFFSET, p3.y()+OFFSET), (p1.x()+OFFSET, p1.y()+OFFSET) )
-            #elif it.isVisible():
-                #pygame.draw.line(self.screen, (0,255,0), (p1.x()+OFFSET, p1.y()+OFFSET), (p2.x()+OFFSET, p2.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (0,255,0), (p2.x()+OFFSET, p2.y()+OFFSET), (p3.x()+OFFSET, p3.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (0,255,0), (p3.x()+OFFSET, p3.y()+OFFSET), (p1.x()+OFFSET, p1.y()+OFFSET) )
-            
-        #for i in range(self.dt.lstTri.nbItem):
-            #t = TL_getTri(self.dt.lstTri, i)
-            #p1 = TRI_p1(t)
-            #p2 = TRI_p2(t)
-            #p3 = TRI_p3(t)
-            #pl = t.circumcenter
-            #if self.print_triangles:
-                #pygame.draw.line(self.screen, (200,0,0), (p1.x()+OFFSET, p1.y()+OFFSET), (p2.x()+OFFSET, p2.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (0,200,0), (p2.x()+OFFSET, p2.y()+OFFSET), (p3.x()+OFFSET, p3.y()+OFFSET) )
-                #pygame.draw.line(self.screen, (0,0,200), (p3.x()+OFFSET, p3.y()+OFFSET), (p1.x()+OFFSET, p1.y()+OFFSET) )
-
-            ## draw lines between gravity point of current triangle and its neighbors
-            #if self.print_neighbors:
-                #centroidT0 = t.centroid
-                #centroidT1 = TRI_getNeighbor1(t)
-                #centroidT2 = TRI_getNeighbor2(t)
-                #centroidT3 = TRI_getNeighbor3(t)
-                #if not math.isnan(centroidT0.x()):
-                    #if centroidT1 is not None: 
-                        #centroidT1 = TRI_getNeighbor1(t).centroid
-                        #if not math.isnan(centroidT1.x()):
-                            #pygame.draw.line(self.screen, (0,0,0), 
-                                     #(centroidT0.x()+OFFSET, centroidT0.y()+OFFSET), (centroidT1.x()+OFFSET, centroidT1.y()+OFFSET) )
-                    #if centroidT2 is not None: 
-                        #centroidT2 = TRI_getNeighbor2(t).centroid
-                        #if not math.isnan(centroidT2.x()):
-                            #pygame.draw.line(self.screen, (0,0,0), 
-                                     #(centroidT0.x()+OFFSET, centroidT0.y()+OFFSET), (centroidT2.x()+OFFSET, centroidT2.y()+OFFSET) )
-                    #if centroidT3 is not None: 
-                        #centroidT3 = TRI_getNeighbor3(t).centroid
-                        #if not math.isnan(centroidT3.x()):
-                            #pygame.draw.line(self.screen, (0,0,0), 
-                                     #(centroidT0.x()+OFFSET, centroidT0.y()+OFFSET), (centroidT3.x()+OFFSET, centroidT3.y()+OFFSET) )
-
-
-
+        return TrianguledObject.of(self.dt.virtualVertexAt(x, y, MOUSE_PRECISION))
 
     
     def movePoint(self, x, y, p=None):
         """Add given values to (x;y) of last added point"""
         if p is not None:
-            self.dt.moveVertex(p, x, y)
+            self.dt.movTrianguledObject(p, (x, y))
 
 
-    def moveAllVertices(self):
+    def moveAllPoints(self):
         """Move all vertices by a small move"""
-        for v in self.dt.allVertices():
-            mx = choice([-0.01,0.01])
-            my = choice([-0.01,0.01])
-            self.dt.moveVertex(v, mx, my)
+        # use of virtual vertice in place of trianguled vertice
+        # because don't need trianguled objects data, and this is a little quicker to deal with VirtualVertex directly
+        for v in self.dt.virtualVertices():
+            eps = self.dt.epsilon()
+            mx = choice([-eps,eps])
+            my = choice([-eps,eps])
+            self.dt.movVirtualVertex(v, mx, my)
 
-    def addPointToDT(self, x = None, y = None):
-        """Add a random point in DT"""
-        p = None
-        if x is None or y is None:
-            p = Coordinates(randint(self.dt.getXmin(), self.dt.getXmax()), randint(self.dt.getYmin(), self.dt.getYmax()))
-        else:
-            p = Coordinates(x, y)
-        self.dt.addVertexAt(p)
 
-        #print("Point ("+str(p.x())+";"+str(p.y())+") added.")
-        #print("Total of "+str(self.dt.nb_points)+" points and "+str(self.dt.lstTri.nbItem)+" triangles")
+
 
 # PRIVATE METHODS #############################################################
 # PREDICATS ###################################################################
@@ -235,64 +238,6 @@ class Delinterface(Thread):
 # OPERATORS ###################################################################
 
 
-
-
-
-#########################
-# FUNCTIONS             #
-#########################
-#pygame.init()
-
-#class Hangman():
-    #def __init__(self):
-        #self.lines = 0 #Number of lines to be drawn
-
-    #def hang(self):
-        #self.lines += 1
-
-    #def draw(self,screen):
-        #for x in range(self.lines):
-            #coord1 = (x*10,20)
-            #coord2 = (x*10,50)
-            #pygame.draw.line(screen,(0,0,0),coord1,coord2)
-
-#size = screenWidth,screenHeight = 200,70
-#screen = pygame.display.set_mode(size)
-#pygame.display.flip()
-
-#myman = Hangman()
-
-#drawlist = []
-#drawlist.append(myman)
-##mainloop
-#running = True
-#while running:
-    ##EVENT HANDLING#
-    #for event in pygame.event.get():
-        #if event.type == pygame.QUIT:
-            #running = False
-        #if event.type == pygame.KEYDOWN:
-            #if event.key == pygame.K_SPACE: #Spacebar
-                #myman.hang()
-            #elif event.key == pygame.K_ESCAPE:
-                #running = False
-
-    ##DRAWING#
-    #screen.fill((255,255,255))
-    #for item in drawlist:
-        #item.draw(screen)
-    #pygame.display.flip()
-
-
-
-
-
-
-
-
-#########################
-# FUNCTIONS             #
-#########################
 
 
 

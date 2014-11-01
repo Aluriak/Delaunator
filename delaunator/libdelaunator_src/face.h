@@ -39,7 +39,7 @@ class Face {
 	// PUBLIC METHODS
                 void computeInternalValues();
                 bool collideAt(Coordinates);
-                bool circumcircleContainCoords(Coordinates) const ;
+                bool circumcircleContainCoords(Coordinates) const;
 	// ACCESSORS
                 //getter
                 bool isVisible()      const { return this->visible; }
@@ -51,14 +51,20 @@ class Face {
                 Vertex* getP2()       const;
                 Vertex* getP3()       const;
                 unsigned int getID()  const { return this->id; }
+                Coordinates circumcenter() const {
+                        return this->circumcenter_;
+                }
+                float circumcircleRadius() const {
+                        return this->circumcenter().distanceTo(*this->getP1());
+                }
                 //setter
                 void setEdge(Edge*);
                 void setVisibility(bool v)      { this->visible = v; }
 	private:
 	// ATTRIBUTES
-                bool visible; // in a graphical representation
                 Edge* edge; // any edge that describe that face
-                Coordinates centroid;
+                bool visible; // in a graphical representation
+                Coordinates centroid, circumcenter_;
                 unsigned int id;
                 static unsigned int last_id;
 	// PRIVATE METHODS

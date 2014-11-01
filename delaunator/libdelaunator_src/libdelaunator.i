@@ -2,20 +2,17 @@
 %{
 /* Includes the header in the wrapper code */
 #include "delaunator.h"
-static int IteratorOnAllEdges_myErr = 0;
 %}
 
 %include "std_string.i"
+%include "std_list.i"
 %include "std_vector.i"
 %include "exception.i"
-%exception std::vector::getitem {
-        try {
-                $action
-        } catch (std::out_of_range& e) {
-                SWIG_exception(SWIG_IndexError,const_cast<char*>(e.what()));
-        }
+%include "typemaps.i"
+
+namespace std {
+        %template(VirtualVertexList) list<VirtualVertex*>;
 }
-/* Parse the header file to generate wrappers */
 
 %include "utils.h"
 %include "commons.h"
@@ -35,9 +32,14 @@ static int IteratorOnAllEdges_myErr = 0;
 };
 
 %include "edge.h"
-
 %include "face.h"
-
 %include "iterators.i"
-
+%include "virtualVertex.h"
+%include "triangulation.h"
 %include "delaunator.h"
+
+/* Create TrianguledObject interface class */
+#if SWIGPYTHON
+%include "python_trianguledObject.i"
+#endif
+

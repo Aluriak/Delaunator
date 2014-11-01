@@ -13,7 +13,7 @@ unsigned int Face::last_id = 1;
  * @param visible necessary for quad-edge representation, and be only set to true if user know exactly what he do
  * @return a new and well initialized Face
  */
-Face::Face(Edge* e, bool visible) : visible(visible), edge(e) {
+Face::Face(Edge* e, bool visible) : edge(e), visible(visible) {
         this->id = this->last_id++;
         if(e != NULL) {
                 this->computeInternalValues();
@@ -42,6 +42,9 @@ void Face::computeInternalValues() {
         // Deduce coordinates of Centroid.
         this->centroid.setX((p1->x() + p2->x() + p3->x()) / 3.);
         this->centroid.setY((p1->y() + p2->y() + p3->y()) / 3.);
+
+        // Deduce coordinates of Circumcenter
+        this->circumcenter_ = geometry::circumcenterOf(*this->getP1(), *this->getP2(), *this->getP3());
 }
 
 

@@ -93,10 +93,12 @@ std::string randstr(size_t size, char* caracs) {
         //}
 //}
 void logs(const char* str, ...) {
+#if VERBOSE
         va_list args;
         va_start(args, str);
         vfprintf(stderr, str, args);
         va_end(args);
+#endif
 }
 
 

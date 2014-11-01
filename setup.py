@@ -18,10 +18,9 @@ import os, re
 # find a better way to do that is necessary
 d = sysconfig.get_config_vars()
 for k, v in d.items():
-    if str(v).find('-Wstrict-prototypes') != -1:
-        v = d[k] = str(v).replace('-Wstrict-prototypes', '')
-    if str(v).find('-DNDEBUG') != -1:
-        v = d[k] = str(v).replace('-DNDEBUG', '')
+    for unwanted in ('-Wstrict-prototypes', '-DNDEBUG'): # can add '-O2', if no optimizations expected
+        if str(v).find(unwanted) != -1:
+            v = d[k] = str(v).replace(unwanted, '')
 
 
 
@@ -36,10 +35,7 @@ swig_extension = Extension(
     swig_opts = ['-c++'],
     define_macros = [
         ('DEBUG', 1),
-        # choose your finder mode here !
-        ('DEULAUNAY_FINDER_INITIAL_RANDOM', None),
-        #('DEULAUNAY_FINDER_INITIAL_FIRST', None),
-        #('DEULAUNAY_FINDER_INITIAL_MIDDLE', None),
+        ('VERBOSE', 1),
     ],
     optional = False,
     extra_compile_args = [
@@ -78,14 +74,7 @@ setup(
         "Programming Language :: C",
         "Programming Language :: C++",
         "Programming Language :: Python :: 3",
-        "Programming Language :: C#",
-        "Programming Language :: Java",
-        "Programming Language :: OCaml",
-        "Programming Language :: Other",
-        "Programming Language :: Perl",
-        "Programming Language :: PHP",
         "Programming Language :: Python",
-        "Programming Language :: Tcl",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ]

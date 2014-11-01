@@ -46,7 +46,7 @@ Edge::~Edge() {
  * Return square of distance between the edge and given coordinates.
  */
 float Edge::squareDistanceTo(float px, float py) const {
-        return geometry::distanceBetweenPointAndSegment(
+        return geometry::squareDistanceBetweenSegmentAndPoint(
                         this->origin_vertex->x(), this->origin_vertex->y(), 
                         this->destinVertex()->x(), this->destinVertex()->y(), 
                         px, py
@@ -94,8 +94,38 @@ bool Edge::coordOnTheLeft(Coordinates c)        const { return dot_product(this,
 /***************************************************
  * ACCESSORS
  ***************************************************/
+/**
+ * An external Edge is an Edge that rely two corner Vertex.
+ * @return true iff this is one of the eight external Edge.
+ */
+bool Edge::isExternal() const {
+        // an edge is external if in contact with a unvisible face. 
+        return (!this->leftFace()->isVisible()) || (!this->rightFace()->isVisible());
+}
 
 
+
+
+/**
+ * @return distance between the origin and destination Vertex
+ */
+float Edge::length() const {
+        return this->origin_vertex->distanceTo(*this->opposite_edge->origin_vertex);
+}
+
+/**
+ * @return square distance between the origin and destination Vertex
+ */
+float Edge::squareLength() const {
+        return this->origin_vertex->squareDistanceTo(*this->opposite_edge->origin_vertex);
+}
+
+/**
+ * @return Coordinates of the middle of this Edge.
+ */
+Coordinates Edge::middle() const {
+        return (*this->originVertex() + *this->destinVertex()) / 2;
+}
 /***************************************************
  * PRIVATE METHODS
  ***************************************************/
