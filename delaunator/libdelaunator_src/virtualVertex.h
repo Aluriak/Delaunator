@@ -50,7 +50,7 @@ class VirtualVertex {
                 std::list<VirtualVertex*> confundedNeighbors() const;
                 std::list<VirtualVertex*> directNeighbors() const;
                 std::list<VirtualVertex*> neighborsAt(const float, const float = 0) const;
-                std::list<VirtualVertex*> nearerNeighbors(const unsigned int) const;
+                std::list<VirtualVertex*> nearerNeighbors(const unsigned int, bool = false) const;
 	private:
 	// ATTRIBUTES
                 Vertex* ref_vertex;
