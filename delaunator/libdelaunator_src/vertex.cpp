@@ -120,10 +120,20 @@ void Vertex::forget(VirtualVertex* trob) {
  ***************************************************/
 /**
  * Access to all VirtualVertexs of this instance.
+ * @param nb number of objects returned. If 0, default or greater than object count, all are returned.
  * @return a std::list of VirtualVertex pointers
  */
-std::list<VirtualVertex*> Vertex::getObjects() const {
-        std::list<VirtualVertex*> l(this->objects); // recopy
+std::list<VirtualVertex*> Vertex::getObjects(unsigned int nb) const {
+        //std::list<VirtualVertex*> l(this->objects); 
+        std::list<VirtualVertex*> l; 
+        if(nb == 0 || nb >= this->objects.size()) {
+                nb = this->objects.size(); 
+        }
+        // we will use insert one day
+        std::list<VirtualVertex*>::const_iterator it = this->objects.begin();
+        for(; nb > 0 && it != this->objects.end(); it++, nb--) {
+                l.push_back(*it);
+        }
         return l;
 }
 

@@ -94,7 +94,7 @@ class Vertex : public Coordinates {
         // ACCESSORS
                 unsigned int getID()            const { return this->id; }
                 unsigned int getObjectCount()   const { return this->objects.size(); }
-                std::list<VirtualVertex*> getObjects() const;
+                std::list<VirtualVertex*> getObjects(unsigned int = 0) const;
                 VirtualVertex* getFirstObject()        const;
                 Edge* getEdge() const;
                 void setEdge(Edge* e);
