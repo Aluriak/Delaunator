@@ -54,6 +54,11 @@ class Edge {
                  * @return square of shorter distance between this Edge and the target
                  */
                 float squareDistanceTo(Coordinates c) const { return this->squareDistanceTo(c.x(), c.y()); }
+                /**
+                 * @param x x coordinate of target 
+                 * @param y y coordinate of target 
+                 * @return square of shorter distance between this Edge and the target
+                 */
                 float squareDistanceTo(float x, float y) const;
                 bool coordOnTheStrictRight(Coordinates)  const;
                 bool coordOnTheRight(Coordinates)        const;
