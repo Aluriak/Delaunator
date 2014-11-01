@@ -34,8 +34,8 @@ swig_extension = Extension(
                 ['delaunator/libdelaunator_src/libdelaunator.i'],
     swig_opts = ['-c++'],
     define_macros = [
-        ('DEBUG', 1),
-        ('VERBOSE', 1),
+        #('DEBUG', 1),
+        #('VERBOSE', 1),
     ],
     optional = False,
     extra_compile_args = [
