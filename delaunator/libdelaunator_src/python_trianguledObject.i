@@ -59,12 +59,13 @@ class TrianguledObject(object):
                 return self.virtual_vertex.directNeighbors()
 
 
-        def nearerNeighbors(self, nb_neighbors):
+        def nearerNeighbors(self, nb_neighbors, confounded = False):
                 """
                 @param nb_neighbors a positiv integer
+                @param confounded a boolean (False by default). If true, confounded TrianguledObject count for only one, but are all returned.
                 @return list that contain the nb_neighbors neighbors in nearer-first order
                 """
-                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors))
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors, confounded))
 
 
         def neighborsAt(self, max_distance, min_distance = 0):
