@@ -54,7 +54,7 @@ class TrianguledObject(object):
                 @return list of VirtualVertex, that are confunded neighbors of self
                 @note confunded neighbors share the same Vertex instance.
                 """
-                return (_ for _ in self.virtual_vertex.confundedNeighbors() if self.virtual_vertex.id() !=  vv.id())
+                return (_ for _ in self.virtual_vertex.confundedNeighbors() if self.virtual_vertex.id() !=  _.id())
 
 
         @property
@@ -63,7 +63,7 @@ class TrianguledObject(object):
                 @return list of TrianguledObject, that are confunded neighbors of self
                 @note confunded neighbors share the same Vertex instance.
                 """
-                return (TrianguledObject.of(_) for _ in self.virtual_vertex.confundedNeighbors() if self.virtual_vertex.id() !=  vv.id())
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.confundedNeighbors() if self.virtual_vertex.id() !=  _.id())
 
 
         @property
@@ -81,7 +81,7 @@ class TrianguledObject(object):
                 @param confounded a boolean (False by default). If true, confounded TrianguledObject count for only one, but are all returned.
                 @return list that contain the nb_neighbors neighbors in nearer-first order
                 """
-                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors, confounded) if self.virtual_vertex.id() !=  vv.id())
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors, confounded) if self.virtual_vertex.id() !=  _.id())
 
 
         def neighborsAt(self, max_distance, min_distance = 0):
@@ -90,7 +90,7 @@ class TrianguledObject(object):
                 @param min_distance number that give the low limit. No low limit if equal to zero (default value is zero)
                 @return list that contain the TrianguledObject that are at max_distance at most of self 
                 """
-                return (TrianguledObject.of(vv) for vv in self.virtual_vertex.neighborsAt(max_distance, min_distance) if self.virtual_vertex.id() !=  vv.id())
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.neighborsAt(max_distance, min_distance) if self.virtual_vertex.id() !=  _.id())
 
 
 
