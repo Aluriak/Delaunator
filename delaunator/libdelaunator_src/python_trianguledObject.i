@@ -125,6 +125,10 @@ def addTrianguledObject(self, tri_obj, coords):
         @return the id of tri_obj in self instance, or None iff coords invalid 
         """
         added = None
+        # transform user coords into Coordinates object
+        if not isinstance(coords, Coordinates):
+                coords = Coordinates(*coords)
+        # add the trianguled object
         if tri_obj is not None and coords is not None:
                 tri_obj.virtual_vertex  = self.addVirtualVertex(coords)
                 if tri_obj.virtual_vertex is not None:
