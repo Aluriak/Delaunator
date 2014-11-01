@@ -160,6 +160,11 @@ class Delinterface(Thread):
                     p1 = cnei.coordinates()
                     pygame.draw.circle(self.screen, (0, 0, 0), (int(p1.x), int(p1.y)), 20, circle_width*2)
 
+                # print the 7 nearer neighbors
+                for cnei in obj.nearerNeighbors(7):
+                    p1 = cnei.coordinates()
+                    pygame.draw.circle(self.screen, (0, 0, 255), (int(p1.x), int(p1.y)), 20, circle_width*1)
+
             
             # print confunded neighbors circle, only if its id is lower
             for cnei in obj.confundedNeighbors:
