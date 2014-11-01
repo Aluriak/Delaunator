@@ -75,22 +75,26 @@ class TrianguledObject(object):
                 return self.virtual_vertex.directNeighbors()
 
 
-        def nearerNeighbors(self, nb_neighbors, confounded = False):
+        def nearerNeighbors(self, nb_neighbors, confounded = False, predicat=lambda t: True):
                 """
                 @param nb_neighbors a positiv integer
                 @param confounded a boolean (False by default). If true, confounded TrianguledObject count for only one, but are all returned.
-                @return list that contain the nb_neighbors neighbors in nearer-first order
+                @param predicat a callable that return True or False and take a TrianguledObject in argument. 
+                @return list that contain the nb_neighbors neighbors in nearer-first order.
+                @note if predicat provided, filtering happen after constitution of the list.
                 """
-                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors, confounded) if self.virtual_vertex.id() !=  _.id())
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors, confounded) if self.virtual_vertex.id() !=  _.id() and predicat(TrianguledObject.of(_)))
 
 
-        def neighborsAt(self, max_distance, min_distance = 0):
+        def neighborsAt(self, max_distance, min_distance = 0, predicat=lambda t: True):
                 """
                 @param max_distance number that give the limit distance 
                 @param min_distance number that give the low limit. No low limit if equal to zero (default value is zero)
-                @return list that contain the TrianguledObject that are at max_distance at most of self 
+                @param predicat a callable that return True or False and take a TrianguledObject in argument. 
+                @return list that contain the TrianguledObject that are at max_distance at most of self, min_distance at least of self, and that respect the given predicat
                 """
-                return (TrianguledObject.of(_) for _ in self.virtual_vertex.neighborsAt(max_distance, min_distance) if self.virtual_vertex.id() !=  _.id())
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.neighborsAt(max_distance, min_distance) if self.virtual_vertex.id() !=  _.id() and predicat(TrianguledObject.of(_)))
+                        
 
 
 
