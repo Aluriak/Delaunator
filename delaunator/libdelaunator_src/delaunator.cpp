@@ -202,7 +202,7 @@ std::list<VirtualVertex*> Delaunator::virtualVerticesAt(float x, float y, float 
  * @return true iff tested Vertex is referenced by triangulation
  */
 bool Delaunator::haveVertex(Vertex* v) const {
-        return this->triangulation->haveVertex(v);
+        return this->triangulation->have(v);
 }
 
 

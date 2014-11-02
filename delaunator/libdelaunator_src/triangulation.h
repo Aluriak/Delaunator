@@ -95,7 +95,7 @@ class Triangulation {
                 void setFinderMode(VertexFinderMode); 
 
         // PREDICATS
-                bool haveVertex(Vertex*) const;
+                bool have(Vertex*) const;
                 bool collideAt(Coordinates) const;
 #ifdef DEBUG
                 bool opt_isdebug()       const { return true; }

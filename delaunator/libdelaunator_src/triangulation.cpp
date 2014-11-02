@@ -397,7 +397,7 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
 // INIT
 #ifdef DEBUG
         assert(del_vrtx != NULL);
-        assert(this->haveVertex(del_vrtx));
+        assert(this->have(del_vrtx));
         assert(!del_vrtx->isACorner());
 #endif
         bool modification = true; // false when no modification operate on triangulation
@@ -631,11 +631,8 @@ void Triangulation::setFinderMode(VertexFinderMode m) {
  * @param v tested Vertex 
  * @return true iff tested Vertex is referenced by triangulation
  */
-bool Triangulation::haveVertex(Vertex* v) const {
-        bool have = false;
-        for(unsigned int i = this->vertices.size() - 1; i >= 0 && not have; i--) 
-                have = (this->vertices[i] == v);
-        return have;
+bool Triangulation::have(Vertex* v) const {
+        return std::find(this->vertices.begin(), this->vertices.end(), v) != this->vertices.end();
 }
 
 
