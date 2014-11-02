@@ -98,7 +98,10 @@ void Delaunator::delVirtualVertex(VirtualVertex* obj) {
  */
 VirtualVertex* Delaunator::movVirtualVertex(VirtualVertex* obj, Coordinates relative_move) {
 #ifdef DEBUG
+        assert(this->triangulation != NULL);
+        assert(obj != NULL);
         assert(obj->vertex() != NULL);
+        assert(obj->vertex()->getEdge() != NULL);
 #endif
         // if another object is referenced by obj Vertex, a new Vertex will be creat
         if(obj->confoundedWithAnotherObject()) {
