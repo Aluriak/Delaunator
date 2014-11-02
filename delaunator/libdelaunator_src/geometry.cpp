@@ -10,7 +10,20 @@
  * @warning: assertion fail if detected problem
  */
 void geometry::unit_tests() {
-        Coordinates A = Coordinates(1, 3), B = Coordinates(3, 3), C = Coordinates(3, 1);
+        Coordinates A = Coordinates(0, 0), B = Coordinates(1, 1), C = Coordinates(10, 10), D = Coordinates(10, 1);
+        assert(pointInTriangle(A, C, D, B)); // B is in ACD
+        // triangle x point ok !
+
+
+        assert(alignedPoints(A, B, C)); 
+        assert(alignedPoints(A, A, A));
+        assert(alignedPoints(A, A, D));
+        // aligned point ok !
+
+
+        A = Coordinates(1, 3);
+        B = Coordinates(3, 3);
+        C = Coordinates(3, 1);
         assert(geometry::collisionBetweenSegmentAndSegment(B, A, B, C));
         // segment x segment collision ok !
 
@@ -333,6 +346,22 @@ bool geometry::parallelLines(Coordinates A, Coordinates B, Coordinates C, Coordi
 }
 
 
+
+
+
+/***************************************************
+ * ALIGNED POINTS
+ ***************************************************/
+/**
+ * @param A Coordinates of a point
+ * @param B Coordinates of another point
+ * @param C Coordinates of another point
+ * @return true if points are aligned
+ * @note prediction performed with a call to geometry::parallelLines(4)
+ */
+bool geometry::alignedPoints(Coordinates A, Coordinates B, Coordinates C) {
+        return parallelLines(A, B, A, C);
+}
 
 
 
