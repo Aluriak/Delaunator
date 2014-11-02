@@ -280,10 +280,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         if((*mv_vrtx) != new_position) {
 // LIMIT MOVE
         //logs("LIMIT MOVE\n");
-        if(new_position.x() < this->xmin)  new_position.setX(this->xmin);
-        if(new_position.x() > this->xmax)  new_position.setX(this->xmax);
-        if(new_position.y() < this->ymin)  new_position.setY(this->ymin);
-        if(new_position.y() > this->ymax)  new_position.setY(this->ymax);
+        new_position = this->coordinateCorrection(new_position);
 
 // FIND COLLISION WITH A LIMITER EDGES 
         //logs("FIND COLLISION WITH A LIMITER EDGES\n");
@@ -618,6 +615,20 @@ void Triangulation::setFinderMode(VertexFinderMode m) {
         }
 }
 
+
+
+/**
+ * Correct Coordinates
+ * @param c Coordinates 
+ * @return Coordinates that are equal to c, or, if c is out of bounds, a projection of c on this.
+ */
+Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
+        if(c.x() < this->xmin)  c.setX(this->xmin);
+        if(c.x() > this->xmax)  c.setX(this->xmax);
+        if(c.y() < this->ymin)  c.setY(this->ymin);
+        if(c.y() > this->ymax)  c.setY(this->ymax);
+        return c;
+}
 
 
 

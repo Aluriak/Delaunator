@@ -79,6 +79,7 @@ class Triangulation {
                 Vertex* moveVertexTo(Vertex* v, Coordinates c);
                 void delVertex(Vertex* v);
                 void mergeVertex(Vertex* v, Vertex* v_destroyed);
+                Coordinates coordinateCorrection(Coordinates) const;
 #ifdef DEBUG // some tests with assertions
                 void DEBUG_tests() const;
 #endif
