@@ -84,7 +84,7 @@ class Triangulation {
                 void DEBUG_tests() const;
 #endif
 	// ACCESSORS
-                std::vector<Edge*> getEdges()  const { return this->edges; }
+                std::list<Edge*> getEdges()  const { return this->edges; }
                 unsigned int getVerticeCount() const { return this->vertices.size(); }
                 float getXmin() const { return this->xmin; }
                 float getXmax() const { return this->xmax; }
@@ -143,17 +143,25 @@ class Triangulation {
 	private:
 	// ATTRIBUTES
                 float xmin, xmax, ymin, ymax;
-                std::vector<Vertex*> vertices;
-                std::vector<Edge*> edges;
-                std::vector<Face*> faces;
+                std::list<Vertex*> vertices;
+                std::list<Edge*> edges;
+                std::list<Face*> faces;
                 finderInitialEdge_mode finderInitialEdge = NULL; // pointer to func that looking for initial Edge
 	// PRIVATE METHODS
                 Face* findContainerOf(Coordinates, Edge* = NULL) const;
                 // methods for choose initial Edges. The effectively used is pointed by finderInitialEdge.
-                Edge* finderInitial_random() const { return this->edges[randN(this->edges.size())]; }
-                Edge* finderInitial_middle() const { return this->edges[randN(this->edges.size()/2)]; }
-                Edge* finderInitial_first () const { return this->edges[0]; }
-                Edge* finderInitial_last  () const { return this->edges[this->edges.size()-1]; }
+                Edge* finderInitial_random() const { 
+                        auto it = this->edges.begin();
+                        for(unsigned int i = randN(this->edges.size()); i > 0; i--, it++);
+                        return *it; 
+                }
+                Edge* finderInitial_middle() const { 
+                        auto it = this->edges.begin();
+                        for(unsigned int i = this->edges.size() / 2; i > 0; i--, it++);
+                        return *it; 
+                }
+                Edge* finderInitial_first () const { return this->edges.front(); }
+                Edge* finderInitial_last  () const { return this->edges.back(); }
 #ifdef DEBUG
                 bool applyDelaunayCondition(Face*, unsigned int ttl = 0);
 #else
@@ -161,35 +169,45 @@ class Triangulation {
 #endif
                 void operateFlip(Edge*);
                 // Methods for manipulate lists of components
+                /** Destroy and forget given Vertex */
                 inline void removeVertexFromVertices(Vertex* v) {
-                        for(std::vector<Vertex*>::iterator it = this->vertices.begin(); 
-                                        it != this->vertices.end(); it++) {
-                                if((*it) == v) {
-                                        this->vertices.erase(it);
-                                        delete v;
-                                        it = this->vertices.end()-1;
-                                }
-                        }
+                        delete v;
+                        this->vertices.erase(std::find(this->vertices.begin(), this->vertices.end(), v));
+
+                        //for(auto it = this->vertices.begin(); it != this->vertices.end(); it++) {
+                                //if((*it) == v) {
+                                        //this->vertices.erase(it);
+                                        //it = this->vertices.end();
+                                        //delete v;
+                                        //it--;
+                                //}
+                        //}
                 }
+                /** Destroy and forget given Edge */
                 inline void removeEdgeFromEdges(Edge* e) {
-                        for(std::vector<Edge*>::iterator it = this->edges.begin(); 
-                                        it != this->edges.end(); it++) {
-                                if((*it) == e) {
-                                        this->edges.erase(it);
-                                        delete e;
-                                        it = this->edges.end()-1;
-                                }
-                        }
+                        delete e;
+                        this->edges.erase(std::find(this->edges.begin(), this->edges.end(), e));
+                        //for(auto it = this->edges.begin(); it != this->edges.end(); it++) {
+                                //if((*it) == e) {
+                                        //this->edges.erase(it);
+                                        //delete e;
+                                        //it = this->edges.end();
+                                        //it--;
+                                //}
+                        //}
                 }
+                /** Destroy and forget given Face */
                 inline void removeFaceFromFaces(Face* f) {
-                        for(std::vector<Face*>::iterator it = this->faces.begin(); 
-                                        it != this->faces.end(); it++) {
-                                if((*it) == f) {
-                                        this->faces.erase(it);
-                                        delete f;
-                                        it = this->faces.end()-1;
-                                }
-                        }
+                        delete f;
+                        this->faces.erase(std::find(this->faces.begin(), this->faces.end(), f));
+                        //for(auto it = this->faces.begin(); it != this->faces.end(); it++) {
+                                //if((*it) == f) {
+                                        //this->faces.erase(it);
+                                        //delete f;
+                                        //it = this->faces.end();
+                                        //it--;
+                                //}
+                        //}
                 }
                 /*
                  * Replace given vertex coords by given values.
