@@ -23,8 +23,10 @@ import math
 # PRE-DECLARATIONS      #
 #########################
 class Point(TrianguledObject):
-    def __init__(self, color):
+    def __init__(self, color=None):
         super().__init__()
+        if color is None:
+            color = (randint(1, 255), randint(1, 255), randint(1, 255))
         self.color = color
 
 
@@ -66,6 +68,10 @@ class Delinterface(Thread):
     def run(self):
         """Start priniting of engine simulation"""
         print("WANDA JACKSON")
+
+        # just for begin…
+        for i in range(4):
+            self.addPointToDT()
 
         while not self.finish:
             # auto adding
@@ -140,7 +146,6 @@ class Delinterface(Thread):
     ################# DRAW METHODS #################
     def draw(self):
         """Print current state of engine"""
-        #print("DRAWING")
         for obj in self.dt.trianguledObjects():
 
             # shortcuts
@@ -161,7 +166,7 @@ class Delinterface(Thread):
                     pygame.draw.circle(self.screen, (0, 0, 0), (int(p1.x), int(p1.y)), 20, circle_width*2)
 
                 # print the 7 nearer neighbors
-                for cnei in obj.nearerNeighbors(7, confounded=True): # if confounded objects, they count for only one
+                for cnei in obj.nearerNeighbors(7): 
                     p1 = cnei.coordinates()
                     pygame.draw.circle(self.screen, (0, 0, 255), (int(p1.x), int(p1.y)), 20, circle_width*1)
 
@@ -175,8 +180,8 @@ class Delinterface(Thread):
 
             # printing !
             pygame.draw.circle(self.screen, obj.color, (int(p2.x), int(p2.y)), int(diameter/2), circle_width)
-            for nei in obj.directNeighbors:
-                p1 = nei.coordinates()
+            for cnei in obj.directNeighbors:
+                p1 = cnei.coordinates()
                 pygame.draw.line(self.screen, line_color, (p1.x, p1.y), (p2.x, p2.y), line_width)
 
 
