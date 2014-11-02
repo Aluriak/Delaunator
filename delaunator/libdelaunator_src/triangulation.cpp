@@ -160,12 +160,14 @@ Triangulation::~Triangulation() {
  * Add a new vertex to Mesh at given coordinates.
  * @param p Coordinates where Vertex will be add
  * @param first initial Edge use by finder, in place of the one taked according to FinderMode
- * @return address of that point in Mesh, or NULL if not found or out of bounds.
+ * @return address of that point in Mesh, or NULL if not found.
+ * @note if out of bounds, a correction is applied.
  */
 Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
 // initialization
         Face* container = NULL; // container of p
         Vertex* new_vertex = NULL; // returned vertex
+        p = this->coordinateCorrection(p);
         if(this->collideAt(p)) {
 
 // find container of vertex ( container>, >p )
@@ -567,6 +569,20 @@ void Triangulation::DEBUG_tests() const {
 
 
 
+/**
+ * Correct Coordinates
+ * @param c Coordinates 
+ * @return Coordinates that are equal to c, or, if c is out of bounds, a projection of c on this.
+ */
+Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
+        if(c.x() < this->xmin)  c.setX(this->xmin);
+        if(c.x() > this->xmax)  c.setX(this->xmax);
+        if(c.y() < this->ymin)  c.setY(this->ymin);
+        if(c.y() > this->ymax)  c.setY(this->ymax);
+        return c;
+}
+
+
 
 
 
@@ -625,20 +641,6 @@ void Triangulation::setFinderMode(VertexFinderMode m) {
         }
 }
 
-
-
-/**
- * Correct Coordinates
- * @param c Coordinates 
- * @return Coordinates that are equal to c, or, if c is out of bounds, a projection of c on this.
- */
-Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
-        if(c.x() < this->xmin)  c.setX(this->xmin);
-        if(c.x() > this->xmax)  c.setX(this->xmax);
-        if(c.y() < this->ymin)  c.setY(this->ymin);
-        if(c.y() > this->ymax)  c.setY(this->ymax);
-        return c;
-}
 
 
 
