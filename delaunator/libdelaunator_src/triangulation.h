@@ -207,7 +207,7 @@ class Triangulation {
                                 edge = edge->rotLeftEdge();
                         } while(edge != v->getEdge());
 
-                        for(Face* f : nei_faces) {
+                        for(auto f : nei_faces) {
 #ifdef DEBUG
                                 assert(f != NULL);
 #endif

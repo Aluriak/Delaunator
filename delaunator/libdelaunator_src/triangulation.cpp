@@ -328,7 +328,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         }
 
 // MOVE MV_VRTX TO NEW LOCATION
-        //logs("MOVE MV_VRTX TO NEW LOCATION\n");
+        //logs("MOVE MV_VRTX TO NEW LOCATION\n");
         if(col_edge == NULL) {
                 // next step is the end
                 this->moveVertex_pure(mv_vrtx, new_position);
@@ -336,6 +336,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         } else if(*col_edge->originVertex() == new_position) { // if target place is already habited
 #ifdef DEBUG
                 assert(mv_vrtx != col_edge->originVertex());
+                assert(not col_edge->originVertex()->isACorner());
 #endif
                 // give all to this existant Vertex
                 mv_vrtx->giveVirtualVerticesTo(col_edge->originVertex());
@@ -456,6 +457,13 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
                         }
                 }
         }
+        //logs("\nNeighbors reduced to %i\n", nei_vrtx.size());
+#ifdef DEBUG
+                // Some tests
+                // del_vrtx is in a triangle or in a square and aligned with at least two neighbors
+                assert(nei_vrtx.size() == 4 || nei_vrtx.size() == 3);
+                this->DEBUG_tests();
+#endif
         
 // DELETE POINT FROM TRIANGLE CONTAINER
         // Container of del_vrtx is composed by the tree neighbors contains in nei_vrtx
@@ -541,7 +549,7 @@ void Triangulation::mergeVertex(Vertex* v, Vertex* v_destroyed) {
  * DEBUG TESTS.
  */
 void Triangulation::DEBUG_tests() const {
-        for(IteratorOnAllEdges_read it = this->iterAllEdges_read(); it != it.end(); it++) {
+        for(auto it = this->edges.cbegin(); it != this->edges.cend(); it++) {
                 assert((*it)->originVertex() != NULL);
                 assert((*it)->oppositeEdge() != NULL);
                 assert((*it)->leftFace() != NULL);
@@ -553,10 +561,10 @@ void Triangulation::DEBUG_tests() const {
                         assert((*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == (*it));
                 }
         }
-        for(IteratorOnAllFaces_read it = this->iterAllFaces_read(); it != it.end(); it++) {
+        for(auto it = this->faces.cbegin(); it != this->faces.cend(); it++) {
                 assert((*it)->getEdge() != NULL);
         }
-        for(IteratorOnAllVertices_read it = this->iterAllVertices_read(); it != it.end(); it++) {
+        for(auto it = this->vertices.cbegin(); it != this->vertices.cend(); it++) {
                 assert((*it)->getEdge() != NULL);
                 assert((*it)->getEdge()->originVertex() == (*it));
                 assert((*it)->getEdge()->leftFace()->collideAt(*(*it)));
