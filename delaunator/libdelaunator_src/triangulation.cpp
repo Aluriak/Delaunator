@@ -410,7 +410,6 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
         assert(this->have(del_vrtx));
         assert(!del_vrtx->isACorner());
 #endif
-        bool modification = true; // false when no modification operate on triangulation
         // Creat some container
         std::vector<Face*> modified_faces(0); // modified faces that can break Delaunay condition
         std::vector<Edge*> nei_edge(0);
@@ -425,11 +424,13 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
         } while(edge != del_vrtx->getEdge());
 
 // SIMPLIFY LOCAL TRIANGULATION
-        // When we can't do something, it's when the del_vrtx is linked to tree points exactly.
+        // When we can't do something, it's when the del_vrtx is linked to three or four points exactly.
+        // The end of local simplification is when no modification is done.
         // At this time of the algo, Delaunay condition is breaked, and suppression of the point
-        // is easy. 
-        while(modification) {
-                modification = false; 
+        // is easy. (point will be in a triangle, or on an edge exactly)
+        unsigned int prev_size = 3;
+        while(prev_size != nei_vrtx.size()) {
+                prev_size = nei_vrtx.size();
                 // For each neighbour
                 for(unsigned int target = 0; target < nei_edge.size(); target++) {
                         // take tree consecutivs neighbors indexes
@@ -437,17 +438,16 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
                         unsigned int id2 = (target+1) % nei_dist.size();
                         unsigned int id3 = (target+2) % nei_dist.size();
                         // collision between del_vrtx and triangle formed by neighbors
-                        bool del_vrtx_in_triangle = geometry::pointInTriangle(
+                        bool del_vrtx_not_in_triangle = not geometry::pointInTriangle(
                                         *nei_vrtx[id1], *nei_vrtx[id2], *nei_vrtx[id3], *del_vrtx
                         );
                         // if middle point is farthest than at least one of the two others from del_vrtx
                         //      AND del_vrtx is not in triangle formed by the tree neighbors
-                        if((nei_dist[id2] >= nei_dist[id1] || nei_dist[id2] >= nei_dist[id3]) 
-                                        && !del_vrtx_in_triangle) {
+                        if(del_vrtx_not_in_triangle &&
+                                (nei_dist[id2] >= nei_dist[id1] || nei_dist[id2] >= nei_dist[id3])) {
                                 // these tree points will be a triangle !
                                 // so, operate flip on the middle edge
                                 this->operateFlip(nei_edge[id2]);
-                                modification  = true;
                                 // remove middle vertex (id2) from neighbors lists
                                 nei_edge.erase(nei_edge.begin() + id2);
                                 nei_dist.erase(nei_dist.begin() + id2);
@@ -466,46 +466,108 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
 #endif
         
 // DELETE POINT FROM TRIANGLE CONTAINER
-        // Container of del_vrtx is composed by the tree neighbors contains in nei_vrtx
-        // Delete del_vrtx is exactly the reverse of adding, after find the container.
-        Edge *edge1 = nei_edge.front();
-        Edge *edge2 = edge1->rotLeftEdge();
-        Edge *edge3 = edge2->rotLeftEdge();
-        // f2 and f3 will be deleted. f1 is the future Face of triangle
-        Face *f1 = edge1->leftFace(), *f2 = edge2->leftFace(), *f3 = edge3->leftFace();
-        // sides are the edge that are the sides of the final triangle of face f1
-        Edge *side1l = edge1->nextLeftEdge();
-        Edge *side2l = edge2->nextLeftEdge();
-        Edge *side3l = edge3->nextLeftEdge();
+        if(nei_vrtx.size() == 3) { // triangle
+                // Container of del_vrtx is composed by the three neighbors contains in nei_vrtx
+                // Delete del_vrtx is exactly the reverse of adding, after find the container.
+                Edge *edge1 = nei_edge.front();
+                Edge *edge2 = edge1->rotLeftEdge();
+                Edge *edge3 = edge2->rotLeftEdge();
+                // f2 and f3 will be deleted. f1 is the future Face of triangle
+                Face *f1 = edge1->leftFace(), *f2 = edge2->leftFace(), *f3 = edge3->leftFace();
+                // sides are the edge that are the sides of the final triangle of face f1
+                Edge *side1l = edge1->nextLeftEdge();
+                Edge *side2l = edge2->nextLeftEdge();
+                Edge *side3l = edge3->nextLeftEdge();
 #ifdef DEBUG
-        // Some tests
-        assert(nei_vrtx.size() == 3);
-        assert(edge3  != edge1  && edge1  != edge2  && edge2  != edge3 );
-        assert(side3l != side1l && side1l != side2l && side2l != side3l);
-        assert(f1 != f3 && f3 != f2 && f2 != f1);
-        this->DEBUG_tests();
+                assert(edge3  != edge1  && edge1  != edge2  && edge2  != edge3 );
+                assert(side3l != side1l && side1l != side2l && side2l != side3l);
+                assert(f1 != f3 && f3 != f2 && f2 != f1);
 #endif
-        // Origin Vertices must refers sides, no edge1, edge2 or edge3
-        side1l->originVertex()->setEdge(side1l);
-        side2l->originVertex()->setEdge(side2l);
-        side3l->originVertex()->setEdge(side3l);
-        // Set next left edge
-        side1l->setNextLeftEdge(side2l);
-        side2l->setNextLeftEdge(side3l);
-        side3l->setNextLeftEdge(side1l);
-        // Set face's Edge reference to a valide side, and reference it as a modified face
-        f1->setEdge(side1l);
-        modified_faces.push_back(f1);
-        // Delete unwanted faces, edges, and finally del_vrtx
-        this->removeEdgeFromEdges(edge1->oppositeEdge());
-        this->removeEdgeFromEdges(edge2->oppositeEdge());
-        this->removeEdgeFromEdges(edge3->oppositeEdge());
-        this->removeEdgeFromEdges(edge1);
-        this->removeEdgeFromEdges(edge2);
-        this->removeEdgeFromEdges(edge3);
-        this->removeFaceFromFaces(f2);
-        this->removeFaceFromFaces(f3);
-        this->removeVertexFromVertices(del_vrtx);
+                // Origin Vertices must refers sides, no edge1, edge2 or edge3
+                side1l->originVertex()->setEdge(side1l);
+                side2l->originVertex()->setEdge(side2l);
+                side3l->originVertex()->setEdge(side3l);
+                // Set next left edge
+                side1l->setNextLeftEdge(side2l);
+                side2l->setNextLeftEdge(side3l);
+                side3l->setNextLeftEdge(side1l);
+                // Set face's Edge reference to a valide side, and reference it as a modified face
+                f1->setEdge(side1l);
+                modified_faces.push_back(f1);
+                // Delete unwanted faces, edges, and finally del_vrtx
+                this->removeEdgeFromEdges(edge1->oppositeEdge());
+                this->removeEdgeFromEdges(edge2->oppositeEdge());
+                this->removeEdgeFromEdges(edge3->oppositeEdge());
+                this->removeEdgeFromEdges(edge1);
+                this->removeEdgeFromEdges(edge2);
+                this->removeEdgeFromEdges(edge3);
+                this->removeFaceFromFaces(f2);
+                this->removeFaceFromFaces(f3);
+                this->removeVertexFromVertices(del_vrtx);
+
+// DELETE POINT FROM SQUARE CONTAINER
+        } else if(nei_vrtx.size() == 4) { // in a square, aligned with two neighbors or more
+                // Two triangles contains del_vrtx; delete it will be a bit more complex.
+                // edge{1,2,3,4} leads to each Vertex of the square.
+                // There is 4 triangles, only two will remain.
+                // edge1 will be used for link vertices 2 and 4.
+                Edge *edge1 = nei_edge.front();
+                Edge *edge2 = edge1->rotLeftEdge();
+                Edge *edge3 = edge2->rotLeftEdge();
+                Edge *edge4 = edge3->rotLeftEdge();
+                // vertex that will be linked by edge1 and its opposite
+                Vertex* vertex2 = edge2->destinVertex();
+                Vertex* vertex4 = edge4->destinVertex();
+                // f2, f3 and f4 will be deleted. f1 and f2 are the future Faces of final triangles.
+                Face* face1 = edge1->leftFace();
+                Face* face2 = edge2->leftFace();
+                Face* face3 = edge3->leftFace();
+                Face* face4 = edge4->leftFace();
+                // sides are the edge that are the sides of the square of faces f1 and f2.
+                Edge *side1 = edge1->nextLeftEdge();
+                Edge *side2 = edge2->nextLeftEdge();
+                Edge *side3 = edge3->nextLeftEdge();
+                Edge *side4 = edge4->nextLeftEdge();
+#ifdef DEBUG
+                assert(edge1 != edge2 && edge1 != edge3 && edge1 != edge4);
+                assert(edge2 != edge3 && edge2 != edge4 && edge3 != edge4);
+                assert(side1 != side2 && side1 != side3 && side1 != side4);
+                assert(side2 != side3 && side2 != side4 && side3 != side4);
+                assert(face1 != face2 && face1 != face3 && face1 != face4);
+                assert(face2 != face3 && face2 != face4 && face3 != face4);
+#endif
+                // Origin Vertices must refers sides, no edge1, edge2 or edge3
+                side1->originVertex()->setEdge(side1);
+                side2->originVertex()->setEdge(side2);
+                side3->originVertex()->setEdge(side3);
+                side4->originVertex()->setEdge(side4);
+                // Set next left edge
+                // side1 -> edge1 -> side4 == one triangle
+                side1->setNextLeftEdge(edge1); 
+                edge1->setNextLeftEdge(side4); 
+                side4->setNextLeftEdge(side1); 
+                // side2 -> side3 -> edge1->oppositeEdge() == second trianglev
+                side2->setNextLeftEdge(side3); 
+                side3->setNextLeftEdge(edge1->oppositeEdge()); 
+                edge1->oppositeEdge()->setNextLeftEdge(side2);
+                // Set face's Edge reference to a valide side, and reference it as a modified face
+                face1->setEdge(side1);
+                face2->setEdge(side2);
+                modified_faces.push_back(face1); // only one face is enough
+                // Set vertices 2 and 4 edge as edge1 and its opposite.
+                edge1->setOriginVertex(vertex2);
+                edge1->oppositeEdge()->setOriginVertex(vertex4);
+                // Delete unwanted faces, edges, and finally del_vrtx
+                this->removeEdgeFromEdges(edge2->oppositeEdge());
+                this->removeEdgeFromEdges(edge3->oppositeEdge());
+                this->removeEdgeFromEdges(edge4->oppositeEdge());
+                this->removeEdgeFromEdges(edge2);
+                this->removeEdgeFromEdges(edge3);
+                this->removeEdgeFromEdges(edge4);
+                this->removeFaceFromFaces(face3);
+                this->removeFaceFromFaces(face4);
+                this->removeVertexFromVertices(del_vrtx);
+        }
 
 // RESTORE DELAUNAY CONDITION
         // Delaunay condition was break. It's time to restore it.
