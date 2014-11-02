@@ -27,11 +27,11 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [x] implement iterator on the N nearest neighbors of a vertex;
 - [x] implement iterator on the N nearest neighbors of a vertex that respect a predicat;   
 - [x] implement iterator on the neighbors that are away from a max distance;  
+- [x] optimize Vertex, Edge and Face containing;
 - [ ] manage groups of vertices that moves together; [Next goal]
 - [ ] support constraints; [Next goal]
 - [ ] built in collision management; [Next goal]
 - [ ] access in constant complexity to nearer neighbour; [PoC on a branch]
-- [ ] optimize Vertex, Edge and Face containing; [One day]
 - [ ] use threads; [One day]  
 - [ ] permit to user to choose preprocessor options by config files or other useful way;  [One day] 
 - [ ] improve API documentation; [One day]
@@ -99,6 +99,12 @@ API will be improved with time and ideas.
 
 
 ## CHANGE LOG
+- 1.0.3: 
+    - no more segfault when movements around corners with confounded VirtualVertices;
+    - algorithmic correction of VirtualVertex::nearerNeighbors() and remove useless parameter;
+    - improvement of data structures for Vertex, Edge and Face;
+    - correct const-correctness of iterators;
+    - add few words on the arch document (always available in doc/);
 - 1.0.2: 
     - clean setup.py;
     - update README prograde directions indications, and add a changelog;
