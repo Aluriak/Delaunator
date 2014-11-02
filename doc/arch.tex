@@ -73,8 +73,13 @@
         def __init__(self, name):
             super().__init__()
             self.name = str(name)
-        def __str__(self):
-            return self.name
+
+        def presentation(self, othr=None):
+            if othr is not None:
+                d = str(othr.distanceTo(self)) 
+                return self.name + " " + "("+d+")"
+            else:
+                return self.name
 
     # bounds
     xmin, xmax, ymin, ymax = 0, 600, 0, 600
@@ -82,24 +87,21 @@
     # creat delaunator and data
     dt = Delaunator(xmin, xmax, ymin, ymax)
     michel = Student('michel')
-    dt.addTrianguledObject(michel, 342, 123)
+    dt.addTrianguledObject(michel, (342, 123))
 
-    for i in range(100):
-        dt.addTrianguledObject(
-            randint(xmin, xmax), 
-            randint(ymin, ymax), 
-            Student('totoro')
-        )
+    for i in range(3):
+        dt.addTrianguledObject(Student('totoro'), (randint(xmin, xmax), randint(ymin, ymax)))
 
     # movement
-    dt.moveTrianguledObject(michel, randint(xmin, xmax) / 2, randint(ymin, ymax) / 2)
-    
+    dt.movTrianguledObject(michel, (randint(xmin, xmax) / 2, randint(ymin, ymax) / 2))
+
     # print name of all neighbors that are to a distance at most 100
-    print("My neighbors are " + ", ".join([str(_) for _ in michel.neighborsAt(100)]))
-    
+    print("My neighbors are " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(300)]))
+    print("The others are   " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(dt.distanceMax(), 300)]))
+    print("All are          " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(dt.distanceMax())]))
+
     # frees
     dt.delTrianguledObject(michel)
-    dt.delAllObjects()
     \end{lstlisting}
 
 
@@ -194,13 +196,43 @@ The main class of this level is \textbf{Trianguled Object}, and important code i
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-% CHAPTER 4             %
+% CHAPTER               %
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{API}
 \section{Delaunator object}
     \paragraph*{}
     the main object of API is Delaunator class. Each instance of Delaunator class describe an independant mesh.
     After definition, the only usecases of a delaunator instance is adding and deleting TrianguledObject.
+    \paragraph*{}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTER               %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Implementation details}
+
+\section{Data structure choices}
+\subsection{Vertices, Edges and Faces containers}
+    \paragraph*{In Triangulation}
+    \begin{enumerate}
+        \item[\textbf{planned}] STL forward list.
+        \item[\textbf{1.0.3 }] STL list, optimized for indels and iteration. Random access performed only 1 time when looking for a Vertex in the Mesh, iff VertexFinderMode is Random or Middle. (those are not the most efficients)
+        \item[\textbf{before}] STL vector, slower for deletion.
+    \end{enumerate}
+
+\subsection{Virtual Vertices}
+    \paragraph*{}
+
+
+\section{Limit cases}
+\subsection{Adding Vertex}
+    \paragraph*{}
+\subsection{Moving Vertex}
+    \paragraph*{}
+\subsection{Deleting Vertex}
+    \paragraph*{}
     \paragraph*{}
 
 
