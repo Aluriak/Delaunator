@@ -235,8 +235,8 @@ std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(const unsigned int nb_n
                 Edge* edge_ref = edge_cur;
                 do {
                         Vertex* nei = edge_cur->destinVertex();
-                        // if not already walked 
-                        if(not walked.count(nei)) {
+                        // if not already walked and not a corner
+                        if(not walked.count(nei) and not nei->isACorner()) {
                                 walked.insert(nei); // now its marked
                                 // we will walk this one later
                                 vertices.push(nei);
