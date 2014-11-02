@@ -598,22 +598,6 @@ Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
  * ACCESSORS
  ***************************************************/
 /**
- * Return index of a Vertex in Triangulation container.
- * @param v Vertex that will be found
- * @return an unsigned int that is the index of the Vertex for this Deulaunator, or equal to number of Vertice if not found
- */
-unsigned int Triangulation::getIndexOf(Vertex* v) const {
-        unsigned int index = this->vertices.size();
-        for(unsigned int i = this->vertices.size() - 1; i >= 0 
-                        && index == this->vertices.size(); i--) 
-                if(this->vertices[i] == v)
-                        index = i;
-        return index;
-}
-
-
-
-/**
  * @return VertexFinderMode value, that described method used by this instance.
  */
 VertexFinderMode Triangulation::getFinderMode() const { 
