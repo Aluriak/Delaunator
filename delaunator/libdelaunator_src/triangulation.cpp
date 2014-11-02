@@ -15,45 +15,54 @@
  * @see VertexFinderMode
  */
 Triangulation::Triangulation(const float xmin, const float xmax, 
-                       const float ymin, const float ymax, const VertexFinderMode finder_mode) : 
-                                xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax) {
+                             const float ymin, const float ymax, 
+                             const VertexFinderMode finder_mode) : 
+                                   xmin(xmin), xmax(xmax), 
+                                   ymin(ymin), ymax(ymax) {
+#ifdef DEBUG
+        assert(xmin < xmax);
+        assert(ymin < ymax);
+#endif
 // Initialize some values
         this->setFinderMode(finder_mode);
 // Creation of primitive mesh, with four points.
-        this->vertices.push_back(new Vertex(xmin-1, ymin-1)); // NORTH-WEST
-        this->vertices.push_back(new Vertex(xmax+1, ymin-1)); // NORTH-EAST
-        this->vertices.push_back(new Vertex(xmax+1, ymax+1)); // SOUTH-EAST
-        this->vertices.push_back(new Vertex(xmin-1, ymax+1)); // SOUTH-WEST
-        //std::cout << this->vertices[0]->x() << ";" << this->vertices[0]->y() << std::endl;
+        Vertex* vnw = new Vertex(xmin-1, ymin-1); // NORTH-WEST
+        Vertex* vne = new Vertex(xmax+1, ymin-1); // NORTH-EAST
+        Vertex* vse = new Vertex(xmax+1, ymax+1); // SOUTH-EAST
+        Vertex* vsw = new Vertex(xmin-1, ymax+1); // SOUTH-WEST
+        this->vertices.push_back(vnw); 
+        this->vertices.push_back(vne); 
+        this->vertices.push_back(vse); 
+        this->vertices.push_back(vsw); 
 
 // Creation of Edges that rely vertices.
-        this->edges.push_back(new Edge(this->vertices[0]));
-        this->edges.push_back(new Edge(this->vertices[0]));
-        this->edges.push_back(new Edge(this->vertices[0]));
-        Edge* eNW2NE = this->edges[0];
-        Edge* eNW2SE = this->edges[1];
-        Edge* eNW2SW = this->edges[2];
+        Edge* eNW2NE = new Edge(vnw) ;
+        Edge* eNW2SE = new Edge(vnw) ;
+        Edge* eNW2SW = new Edge(vnw) ;
+        this->edges.push_back(eNW2NE);
+        this->edges.push_back(eNW2SE);
+        this->edges.push_back(eNW2SW);
 
-        this->edges.push_back(new Edge(this->vertices[1]));
-        this->edges.push_back(new Edge(this->vertices[1]));
-        this->edges.push_back(new Edge(this->vertices[1]));
-        Edge* eNE2NW = this->edges[3];
-        Edge* eNE2SE = this->edges[4];
-        Edge* eNE2SW = this->edges[5];
+        Edge* eNE2NW = new Edge(vne) ;
+        Edge* eNE2SE = new Edge(vne) ;
+        Edge* eNE2SW = new Edge(vne) ;
+        this->edges.push_back(eNE2NW);
+        this->edges.push_back(eNE2SE);
+        this->edges.push_back(eNE2SW);
 
-        this->edges.push_back(new Edge(this->vertices[2]));
-        this->edges.push_back(new Edge(this->vertices[2]));
-        this->edges.push_back(new Edge(this->vertices[2]));
-        Edge* eSE2NW = this->edges[6];
-        Edge* eSE2NE = this->edges[7];
-        Edge* eSE2SW = this->edges[8];
+        Edge* eSE2NW = new Edge(vse) ;
+        Edge* eSE2NE = new Edge(vse) ;
+        Edge* eSE2SW = new Edge(vse) ;
+        this->edges.push_back(eSE2NW);
+        this->edges.push_back(eSE2NE);
+        this->edges.push_back(eSE2SW);
 
-        this->edges.push_back(new Edge(this->vertices[3]));
-        this->edges.push_back(new Edge(this->vertices[3]));
-        this->edges.push_back(new Edge(this->vertices[3]));
-        Edge* eSW2NW = this->edges[9];
-        Edge* eSW2NE = this->edges[10];
-        Edge* eSW2SE = this->edges[11];
+        Edge* eSW2NW = new Edge(vsw) ;
+        Edge* eSW2NE = new Edge(vsw) ;
+        Edge* eSW2SE = new Edge(vsw) ;
+        this->edges.push_back(eSW2NW);
+        this->edges.push_back(eSW2NE);
+        this->edges.push_back(eSW2SE);
 
         //non-visible edges: they passed "behind" the plan.
         eNW2SE->setVisibility(false);
@@ -99,9 +108,8 @@ Triangulation::Triangulation(const float xmin, const float xmax,
         eSW2SE->setNextLeftEdge(eSE2NE);
         eSW2SE->setOppositeEdge(eSE2SW);
 #ifdef DEBUG
-        assert(eSW2SE == this->edges[11]);
-        assert(eNW2NE == this->edges[0]);
         assert(eNW2NE->oppositeEdge() == eNE2NW);
+        assert(eSE2SW->oppositeEdge() == eSW2SE);
         geometry::unit_tests();
 #endif
 
@@ -112,10 +120,12 @@ Triangulation::Triangulation(const float xmin, const float xmax,
         this->faces.push_back(new Face(eNE2SE, false)); // extern face, describe outer world
 
 #ifdef DEBUG
-        assert(eSW2NE->leftFace() == this->faces[0]);
-        assert(eNE2SW->leftFace() == this->faces[1]);
-        assert(eSE2SW->leftFace() == this->faces[2]);
-        assert(eNE2SE->leftFace() == this->faces[3]);
+        assert(eSW2NE->leftFace() != eNE2SW->leftFace()); // faces must be all different
+        assert(eNE2SW->leftFace() != eSE2SW->leftFace()); // but all inequality are not tested
+        assert(eSE2SW->leftFace() != eNE2SE->leftFace()); // these assert will be silent
+        assert(eNE2SE->leftFace() != eSW2NE->leftFace()); // until a very big bug is detected
+        assert(eSW2NE->leftFace() != eSE2SW->leftFace());  
+        assert(eSW2NE->leftFace() != eNE2SE->leftFace());  
         this->DEBUG_tests();
 #endif
 }
