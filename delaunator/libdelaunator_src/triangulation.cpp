@@ -307,12 +307,6 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                                         *lmt_edge->destinVertex(),
                                         *mv_vrtx, new_position)) {
                         col_edge = lmt_edge;
-                        //logs("COLLISION: (%f;%f);", lmt_edge->originVertex()->x(), 
-                                                        //lmt_edge->originVertex()->y());
-                        //logs("(%f;%f) and ", lmt_edge->destinVertex()->x(),
-                                                        //lmt_edge->destinVertex()->y());
-                        //logs("(%f;%f);", mv_vrtx->x(), mv_vrtx->y());
-                        //logs("(%f;%f)\n", new_position.x(), new_position.y());
                 }
         } while(col_edge == NULL && cur_edge != mv_vrtx->getEdge());
 
@@ -404,6 +398,10 @@ Vertex* Triangulation::vertexAt(float x, float y, float precision) const {
  * @param del_vrtx targeted Vertex
  */
 void Triangulation::delVertex(Vertex* del_vrtx) {
+        // ALGORITHM:
+        // for all direct neighbour:
+        //      if the triangle formed by three consecutiv neighbors DOESN'T contain del_vrtx:
+        //              TODO
 // INIT
 #ifdef DEBUG
         assert(del_vrtx != NULL);
@@ -603,6 +601,20 @@ void Triangulation::mergeVertex(Vertex* v, Vertex* v_destroyed) {
 
 
 
+/**
+ * Correct Coordinates
+ * @param c Coordinates 
+ * @return Coordinates that are equal to c, or, if c is out of bounds, a projection of c on this.
+ */
+Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
+        if(c.x() < this->xmin)  c.setX(this->xmin);
+        if(c.x() > this->xmax)  c.setX(this->xmax);
+        if(c.y() < this->ymin)  c.setY(this->ymin);
+        if(c.y() > this->ymax)  c.setY(this->ymax);
+        return c;
+}
+
+
 
 
 
@@ -637,20 +649,6 @@ void Triangulation::DEBUG_tests() const {
 
 
 
-
-
-/**
- * Correct Coordinates
- * @param c Coordinates 
- * @return Coordinates that are equal to c, or, if c is out of bounds, a projection of c on this.
- */
-Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
-        if(c.x() < this->xmin)  c.setX(this->xmin);
-        if(c.x() > this->xmax)  c.setX(this->xmax);
-        if(c.y() < this->ymin)  c.setY(this->ymin);
-        if(c.y() > this->ymax)  c.setY(this->ymax);
-        return c;
-}
 
 
 
