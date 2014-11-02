@@ -15,45 +15,54 @@
  * @see VertexFinderMode
  */
 Triangulation::Triangulation(const float xmin, const float xmax, 
-                       const float ymin, const float ymax, const VertexFinderMode finder_mode) : 
-                                xmin(xmin), xmax(xmax), ymin(ymin), ymax(ymax) {
+                             const float ymin, const float ymax, 
+                             const VertexFinderMode finder_mode) : 
+                                   xmin(xmin), xmax(xmax), 
+                                   ymin(ymin), ymax(ymax) {
+#ifdef DEBUG
+        assert(xmin < xmax);
+        assert(ymin < ymax);
+#endif
 // Initialize some values
         this->setFinderMode(finder_mode);
 // Creation of primitive mesh, with four points.
-        this->vertices.push_back(new Vertex(xmin-1, ymin-1)); // NORTH-WEST
-        this->vertices.push_back(new Vertex(xmax+1, ymin-1)); // NORTH-EAST
-        this->vertices.push_back(new Vertex(xmax+1, ymax+1)); // SOUTH-EAST
-        this->vertices.push_back(new Vertex(xmin-1, ymax+1)); // SOUTH-WEST
-        //std::cout << this->vertices[0]->x() << ";" << this->vertices[0]->y() << std::endl;
+        Vertex* vnw = new Vertex(xmin-1, ymin-1); // NORTH-WEST
+        Vertex* vne = new Vertex(xmax+1, ymin-1); // NORTH-EAST
+        Vertex* vse = new Vertex(xmax+1, ymax+1); // SOUTH-EAST
+        Vertex* vsw = new Vertex(xmin-1, ymax+1); // SOUTH-WEST
+        this->vertices.push_back(vnw); 
+        this->vertices.push_back(vne); 
+        this->vertices.push_back(vse); 
+        this->vertices.push_back(vsw); 
 
 // Creation of Edges that rely vertices.
-        this->edges.push_back(new Edge(this->vertices[0]));
-        this->edges.push_back(new Edge(this->vertices[0]));
-        this->edges.push_back(new Edge(this->vertices[0]));
-        Edge* eNW2NE = this->edges[0];
-        Edge* eNW2SE = this->edges[1];
-        Edge* eNW2SW = this->edges[2];
+        Edge* eNW2NE = new Edge(vnw) ;
+        Edge* eNW2SE = new Edge(vnw) ;
+        Edge* eNW2SW = new Edge(vnw) ;
+        this->edges.push_back(eNW2NE);
+        this->edges.push_back(eNW2SE);
+        this->edges.push_back(eNW2SW);
 
-        this->edges.push_back(new Edge(this->vertices[1]));
-        this->edges.push_back(new Edge(this->vertices[1]));
-        this->edges.push_back(new Edge(this->vertices[1]));
-        Edge* eNE2NW = this->edges[3];
-        Edge* eNE2SE = this->edges[4];
-        Edge* eNE2SW = this->edges[5];
+        Edge* eNE2NW = new Edge(vne) ;
+        Edge* eNE2SE = new Edge(vne) ;
+        Edge* eNE2SW = new Edge(vne) ;
+        this->edges.push_back(eNE2NW);
+        this->edges.push_back(eNE2SE);
+        this->edges.push_back(eNE2SW);
 
-        this->edges.push_back(new Edge(this->vertices[2]));
-        this->edges.push_back(new Edge(this->vertices[2]));
-        this->edges.push_back(new Edge(this->vertices[2]));
-        Edge* eSE2NW = this->edges[6];
-        Edge* eSE2NE = this->edges[7];
-        Edge* eSE2SW = this->edges[8];
+        Edge* eSE2NW = new Edge(vse) ;
+        Edge* eSE2NE = new Edge(vse) ;
+        Edge* eSE2SW = new Edge(vse) ;
+        this->edges.push_back(eSE2NW);
+        this->edges.push_back(eSE2NE);
+        this->edges.push_back(eSE2SW);
 
-        this->edges.push_back(new Edge(this->vertices[3]));
-        this->edges.push_back(new Edge(this->vertices[3]));
-        this->edges.push_back(new Edge(this->vertices[3]));
-        Edge* eSW2NW = this->edges[9];
-        Edge* eSW2NE = this->edges[10];
-        Edge* eSW2SE = this->edges[11];
+        Edge* eSW2NW = new Edge(vsw) ;
+        Edge* eSW2NE = new Edge(vsw) ;
+        Edge* eSW2SE = new Edge(vsw) ;
+        this->edges.push_back(eSW2NW);
+        this->edges.push_back(eSW2NE);
+        this->edges.push_back(eSW2SE);
 
         //non-visible edges: they passed "behind" the plan.
         eNW2SE->setVisibility(false);
@@ -99,9 +108,8 @@ Triangulation::Triangulation(const float xmin, const float xmax,
         eSW2SE->setNextLeftEdge(eSE2NE);
         eSW2SE->setOppositeEdge(eSE2SW);
 #ifdef DEBUG
-        assert(eSW2SE == this->edges[11]);
-        assert(eNW2NE == this->edges[0]);
         assert(eNW2NE->oppositeEdge() == eNE2NW);
+        assert(eSE2SW->oppositeEdge() == eSW2SE);
         geometry::unit_tests();
 #endif
 
@@ -112,10 +120,12 @@ Triangulation::Triangulation(const float xmin, const float xmax,
         this->faces.push_back(new Face(eNE2SE, false)); // extern face, describe outer world
 
 #ifdef DEBUG
-        assert(eSW2NE->leftFace() == this->faces[0]);
-        assert(eNE2SW->leftFace() == this->faces[1]);
-        assert(eSE2SW->leftFace() == this->faces[2]);
-        assert(eNE2SE->leftFace() == this->faces[3]);
+        assert(eSW2NE->leftFace() != eNE2SW->leftFace()); // faces must be all different
+        assert(eNE2SW->leftFace() != eSE2SW->leftFace()); // but all inequality are not tested
+        assert(eSE2SW->leftFace() != eNE2SE->leftFace()); // these assert will be silent
+        assert(eNE2SE->leftFace() != eSW2NE->leftFace()); // until a very big bug is detected
+        assert(eSW2NE->leftFace() != eSE2SW->leftFace());  
+        assert(eSW2NE->leftFace() != eNE2SE->leftFace());  
         this->DEBUG_tests();
 #endif
 }
@@ -150,12 +160,14 @@ Triangulation::~Triangulation() {
  * Add a new vertex to Mesh at given coordinates.
  * @param p Coordinates where Vertex will be add
  * @param first initial Edge use by finder, in place of the one taked according to FinderMode
- * @return address of that point in Mesh, or NULL if not found or out of bounds.
+ * @return address of that point in Mesh, or NULL if not found.
+ * @note if out of bounds, a correction is applied.
  */
 Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
 // initialization
         Face* container = NULL; // container of p
         Vertex* new_vertex = NULL; // returned vertex
+        p = this->coordinateCorrection(p);
         if(this->collideAt(p)) {
 
 // find container of vertex ( container>, >p )
@@ -280,10 +292,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         if((*mv_vrtx) != new_position) {
 // LIMIT MOVE
         //logs("LIMIT MOVE\n");
-        if(new_position.x() < this->xmin)  new_position.setX(this->xmin);
-        if(new_position.x() > this->xmax)  new_position.setX(this->xmax);
-        if(new_position.y() < this->ymin)  new_position.setY(this->ymin);
-        if(new_position.y() > this->ymax)  new_position.setY(this->ymax);
+        new_position = this->coordinateCorrection(new_position);
 
 // FIND COLLISION WITH A LIMITER EDGES 
         //logs("FIND COLLISION WITH A LIMITER EDGES\n");
@@ -298,12 +307,6 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                                         *lmt_edge->destinVertex(),
                                         *mv_vrtx, new_position)) {
                         col_edge = lmt_edge;
-                        //logs("COLLISION: (%f;%f);", lmt_edge->originVertex()->x(), 
-                                                        //lmt_edge->originVertex()->y());
-                        //logs("(%f;%f) and ", lmt_edge->destinVertex()->x(),
-                                                        //lmt_edge->destinVertex()->y());
-                        //logs("(%f;%f);", mv_vrtx->x(), mv_vrtx->y());
-                        //logs("(%f;%f)\n", new_position.x(), new_position.y());
                 }
         } while(col_edge == NULL && cur_edge != mv_vrtx->getEdge());
 
@@ -319,7 +322,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         }
 
 // MOVE MV_VRTX TO NEW LOCATION
-        //logs("MOVE MV_VRTX TO NEW LOCATION\n");
+        //logs("MOVE MV_VRTX TO NEW LOCATION\n");
         if(col_edge == NULL) {
                 // next step is the end
                 this->moveVertex_pure(mv_vrtx, new_position);
@@ -327,6 +330,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         } else if(*col_edge->originVertex() == new_position) { // if target place is already habited
 #ifdef DEBUG
                 assert(mv_vrtx != col_edge->originVertex());
+                assert(not col_edge->originVertex()->isACorner());
 #endif
                 // give all to this existant Vertex
                 mv_vrtx->giveVirtualVerticesTo(col_edge->originVertex());
@@ -394,13 +398,16 @@ Vertex* Triangulation::vertexAt(float x, float y, float precision) const {
  * @param del_vrtx targeted Vertex
  */
 void Triangulation::delVertex(Vertex* del_vrtx) {
+        // ALGORITHM:
+        // for all direct neighbour:
+        //      if the triangle formed by three consecutiv neighbors DOESN'T contain del_vrtx:
+        //              TODO
 // INIT
 #ifdef DEBUG
         assert(del_vrtx != NULL);
-        assert(this->haveVertex(del_vrtx));
+        assert(this->have(del_vrtx));
         assert(!del_vrtx->isACorner());
 #endif
-        bool modification = true; // false when no modification operate on triangulation
         // Creat some container
         std::vector<Face*> modified_faces(0); // modified faces that can break Delaunay condition
         std::vector<Edge*> nei_edge(0);
@@ -415,11 +422,13 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
         } while(edge != del_vrtx->getEdge());
 
 // SIMPLIFY LOCAL TRIANGULATION
-        // When we can't do something, it's when the del_vrtx is linked to tree points exactly.
+        // When we can't do something, it's when the del_vrtx is linked to three or four points exactly.
+        // The end of local simplification is when no modification is done.
         // At this time of the algo, Delaunay condition is breaked, and suppression of the point
-        // is easy. 
-        while(modification) {
-                modification = false; 
+        // is easy. (point will be in a triangle, or on an edge exactly)
+        unsigned int prev_size = 3;
+        while(prev_size != nei_vrtx.size()) {
+                prev_size = nei_vrtx.size();
                 // For each neighbour
                 for(unsigned int target = 0; target < nei_edge.size(); target++) {
                         // take tree consecutivs neighbors indexes
@@ -427,17 +436,16 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
                         unsigned int id2 = (target+1) % nei_dist.size();
                         unsigned int id3 = (target+2) % nei_dist.size();
                         // collision between del_vrtx and triangle formed by neighbors
-                        bool del_vrtx_in_triangle = geometry::pointInTriangle(
+                        bool del_vrtx_not_in_triangle = not geometry::pointInTriangle(
                                         *nei_vrtx[id1], *nei_vrtx[id2], *nei_vrtx[id3], *del_vrtx
                         );
                         // if middle point is farthest than at least one of the two others from del_vrtx
                         //      AND del_vrtx is not in triangle formed by the tree neighbors
-                        if((nei_dist[id2] >= nei_dist[id1] || nei_dist[id2] >= nei_dist[id3]) 
-                                        && !del_vrtx_in_triangle) {
+                        if(del_vrtx_not_in_triangle &&
+                                (nei_dist[id2] >= nei_dist[id1] || nei_dist[id2] >= nei_dist[id3])) {
                                 // these tree points will be a triangle !
                                 // so, operate flip on the middle edge
                                 this->operateFlip(nei_edge[id2]);
-                                modification  = true;
                                 // remove middle vertex (id2) from neighbors lists
                                 nei_edge.erase(nei_edge.begin() + id2);
                                 nei_dist.erase(nei_dist.begin() + id2);
@@ -447,48 +455,117 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
                         }
                 }
         }
+        //logs("\nNeighbors reduced to %i\n", nei_vrtx.size());
+#ifdef DEBUG
+                // Some tests
+                // del_vrtx is in a triangle or in a square and aligned with at least two neighbors
+                assert(nei_vrtx.size() == 4 || nei_vrtx.size() == 3);
+                this->DEBUG_tests();
+#endif
         
 // DELETE POINT FROM TRIANGLE CONTAINER
-        // Container of del_vrtx is composed by the tree neighbors contains in nei_vrtx
-        // Delete del_vrtx is exactly the reverse of adding, after find the container.
-        Edge *edge1 = nei_edge.front();
-        Edge *edge2 = edge1->rotLeftEdge();
-        Edge *edge3 = edge2->rotLeftEdge();
-        // f2 and f3 will be deleted. f1 is the future Face of triangle
-        Face *f1 = edge1->leftFace(), *f2 = edge2->leftFace(), *f3 = edge3->leftFace();
-        // sides are the edge that are the sides of the final triangle of face f1
-        Edge *side1l = edge1->nextLeftEdge();
-        Edge *side2l = edge2->nextLeftEdge();
-        Edge *side3l = edge3->nextLeftEdge();
+        if(nei_vrtx.size() == 3) { // triangle
+                // Container of del_vrtx is composed by the three neighbors contains in nei_vrtx
+                // Delete del_vrtx is exactly the reverse of adding, after find the container.
+                Edge *edge1 = nei_edge.front();
+                Edge *edge2 = edge1->rotLeftEdge();
+                Edge *edge3 = edge2->rotLeftEdge();
+                // f2 and f3 will be deleted. f1 is the future Face of triangle
+                Face *f1 = edge1->leftFace(), *f2 = edge2->leftFace(), *f3 = edge3->leftFace();
+                // sides are the edge that are the sides of the final triangle of face f1
+                Edge *side1l = edge1->nextLeftEdge();
+                Edge *side2l = edge2->nextLeftEdge();
+                Edge *side3l = edge3->nextLeftEdge();
 #ifdef DEBUG
-        // Some tests
-        assert(nei_vrtx.size() == 3);
-        assert(edge3  != edge1  && edge1  != edge2  && edge2  != edge3 );
-        assert(side3l != side1l && side1l != side2l && side2l != side3l);
-        assert(f1 != f3 && f3 != f2 && f2 != f1);
-        this->DEBUG_tests();
+                assert(edge3  != edge1  && edge1  != edge2  && edge2  != edge3 );
+                assert(side3l != side1l && side1l != side2l && side2l != side3l);
+                assert(f1 != f3 && f3 != f2 && f2 != f1);
 #endif
-        // Origin Vertices must refers sides, no edge1, edge2 or edge3
-        side1l->originVertex()->setEdge(side1l);
-        side2l->originVertex()->setEdge(side2l);
-        side3l->originVertex()->setEdge(side3l);
-        // Set next left edge
-        side1l->setNextLeftEdge(side2l);
-        side2l->setNextLeftEdge(side3l);
-        side3l->setNextLeftEdge(side1l);
-        // Set face's Edge reference to a valide side, and reference it as a modified face
-        f1->setEdge(side1l);
-        modified_faces.push_back(f1);
-        // Delete unwanted faces, edges, and finally del_vrtx
-        this->removeEdgeFromEdges(edge1->oppositeEdge());
-        this->removeEdgeFromEdges(edge2->oppositeEdge());
-        this->removeEdgeFromEdges(edge3->oppositeEdge());
-        this->removeEdgeFromEdges(edge1);
-        this->removeEdgeFromEdges(edge2);
-        this->removeEdgeFromEdges(edge3);
-        this->removeFaceFromFaces(f2);
-        this->removeFaceFromFaces(f3);
-        this->removeVertexFromVertices(del_vrtx);
+                // Origin Vertices must refers sides, no edge1, edge2 or edge3
+                side1l->originVertex()->setEdge(side1l);
+                side2l->originVertex()->setEdge(side2l);
+                side3l->originVertex()->setEdge(side3l);
+                // Set next left edge
+                side1l->setNextLeftEdge(side2l);
+                side2l->setNextLeftEdge(side3l);
+                side3l->setNextLeftEdge(side1l);
+                // Set face's Edge reference to a valide side, and reference it as a modified face
+                f1->setEdge(side1l);
+                modified_faces.push_back(f1);
+                // Delete unwanted faces, edges, and finally del_vrtx
+                this->removeEdgeFromEdges(edge1->oppositeEdge());
+                this->removeEdgeFromEdges(edge2->oppositeEdge());
+                this->removeEdgeFromEdges(edge3->oppositeEdge());
+                this->removeEdgeFromEdges(edge1);
+                this->removeEdgeFromEdges(edge2);
+                this->removeEdgeFromEdges(edge3);
+                this->removeFaceFromFaces(f2);
+                this->removeFaceFromFaces(f3);
+                this->removeVertexFromVertices(del_vrtx);
+
+// DELETE POINT FROM SQUARE CONTAINER
+        } else if(nei_vrtx.size() == 4) { // in a square, aligned with two neighbors or more
+                // Two triangles contains del_vrtx; delete it will be a bit more complex.
+                // edge{1,2,3,4} leads to each Vertex of the square.
+                // There is 4 triangles, only two will remain.
+                // edge1 will be used for link vertices 2 and 4.
+                Edge *edge1 = nei_edge.front();
+                Edge *edge2 = edge1->rotLeftEdge();
+                Edge *edge3 = edge2->rotLeftEdge();
+                Edge *edge4 = edge3->rotLeftEdge();
+                // vertex that will be linked by edge1 and its opposite
+                Vertex* vertex2 = edge2->destinVertex();
+                Vertex* vertex4 = edge4->destinVertex();
+                // f2, f3 and f4 will be deleted. f1 and f2 are the future Faces of final triangles.
+                Face* face1 = edge1->leftFace();
+                Face* face2 = edge2->leftFace();
+                Face* face3 = edge3->leftFace();
+                Face* face4 = edge4->leftFace();
+                // sides are the edge that are the sides of the square of faces f1 and f2.
+                Edge *side1 = edge1->nextLeftEdge();
+                Edge *side2 = edge2->nextLeftEdge();
+                Edge *side3 = edge3->nextLeftEdge();
+                Edge *side4 = edge4->nextLeftEdge();
+#ifdef DEBUG
+                assert(edge1 != edge2 && edge1 != edge3 && edge1 != edge4);
+                assert(edge2 != edge3 && edge2 != edge4 && edge3 != edge4);
+                assert(side1 != side2 && side1 != side3 && side1 != side4);
+                assert(side2 != side3 && side2 != side4 && side3 != side4);
+                assert(face1 != face2 && face1 != face3 && face1 != face4);
+                assert(face2 != face3 && face2 != face4 && face3 != face4);
+#endif
+                // Origin Vertices must refers sides, no edge1, edge2 or edge3
+                side1->originVertex()->setEdge(side1);
+                side2->originVertex()->setEdge(side2);
+                side3->originVertex()->setEdge(side3);
+                side4->originVertex()->setEdge(side4);
+                // Set next left edge
+                // side1 -> edge1 -> side4 == one triangle
+                side1->setNextLeftEdge(edge1); 
+                edge1->setNextLeftEdge(side4); 
+                side4->setNextLeftEdge(side1); 
+                // side2 -> side3 -> edge1->oppositeEdge() == second trianglev
+                side2->setNextLeftEdge(side3); 
+                side3->setNextLeftEdge(edge1->oppositeEdge()); 
+                edge1->oppositeEdge()->setNextLeftEdge(side2);
+                // Set face's Edge reference to a valide side, and reference it as a modified face
+                face1->setEdge(side1);
+                face2->setEdge(side2);
+                modified_faces.push_back(face1); // only one face is enough
+                // Set vertices 2 and 4 edge as edge1 and its opposite.
+                edge1->setOriginVertex(vertex2);
+                edge1->oppositeEdge()->setOriginVertex(vertex4);
+                // Delete unwanted faces, edges, and finally del_vrtx
+                this->removeEdgeFromEdges(edge2->oppositeEdge());
+                this->removeEdgeFromEdges(edge3->oppositeEdge());
+                this->removeEdgeFromEdges(edge4->oppositeEdge());
+                this->removeEdgeFromEdges(edge2);
+                this->removeEdgeFromEdges(edge3);
+                this->removeEdgeFromEdges(edge4);
+                this->removeFaceFromFaces(face3);
+                this->removeFaceFromFaces(face4);
+                this->removeVertexFromVertices(del_vrtx);
+        }
 
 // RESTORE DELAUNAY CONDITION
         // Delaunay condition was break. It's time to restore it.
@@ -524,6 +601,20 @@ void Triangulation::mergeVertex(Vertex* v, Vertex* v_destroyed) {
 
 
 
+/**
+ * Correct Coordinates
+ * @param c Coordinates 
+ * @return Coordinates that are equal to c, or, if c is out of bounds, a projection of c on this.
+ */
+Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
+        if(c.x() < this->xmin)  c.setX(this->xmin);
+        if(c.x() > this->xmax)  c.setX(this->xmax);
+        if(c.y() < this->ymin)  c.setY(this->ymin);
+        if(c.y() > this->ymax)  c.setY(this->ymax);
+        return c;
+}
+
+
 
 
 
@@ -532,7 +623,7 @@ void Triangulation::mergeVertex(Vertex* v, Vertex* v_destroyed) {
  * DEBUG TESTS.
  */
 void Triangulation::DEBUG_tests() const {
-        for(IteratorOnAllEdges_read it = this->iterAllEdges_read(); it != it.end(); it++) {
+        for(auto it = this->edges.cbegin(); it != this->edges.cend(); it++) {
                 assert((*it)->originVertex() != NULL);
                 assert((*it)->oppositeEdge() != NULL);
                 assert((*it)->leftFace() != NULL);
@@ -544,10 +635,10 @@ void Triangulation::DEBUG_tests() const {
                         assert((*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == (*it));
                 }
         }
-        for(IteratorOnAllFaces_read it = this->iterAllFaces_read(); it != it.end(); it++) {
+        for(auto it = this->faces.cbegin(); it != this->faces.cend(); it++) {
                 assert((*it)->getEdge() != NULL);
         }
-        for(IteratorOnAllVertices_read it = this->iterAllVertices_read(); it != it.end(); it++) {
+        for(auto it = this->vertices.cbegin(); it != this->vertices.cend(); it++) {
                 assert((*it)->getEdge() != NULL);
                 assert((*it)->getEdge()->originVertex() == (*it));
                 assert((*it)->getEdge()->leftFace()->collideAt(*(*it)));
@@ -566,22 +657,6 @@ void Triangulation::DEBUG_tests() const {
 /***************************************************
  * ACCESSORS
  ***************************************************/
-/**
- * Return index of a Vertex in Triangulation container.
- * @param v Vertex that will be found
- * @return an unsigned int that is the index of the Vertex for this Deulaunator, or equal to number of Vertice if not found
- */
-unsigned int Triangulation::getIndexOf(Vertex* v) const {
-        unsigned int index = this->vertices.size();
-        for(unsigned int i = this->vertices.size() - 1; i >= 0 
-                        && index == this->vertices.size(); i--) 
-                if(this->vertices[i] == v)
-                        index = i;
-        return index;
-}
-
-
-
 /**
  * @return VertexFinderMode value, that described method used by this instance.
  */
@@ -631,11 +706,8 @@ void Triangulation::setFinderMode(VertexFinderMode m) {
  * @param v tested Vertex 
  * @return true iff tested Vertex is referenced by triangulation
  */
-bool Triangulation::haveVertex(Vertex* v) const {
-        bool have = false;
-        for(unsigned int i = this->vertices.size() - 1; i >= 0 && not have; i--) 
-                have = (this->vertices[i] == v);
-        return have;
+bool Triangulation::have(Vertex* v) const {
+        return std::find(this->vertices.begin(), this->vertices.end(), v) != this->vertices.end();
 }
 
 

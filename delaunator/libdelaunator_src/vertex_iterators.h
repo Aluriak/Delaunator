@@ -36,9 +36,13 @@
 class IteratorOnVertices {
 	public:
 	// CONSTRUCTOR
-		IteratorOnVertices(std::vector<Vertex*>* v) : vertices(v) {
+		IteratorOnVertices(std::list<Vertex*>* v) : vertices(v) {
                         // ignore the vertices that are not asked by user
-                        this->it = this->vertices->begin()+4;
+                        this->it = this->vertices->begin();
+                        this->it++;
+                        this->it++;
+                        this->it++;
+                        this->it++;
                 }
 	// PUBLIC METHODS
                 IteratorOnVertices& next() { 
@@ -49,7 +53,7 @@ class IteratorOnVertices {
                 bool operator!=(const IteratorOnVertices& othr) const { 
                         return this->it != othr.it;
                 }
-                bool operator!=(const std::vector<Vertex*>::iterator& ot) const{ 
+                bool operator!=(const std::list<Vertex*>::iterator& ot) const{ 
                         return this->it != ot;
                 }
                 IteratorOnVertices& operator++(int) { return this->next(); }
@@ -57,21 +61,25 @@ class IteratorOnVertices {
                         return *(this->it);
                 }
 	// ACCESSORS
-                std::vector<Vertex*>::iterator begin()  const { return this->vertices->begin(); }
-                std::vector<Vertex*>::iterator end()    const { return this->vertices->end(); }
-                std::vector<Vertex*>* getVertices()     const { return this->vertices; }
+                std::list<Vertex*>::iterator begin()  const { return this->vertices->begin(); }
+                std::list<Vertex*>::iterator end()    const { return this->vertices->end(); }
+                std::list<Vertex*>* getVertices()     const { return this->vertices; }
         protected:
 	// ATTRIBUTES
-                std::vector<Vertex*>* vertices;
-                std::vector<Vertex*>::const_iterator it;
+                std::list<Vertex*>* vertices;
+                std::list<Vertex*>::const_iterator it;
 	// PRIVATE METHODS
 };
 class IteratorOnVertices_read {
 	public:
 	// CONSTRUCTOR
-		IteratorOnVertices_read(const std::vector<Vertex*>* const v) : vertices(v) {
+		IteratorOnVertices_read(const std::list<Vertex*>* const v) : vertices(v) {
                         // ignore the vertices that are not asked by user
-                        this->it = this->vertices->begin()+4;
+                        this->it = this->vertices->cbegin();
+                        this->it++;
+                        this->it++;
+                        this->it++;
+                        this->it++;
                 }
 	// PUBLIC METHODS
                 IteratorOnVertices_read& next() { 
@@ -82,7 +90,7 @@ class IteratorOnVertices_read {
                 bool operator!=(const IteratorOnVertices_read& othr) const { 
                         return this->it != othr.it;
                 }
-                bool operator!=(const std::vector<Vertex*>::const_iterator& ot) const { 
+                bool operator!=(const std::list<Vertex*>::const_iterator& ot) const { 
                         return this->it != ot;
                 }
                 IteratorOnVertices_read& operator++(int) { return this->next(); }
@@ -90,13 +98,13 @@ class IteratorOnVertices_read {
                         return *(this->it);
                 }
 	// ACCESSORS
-                std::vector<Vertex*>::const_iterator begin()  const { return this->vertices->begin(); }
-                std::vector<Vertex*>::const_iterator end()    const { return this->vertices->end(); }
-                const std::vector<Vertex*>* const getVertices()     const { return this->vertices; }
+                std::list<Vertex*>::const_iterator begin()  const { return this->vertices->cbegin(); }
+                std::list<Vertex*>::const_iterator end()    const { return this->vertices->cend(); }
+                const std::list<Vertex*>* const getVertices()     const { return this->vertices; }
         protected:
 	// ATTRIBUTES
-                const std::vector<Vertex*>* const vertices;
-                std::vector<Vertex*>::const_iterator it;
+                const std::list<Vertex*>* const vertices;
+                std::list<Vertex*>::const_iterator it;
 	// PRIVATE METHODS
 };
 
@@ -113,7 +121,7 @@ class IteratorOnVertices_read {
 class IteratorOnAllVertices {
 	public:
 	// CONSTRUCTOR
-		IteratorOnAllVertices(std::vector<Vertex*>* v) : vertices(v) {
+		IteratorOnAllVertices(std::list<Vertex*>* v) : vertices(v) {
                         this->it = this->vertices->begin();
                 }
 	// PUBLIC METHODS
@@ -125,7 +133,7 @@ class IteratorOnAllVertices {
                 bool operator!=(const IteratorOnAllVertices& othr) const { 
                         return this->it != othr.it;
                 }
-                bool operator!=(const std::vector<Vertex*>::iterator& ot) const{ 
+                bool operator!=(const std::list<Vertex*>::iterator& ot) const{ 
                         return this->it != ot;
                 }
                 IteratorOnAllVertices& operator++(int) { return this->next(); }
@@ -133,20 +141,20 @@ class IteratorOnAllVertices {
                         return *(this->it);
                 }
 	// ACCESSORS
-                std::vector<Vertex*>::iterator begin()  const { return this->vertices->begin(); }
-                std::vector<Vertex*>::iterator end()    const { return this->vertices->end(); }
-                std::vector<Vertex*>* getVertices()     const { return this->vertices; }
+                std::list<Vertex*>::iterator begin()  const { return this->vertices->begin(); }
+                std::list<Vertex*>::iterator end()    const { return this->vertices->end(); }
+                std::list<Vertex*>* getVertices()     const { return this->vertices; }
         protected:
 	// ATTRIBUTES
-                std::vector<Vertex*>* vertices;
-                std::vector<Vertex*>::const_iterator it;
+                std::list<Vertex*>* vertices;
+                std::list<Vertex*>::const_iterator it;
 	// PRIVATE METHODS
 };
 class IteratorOnAllVertices_read {
 	public:
 	// CONSTRUCTOR
-		IteratorOnAllVertices_read(const std::vector<Vertex*>* const v) : vertices(v) {
-                        this->it = this->vertices->begin();
+		IteratorOnAllVertices_read(const std::list<Vertex*>* const v) : vertices(v) {
+                        this->it = this->vertices->cbegin();
                 }
 	// PUBLIC METHODS
                 IteratorOnAllVertices_read& next() { 
@@ -157,7 +165,7 @@ class IteratorOnAllVertices_read {
                 bool operator!=(const IteratorOnAllVertices_read& othr) const { 
                         return this->it != othr.it;
                 }
-                bool operator!=(const std::vector<Vertex*>::const_iterator& ot) const { 
+                bool operator!=(const std::list<Vertex*>::const_iterator& ot) const { 
                         return this->it != ot;
                 }
                 IteratorOnAllVertices_read& operator++(int) { return this->next(); }
@@ -165,13 +173,13 @@ class IteratorOnAllVertices_read {
                         return *(this->it);
                 }
 	// ACCESSORS
-                std::vector<Vertex*>::const_iterator begin()  const { return this->vertices->begin(); }
-                std::vector<Vertex*>::const_iterator end()    const { return this->vertices->end(); }
-                const std::vector<Vertex*>* const getVertices()     const { return this->vertices; }
+                std::list<Vertex*>::const_iterator begin()  const { return this->vertices->begin(); }
+                std::list<Vertex*>::const_iterator end()    const { return this->vertices->end(); }
+                const std::list<Vertex*>* const getVertices()     const { return this->vertices; }
         protected:
 	// ATTRIBUTES
-                const std::vector<Vertex*>* const vertices;
-                std::vector<Vertex*>::const_iterator it;
+                const std::list<Vertex*>* const vertices;
+                std::list<Vertex*>::const_iterator it;
 	// PRIVATE METHODS
 };
 

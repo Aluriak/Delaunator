@@ -181,6 +181,8 @@ std::list<VirtualVertex*> VirtualVertex::neighborsAt(const float distance_max, c
 
 // ENDING
         walked.clear();
+        // remove this from returned list: don't work because call the destructor on this…
+        //find_nei.erase(std::find(find_nei.begin(), find_nei.end(), this));
 #ifdef DEBUG
         // verification: distance to this must grow bigger
         // because list is sorted
@@ -198,12 +200,11 @@ std::list<VirtualVertex*> VirtualVertex::neighborsAt(const float distance_max, c
 
 /**
  * @param nb_nei the number of neighbors
- * @param confounded false by default. If true, confounded neighbors count for only one.
  * @return list of VirtualVertex that are the closer of this. List size is equal to nb_nei at the most.
  * @note VirtualVertex are returned in distance increasing order. (nearer first)
- * @note confounded VirtualVertex are not sorted in any particular order
+ * @note VirtualVertex at the same distance are not sorted in any particular order
  */
-std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(const unsigned int nb_nei, bool confounded) const {
+std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(const unsigned int nb_nei) const {
         std::list<VirtualVertex*> find_nei;
         vertex_comparator vertices(VertexComparison(*this->ref_vertex));
         std::unordered_set<Vertex*, VertexHash> walked;
@@ -221,9 +222,9 @@ std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(const unsigned int nb_n
 
                 // add Virtual Vertices to list of finded neighbors
                 nb_vv = vertex->getObjectCount();
-                if(confounded || nb_vv <= remain_nei) { // nb_vv can't be equal to zero
+                if(nb_vv < remain_nei) { 
                         find_nei.splice(find_nei.end(), vertex->getObjects());
-                        remain_nei -= (confounded ? 1 : nb_vv);
+                        remain_nei -= nb_vv;
                 } else { // not enough objects
                         find_nei.splice(find_nei.end(), vertex->getObjects(remain_nei));
                         remain_nei = 0;
@@ -234,8 +235,8 @@ std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(const unsigned int nb_n
                 Edge* edge_ref = edge_cur;
                 do {
                         Vertex* nei = edge_cur->destinVertex();
-                        // if not already walked 
-                        if(not walked.count(nei)) {
+                        // if not already walked and not a corner
+                        if(not walked.count(nei) and not nei->isACorner()) {
                                 walked.insert(nei); // now its marked
                                 // we will walk this one later
                                 vertices.push(nei);

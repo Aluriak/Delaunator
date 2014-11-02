@@ -98,7 +98,10 @@ void Delaunator::delVirtualVertex(VirtualVertex* obj) {
  */
 VirtualVertex* Delaunator::movVirtualVertex(VirtualVertex* obj, Coordinates relative_move) {
 #ifdef DEBUG
+        assert(this->triangulation != NULL);
+        assert(obj != NULL);
         assert(obj->vertex() != NULL);
+        assert(obj->vertex()->getEdge() != NULL);
 #endif
         // if another object is referenced by obj Vertex, a new Vertex will be creat
         if(obj->confoundedWithAnotherObject()) {
@@ -199,7 +202,7 @@ std::list<VirtualVertex*> Delaunator::virtualVerticesAt(float x, float y, float 
  * @return true iff tested Vertex is referenced by triangulation
  */
 bool Delaunator::haveVertex(Vertex* v) const {
-        return this->triangulation->haveVertex(v);
+        return this->triangulation->have(v);
 }
 
 

@@ -37,7 +37,7 @@
 class IteratorOnEdges {
 	public:
 	// CONSTRUCTOR
-		IteratorOnEdges(std::vector<Edge*>* v) : edges(v) {
+		IteratorOnEdges(std::list<Edge*>* v) : edges(v) {
                         this->it = this->edges->begin();
                         // ignore the edges that are not necessary for linked user Vertex
                         while((*this->it)->isExternal()) this->it++;
@@ -48,7 +48,7 @@ class IteratorOnEdges {
                 bool operator!=(const IteratorOnEdges& othr) const { 
                         return this->it != othr.it;
                 }
-                bool operator!=(const std::vector<Edge*>::iterator& ot) const { 
+                bool operator!=(const std::list<Edge*>::iterator& ot) const { 
                         return this->it != ot;
                 }
                 IteratorOnEdges& operator++(int i) { // post increment
@@ -59,19 +59,19 @@ class IteratorOnEdges {
                         return *(this->it);
                 }
 	// ACCESSORS
-                std::vector<Edge*>::iterator begin()    const { return this->edges->begin(); }
-                std::vector<Edge*>::iterator end()      const { return this->edges->end(); }
-                std::vector<Edge*>* getEdges()          const { return this->edges; }
+                std::list<Edge*>::iterator begin()    const { return this->edges->begin(); }
+                std::list<Edge*>::iterator end()      const { return this->edges->end(); }
+                std::list<Edge*>* getEdges()          const { return this->edges; }
         protected:
 	// ATTRIBUTES
-                std::vector<Edge*>* edges;
-                std::vector<Edge*>::iterator it;
+                std::list<Edge*>* edges;
+                std::list<Edge*>::iterator it;
 	// PRIVATE METHODS
 };
 class IteratorOnEdges_read {
 	public:
 	// CONSTRUCTOR
-		IteratorOnEdges_read(const std::vector<Edge*>* const v) : edges(v) {
+		IteratorOnEdges_read(const std::list<Edge*>* const v) : edges(v) {
                         this->it = this->edges->begin();
                         // ignore the edges that are not necessary for linked user Vertex
                         while((*this->it)->isExternal()) this->it++;
@@ -82,7 +82,7 @@ class IteratorOnEdges_read {
                 bool operator!=(const IteratorOnEdges_read& othr) const { 
                         return this->it != othr.it;
                 }
-                bool operator!=(const std::vector<Edge*>::const_iterator& ot) const { 
+                bool operator!=(const std::list<Edge*>::const_iterator& ot) const { 
                         return this->it != ot;
                 }
                 IteratorOnEdges_read& operator++(int i) { // post increment
@@ -93,13 +93,13 @@ class IteratorOnEdges_read {
                         return *(this->it);
                 }
 	// ACCESSORS
-                std::vector<Edge*>::const_iterator begin()    const { return this->edges->begin(); }
-                std::vector<Edge*>::const_iterator end()      const { return this->edges->end(); }
-                const std::vector<Edge*>* getEdges()          const { return this->edges; }
+                std::list<Edge*>::const_iterator begin()    const { return this->edges->begin(); }
+                std::list<Edge*>::const_iterator end()      const { return this->edges->end(); }
+                const std::list<Edge*>* getEdges()          const { return this->edges; }
         protected:
 	// ATTRIBUTES
-                const std::vector<Edge*>* const edges;
-                std::vector<Edge*>::const_iterator it;
+                const std::list<Edge*>* const edges;
+                std::list<Edge*>::const_iterator it;
 	// PRIVATE METHODS
 };
 
@@ -113,7 +113,7 @@ class IteratorOnEdges_read {
 class IteratorOnAllEdges {
 	public:
 	// CONSTRUCTOR
-		IteratorOnAllEdges(std::vector<Edge*>* v) : edges(v) {
+		IteratorOnAllEdges(std::list<Edge*>* v) : edges(v) {
                         this->it = this->edges->begin();
                 }
 	// PUBLIC METHODS
@@ -122,7 +122,7 @@ class IteratorOnAllEdges {
                 bool operator!=(const IteratorOnAllEdges& othr) const { 
                         return this->it != othr.it;
                 }
-                bool operator!=(const std::vector<Edge*>::iterator& ot) const { 
+                bool operator!=(const std::list<Edge*>::iterator& ot) const { 
                         return this->it != ot;
                 }
                 IteratorOnAllEdges& operator++(int i) { // post increment
@@ -133,19 +133,19 @@ class IteratorOnAllEdges {
                         return *(this->it);
                 }
 	// ACCESSORS
-                std::vector<Edge*>::iterator begin()    const { return this->edges->begin(); }
-                std::vector<Edge*>::iterator end()      const { return this->edges->end(); }
-                std::vector<Edge*>* getEdges()          const { return this->edges; }
+                std::list<Edge*>::iterator begin()    const { return this->edges->begin(); }
+                std::list<Edge*>::iterator end()      const { return this->edges->end(); }
+                std::list<Edge*>* getEdges()          const { return this->edges; }
         protected:
 	// ATTRIBUTES
-                std::vector<Edge*>* edges;
-                std::vector<Edge*>::iterator it;
+                std::list<Edge*>* edges;
+                std::list<Edge*>::iterator it;
 	// PRIVATE METHODS
 };
 class IteratorOnAllEdges_read {
 	public:
 	// CONSTRUCTOR
-		IteratorOnAllEdges_read(const std::vector<Edge*>* const v) : edges(v) {
+		IteratorOnAllEdges_read(const std::list<Edge*>* const v) : edges(v) {
                         this->it = this->edges->begin();
                 }
 	// PUBLIC METHODS
@@ -154,7 +154,7 @@ class IteratorOnAllEdges_read {
                 bool operator!=(const IteratorOnAllEdges_read& othr) const { 
                         return this->it != othr.it;
                 }
-                bool operator!=(const std::vector<Edge*>::const_iterator& ot) const { 
+                bool operator!=(const std::list<Edge*>::const_iterator& ot) const { 
                         return this->it != ot;
                 }
                 IteratorOnAllEdges_read& operator++(int i) { // post increment
@@ -165,13 +165,13 @@ class IteratorOnAllEdges_read {
                         return *(this->it);
                 }
 	// ACCESSORS
-                std::vector<Edge*>::const_iterator begin()    const { return this->edges->begin(); }
-                std::vector<Edge*>::const_iterator end()      const { return this->edges->end(); }
-                const std::vector<Edge*>* getEdges()          const { return this->edges; }
+                std::list<Edge*>::const_iterator begin()    const { return this->edges->begin(); }
+                std::list<Edge*>::const_iterator end()      const { return this->edges->end(); }
+                const std::list<Edge*>* getEdges()          const { return this->edges; }
         protected:
 	// ATTRIBUTES
-                const std::vector<Edge*>* const edges;
-                std::vector<Edge*>::const_iterator it;
+                const std::list<Edge*>* const edges;
+                std::list<Edge*>::const_iterator it;
 	// PRIVATE METHODS
 };
 

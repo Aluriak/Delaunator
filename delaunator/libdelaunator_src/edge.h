@@ -91,7 +91,7 @@ class Edge {
                 void setOriginVertex(Vertex* v) { this->origin_vertex = v; v->setEdge(this); }
                 void setOppositeEdge(Edge* e)   { this->opposite_edge = e; }
                 void setNextLeftEdge(Edge* e)   { this->next_left_edge = e; }
-                void setLeftFace(Face* f, short ttl = 4) { // time to live permit an update on all sides of face.
+                void setLeftFace(Face* f, short ttl = 2) { // time to live permit an update on all sides of face.
                         this->left_face = f; 
                         if(ttl > 0)
                                 this->nextLeftEdge()->setLeftFace(f, ttl-1);

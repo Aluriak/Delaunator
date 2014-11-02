@@ -75,15 +75,14 @@ class TrianguledObject(object):
                 return self.virtual_vertex.directNeighbors()
 
 
-        def nearerNeighbors(self, nb_neighbors, confounded = False, predicat=lambda t: True):
+        def nearerNeighbors(self, nb_neighbors, predicat=lambda t: True):
                 """
                 @param nb_neighbors a positiv integer
-                @param confounded a boolean (False by default). If true, confounded TrianguledObject count for only one, but are all returned.
                 @param predicat a callable that return True or False and take a TrianguledObject in argument. 
                 @return list that contain the nb_neighbors neighbors in nearer-first order.
                 @note if predicat provided, filtering happen after constitution of the list.
                 """
-                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors, confounded) if self.virtual_vertex.id() !=  _.id() and predicat(TrianguledObject.of(_)))
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors) if self.virtual_vertex.id() !=  _.id() and predicat(TrianguledObject.of(_)))
 
 
         def neighborsAt(self, max_distance, min_distance = 0, predicat=lambda t: True):
