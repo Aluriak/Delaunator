@@ -181,6 +181,8 @@ std::list<VirtualVertex*> VirtualVertex::neighborsAt(const float distance_max, c
 
 // ENDING
         walked.clear();
+        // remove this from returned list: don't work because call the destructor on this…
+        //find_nei.erase(std::find(find_nei.begin(), find_nei.end(), this));
 #ifdef DEBUG
         // verification: distance to this must grow bigger
         // because list is sorted
