@@ -35,7 +35,27 @@ class Point(TrianguledObject):
 # DELINTERFACE          #
 #########################
 class Delinterface(Thread):
-    """"""
+    """
+    Graphical representation of a delaunator triangulation.
+    Commands:
+        ESC: quit
+        ESPACE or ENTER: add a Point at mouse position
+        DELETE: remove Point at mouse position
+        drag&drop: on Point for move it
+        a: toggle auto-adding of Point
+        i: move all Point randomly
+        ARROWS: movement of 500 px on dragged Point
+
+    Color & Shape code:
+        - each Point have his own color, show by the circle around the point
+        - each edge that rely Point are green lines
+        - when two or more Point at the same location, there are two circles around a Point
+        - in drag&drop mode:
+            - edges that go to direct neighbors are in red.
+            - two black circles around the dragged Point mark distance from 150 to 200 pixels
+            - all Point contained in these limits have an additionnal black circle
+            - the seven nearer Point are circled in blue
+    """
 
 # CONSTRUCTOR #################################################################
     def __init__(self, dt):
@@ -68,6 +88,7 @@ class Delinterface(Thread):
     def run(self):
         """Start priniting of engine simulation"""
         print("WANDA JACKSON")
+        print(Delinterface.__doc__)
 
         # just for begin…
         for i in range(4):
@@ -158,6 +179,7 @@ class Delinterface(Thread):
             if self.print_neighbors and obj == self.dragged_point: 
                 line_color = (255, 0, 0) 
                 line_width = 2
+
                 # print all points that are between 200 and 150 px of distance
                 pygame.draw.circle(self.screen, (0, 0, 0), (int(p2.x), int(p2.y)), 200, circle_width)
                 pygame.draw.circle(self.screen, (0, 0, 0), (int(p2.x), int(p2.y)), 150, circle_width)
@@ -168,7 +190,7 @@ class Delinterface(Thread):
                 # print the 7 nearer neighbors
                 for cnei in obj.nearerNeighbors(7): 
                     p1 = cnei.coordinates()
-                    pygame.draw.circle(self.screen, (0, 0, 255), (int(p1.x), int(p1.y)), 20, circle_width*1)
+                    pygame.draw.circle(self.screen, (0, 0, 255), (int(p1.x), int(p1.y)), int(diameter/2)+1, 5)
 
             
             # print confunded neighbors circle, only if its id is lower
