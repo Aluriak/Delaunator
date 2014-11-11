@@ -64,45 +64,7 @@
         \item[\textbf{Non-invasive:}] don't need complicated initialisation by user and don't asking questions; its just give answers.
     \end{enumerate}
     \newpage
-    \begin{lstlisting}[language=python]
-    from random import randint
-    from delaunator import Delaunator, TrianguledObject
-
-    # useful class
-    class Student(TrianguledObject): 
-        def __init__(self, name):
-            super().__init__()
-            self.name = str(name)
-
-        def presentation(self, othr=None):
-            if othr is not None:
-                d = str(othr.distanceTo(self)) 
-                return self.name + " " + "("+d+")"
-            else:
-                return self.name
-
-    # bounds
-    xmin, xmax, ymin, ymax = 0, 600, 0, 600
-
-    # creat delaunator and data
-    dt = Delaunator(xmin, xmax, ymin, ymax)
-    michel = Student('michel')
-    dt.addTrianguledObject(michel, (342, 123))
-
-    for i in range(3):
-        dt.addTrianguledObject(Student('totoro'), (randint(xmin, xmax), randint(ymin, ymax)))
-
-    # movement
-    dt.movTrianguledObject(michel, (randint(xmin, xmax) / 2, randint(ymin, ymax) / 2))
-
-    # print name of all neighbors that are to a distance at most 100
-    print("My neighbors are " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(300)]))
-    print("The others are   " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(dt.distanceMax(), 300)]))
-    print("All are          " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(dt.distanceMax())]))
-
-    # frees
-    dt.delTrianguledObject(michel)
-    \end{lstlisting}
+    \lstinputlisting[language=Python]{doccode.py}
 
 
 

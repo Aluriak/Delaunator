@@ -55,43 +55,45 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 See github repo, pydelaunator repertory, for built-in example.
 
 
-    from random import randint
-    from delaunator import Delaunator, TrianguledObject
+        from random import randint
+        from delaunator import Delaunator, TrianguledObject
 
-    # useful class
-    class Student(TrianguledObject): 
-        def __init__(self, name):
-            super().__init__()
-            self.name = str(name)
+        # useful class
+        class People(TrianguledObject): 
+            def __init__(self, name):
+                super().__init__()
+                self.name = str(name)
 
-        def presentation(self, othr=None):
-            if othr is not None:
-                d = str(othr.distanceTo(self)) 
-                return self.name + " " + "("+d+")"
-            else:
-                return self.name
+            def presentation(self, othr=None):
+                if othr is not None:
+                    d = str(othr.distanceTo(self)) 
+                    return self.name + " " + "("+d+")"
+                else:
+                    return self.name
 
-    # bounds
-    xmin, xmax, ymin, ymax = 0, 600, 0, 600
+        # bounds
+        xmin, xmax, ymin, ymax = 0, 600, 0, 600
 
-    # creat delaunator and data
-    dt = Delaunator(xmin, xmax, ymin, ymax)
-    michel = Student('michel')
-    dt.addTrianguledObject(michel, (342, 123))
+        # creat delaunator and data
+        dt = Delaunator(xmin, xmax, ymin, ymax)
+        man = People('a man who look at People at 300 px of distance')
+        dt.addTrianguledObject(man, (342, 123))
 
-    for i in range(3):
-        dt.addTrianguledObject(Student('totoro'), (randint(xmin, xmax), randint(ymin, ymax)))
+        for name in ['Totoro', 'Batman', 'Michel', 'Rosalind']:
+            dt.addTrianguledObject(People(name), (randint(xmin, xmax), randint(ymin, ymax)))
 
-    # movement
-    dt.movTrianguledObject(michel, (randint(xmin, xmax) / 2, randint(ymin, ymax) / 2))
+        # movement
+        dt.movTrianguledObject(man, (randint(xmin, xmax) / 2, randint(ymin, ymax) / 2))
 
-    # print name of all neighbors that are to a distance at most 100
-    print("My neighbors are " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(300)]))
-    print("The others are   " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(dt.distanceMax(), 300)]))
-    print("All are          " + ", ".join([_.presentation(michel) for _ in michel.neighborsAt(dt.distanceMax())]))
+        # print name of all neighbors that are to a distance at most 300
+        print("I'm", man.name)
+        print("My neighbors are " + ", ".join([n.presentation(man) for n in man.neighborsAt(300)]))
+        print("The others are   " + ", ".join([n.presentation(man) for n in man.neighborsAt(dt.distanceMax(), 300)]))
+        print("All are          " + ", ".join([n.presentation(man) for n in man.neighborsAt(dt.distanceMax())]))
 
-    # frees
-    dt.delTrianguledObject(michel)
+        # frees
+        dt.delTrianguledObject(man)
+
 
 API will be improved with time and ideas.
 
