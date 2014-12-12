@@ -42,8 +42,8 @@ class Delaunator {
 		~Delaunator();
 	// PUBLIC METHODS
                 // modify triangulation
-                VirtualVertex* addVirtualVertex(Coordinates);
-                VirtualVertex* addVirtualVertex(float, float);
+                VirtualVertex* addVirtualVertex(Coordinates, VirtualVertex* = NULL);
+                VirtualVertex* addVirtualVertex(float, float, VirtualVertex* = NULL);
                 void           delVirtualVertex(VirtualVertex*);
                 VirtualVertex* movVirtualVertex(VirtualVertex*, Coordinates);
                 VirtualVertex* movVirtualVertex(VirtualVertex*, float, float);

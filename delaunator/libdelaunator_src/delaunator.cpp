@@ -41,11 +41,12 @@ Delaunator::~Delaunator() {
 /**
  * Place an object in the triangulation, at the given coords
  * @param coords place where object will be
- * @return obj, just for facilitate functionnal approach
- * @note object is not free or moved in memory
+ * @param vv address of a VirtualVertex object that will be added to triangulation (default: NULL)
+ * @return VirtualVertex added object, if vv provided, vv is returned
+ * @note if no object provided, a pure VirtualVertex will be create and added
  */
-VirtualVertex* Delaunator::addVirtualVertex(Coordinates coords) {
-        return this->addVirtualVertex(coords.x(), coords.y());
+VirtualVertex* Delaunator::addVirtualVertex(Coordinates coords, VirtualVertex* vv) {
+        return this->addVirtualVertex(coords.x(), coords.y(), vv);
 }
 
 
@@ -54,18 +55,23 @@ VirtualVertex* Delaunator::addVirtualVertex(Coordinates coords) {
  * Place an object in the triangulation, at the given coords
  * @param x coordinate in x-axis
  * @param y coordinate in y-axis
- * @return new VirtualVertex object address, or NULL if invalid coords
- * @note no modifications if given coords are invalids (out of bounds)
+ * @param vv address of a VirtualVertex object that will be added to triangulation (default: NULL)
+ * @return VirtualVertex added object, if vv provided, vv is returned
+ * @note if no object provided, a pure VirtualVertex will be create and added
  */
-VirtualVertex* Delaunator::addVirtualVertex(float x, float y) {
-        Vertex* new_vtx = this->triangulation->addVertexAt(x, y);       // create or get a vertex
-        VirtualVertex* obj = NULL;
+VirtualVertex* Delaunator::addVirtualVertex(float x, float y, VirtualVertex* vv) {
+        Vertex* new_vtx = this->triangulation->addVertexAt(x, y); 
         if(new_vtx != NULL) {
-                obj = new VirtualVertex(new_vtx);                       // create a virtual vertex
-                new_vtx->take(obj);                                     // link it to real vertex
-                this->object_count++;                                   // one object more !
-        }
-        return obj;                                                     // give virtual vertex ref to user
+                // create object, and assign it the Vertex
+                if(vv == NULL) {
+                        vv = new VirtualVertex(new_vtx);
+                } else { // vv is provided by user
+                        vv->setVertex(new_vtx);
+                }
+                new_vtx->take(vv);    
+                this->object_count++;
+        } // else: dramatic error: triangulation can't provide vertices…
+        return new_vtx == NULL ? NULL : vv; // return added object iff added
 }
 
 
