@@ -19,10 +19,6 @@ VirtualVertex::VirtualVertex(Vertex* vtx) {
  * Frees.
  */
 VirtualVertex::~VirtualVertex() {
-        // Just in case that is not done :
-        if(this->ref_vertex != NULL) {
-                this->ref_vertex->forget(this);
-        }
 }
 
 
@@ -83,9 +79,33 @@ Coordinates VirtualVertex::coordinates() const {
 
 
 
+/**
+ * @param object a PyObject address that will be referenced by this instance instead of previous one.
+ */
+//void VirtualVertex::setPyObject(PyObject* object) {
+        //this->ref_pyobject = object; 
+//}
+
+
+
+
+/**
+ * @return PyObject address that is referenced by this instance
+ */
+//PyObject* VirtualVertex::getPyObject() const {
+        //return this->ref_pyobject;
+//}
+
+
+
+
+
+
+
+
 
 /***************************************************
- * PRIVATE METHODS
+* PRIVATE METHODS
  ***************************************************/
 
 
@@ -256,7 +276,14 @@ std::list<VirtualVertex*> VirtualVertex::nearerNeighbors(const unsigned int nb_n
         std::list<VirtualVertex*>::const_iterator it = find_nei.begin();
         float dist_ctrl = -1; 
         for(; it != find_nei.end(); it++) {
-                assert(dist_ctrl <= (*it)->vertex()->squareDistanceTo(*this->vertex()));
+                if(dist_ctrl > (*it)->vertex()->squareDistanceTo(*this->vertex())) {
+                        for(auto nei : find_nei) {
+                                logs("\t%u: %f\n", nei->id(), nei->vertex()->squareDistanceTo(*this->vertex()));
+                        }
+                        logs("dist_ctrl = %f\n", dist_ctrl);
+                        logs("dist_test = %f\n", (*it)->vertex()->squareDistanceTo(*this->vertex()));
+                        assert(dist_ctrl <= (*it)->vertex()->squareDistanceTo(*this->vertex()));
+                }
                 dist_ctrl = (*it)->vertex()->squareDistanceTo(*this->vertex());
         }
 #endif

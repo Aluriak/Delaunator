@@ -44,6 +44,8 @@ class VirtualVertex {
                 Vertex* vertex() const;
                 unsigned int id() const { return this->_id; }
                 Coordinates coordinates() const;
+                //void setPyObject(PyObject*);
+                //PyObject* getPyObject() const;
                 // setters
                 void setVertex(Vertex*);
         // GRAPH EXPLORATION
@@ -54,6 +56,7 @@ class VirtualVertex {
 	private:
 	// ATTRIBUTES
                 Vertex* ref_vertex;
+                //PyObject* ref_pyobject;
                 unsigned int _id;
                 static unsigned int last_id;
 	// PRIVATE METHODS
