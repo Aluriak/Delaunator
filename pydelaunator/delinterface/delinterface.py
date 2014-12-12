@@ -67,7 +67,6 @@ class Delinterface(Thread):
         self.finish = False
         self.auto_add = False
         self.print_neighbors = True
-        self.dragging = False
         self.dragged_point = None
 
         # pygame
@@ -139,16 +138,14 @@ class Delinterface(Thread):
                 # MOUSE BUTTON
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.dragged_point = self.getPointAt(*pygame.mouse.get_pos())
-                    if self.dragged_point is not None: self.dragging = True
 
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    self.dragging = False
                     self.dragged_point = None
 
                 # MOUSE MOTION
                 elif event.type == pygame.MOUSEMOTION:
                     x,y = pygame.mouse.get_rel()
-                    if self.dragging:
+                    if self.dragged_point is not None:
                         self.movePoint(x, y, self.dragged_point)
 
         print("WANDA JACKSOFF")
@@ -230,7 +227,6 @@ class Delinterface(Thread):
         """Delete given Point"""
         if self.dragged_point == point:
             self.dragged_point = None
-            self.dragging = False
         self.dt.delTrianguledObject(point)
 
 
