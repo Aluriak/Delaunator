@@ -194,13 +194,32 @@ def movTrianguledObject(self, tri_obj, coords):
                 coords = Coordinates(*coords)
         # do the move
         self.movVirtualVertex(tri_obj.virtual_vertex, coords)
+# this function is now part of Delaunator API
 Delaunator.movTrianguledObject = movTrianguledObject
 
 
 
 
 
-%}
+def trianguledObjectAt(self, coords, precision=None):
+        """
+        @param tri_obj the TrianguledObject that will be moved
+        @param coords that will be added to current tri_obj coordinates
+        @return TrianguledObject find at given coords, or None if not found
+        """
+        # transform precision in a valid value
+        if precision is None: 
+                precision = self.epsilon()
+        # transform user coords into Coordinates object
+        if not isinstance(coords, Coordinates):
+                coords = Coordinates(*coords)
+        # do the looking
+        return TrianguledObject.of(self.virtualVertexAt(coords, precision))
+# this function is now part of Delaunator API
+Delaunator.trianguledObjectAt = trianguledObjectAt
+
+
+%} /* end of Delaunator extending */
 
 
 
