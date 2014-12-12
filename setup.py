@@ -30,7 +30,7 @@ for k, v in d.items():
 # SWIG COMPILATION
 swig_extension = Extension(
     'delaunator.libdelaunator_src._libdelaunator',
-    sources = [('delaunator/libdelaunator_src/'+_) for _ in os.listdir('delaunator/libdelaunator_src/') if os.path.splitext(_)[1] == '.cpp'] + 
+    sources = [('delaunator/libdelaunator_src/'+_) for _ in os.listdir('delaunator/libdelaunator_src/') if os.path.splitext(_)[1] == '.cpp' and _ != 'main.cpp'] + 
                 ['delaunator/libdelaunator_src/libdelaunator.i'],
     swig_opts = ['-c++'],
     define_macros = [
