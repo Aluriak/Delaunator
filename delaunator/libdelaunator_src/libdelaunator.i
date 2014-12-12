@@ -10,9 +10,6 @@
 %include "exception.i"
 %include "typemaps.i"
 
-namespace std {
-        %template(VirtualVertexList) list<VirtualVertex*>;
-}
 
 %include "utils.h"
 %include "commons.h"
@@ -42,4 +39,9 @@ namespace std {
 #if SWIGPYTHON
 %include "python_trianguledObject.i"
 #endif
+
+/* templates */
+namespace std {
+        %template(VirtualVertexList) list<VirtualVertex*>;
+}
 
