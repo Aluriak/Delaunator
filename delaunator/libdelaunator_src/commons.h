@@ -6,11 +6,14 @@
 /*
  * LIBRARIES
  */
+// Python, for embedding (not needed for SWIG)
+#include <Python.h>
 // STD LIB
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
+#include <memory> // smart pointers
 #include <cassert>
 #include <cmath>
 #include <climits>
