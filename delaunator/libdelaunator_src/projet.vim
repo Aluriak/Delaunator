@@ -1,5 +1,5 @@
-e	main.h
-vsp	main.cpp
+e	meshGenerator.h
+vsp	meshGenerator.cpp
 
 tabnew	delaunator.h
 vsp	delaunator.cpp
@@ -21,6 +21,9 @@ vsp	geometry.cpp
 
 tabnew  virtualVertex.h
 vsp     virtualVertex.cpp
+
+tabnew  vertexGroup.h
+vsp     vertexGroup.cpp
 
 tabnew  utils.h
 vsp	commons.h
