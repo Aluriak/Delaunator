@@ -83,7 +83,7 @@ class TrianguledObject(object):
                 @return list that contain a maximum of nb_neighbors neighbors in nearer-first order.
                 @note if post_filter provided, filtering happen after constitution of the list.
                 """
-                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors) if self.virtual_vertex.id() !=  _.id() and predicat(TrianguledObject.of(_)))
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors) if self.virtual_vertex.id() !=  _.id() and post_filter(TrianguledObject.of(_)))
 
 
         def neighborsAt(self, max_distance, min_distance = 0, predicat=lambda t: True):
