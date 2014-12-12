@@ -1,4 +1,4 @@
-/* Create the TrianguledObject, used by Delaunator's Users */
+/* Create the TrianguledObject, used by Delaunator`s users */
 %pythoncode %{
 
 
@@ -10,7 +10,8 @@ class TrianguledObject(object):
         This is like an abstract class : no real code need to have pure Trianguled Object defined.
         Correct use is to use objects that inherits from this class.
         """
-        VRTL_VRTX_TO_TRNGLD_OBJCT = {None:None}
+        # TrianguledObject references all trianguled objects by dict virtual vertex => TrianguledObject
+        refs = {None:None}
 
 
 # CONSTRUCTOR #################################################################
@@ -72,15 +73,15 @@ class TrianguledObject(object):
                 @return list of direct neighbors of self
                 @note direct neighbors have no sense out of mathematical definition of delaunay triangulation, because its just objects that are directly connected to self by an edge.
                 """
-                return self.virtual_vertex.directNeighbors()
+                return (TrianguledObject.of(_) for _ in self.virtual_vertex.directNeighbors())
 
 
-        def nearerNeighbors(self, nb_neighbors, predicat=lambda t: True):
+        def nearerNeighbors(self, nb_neighbors, post_filter=lambda t: True):
                 """
                 @param nb_neighbors a positiv integer
-                @param predicat a callable that return True or False and take a TrianguledObject in argument. 
-                @return list that contain the nb_neighbors neighbors in nearer-first order.
-                @note if predicat provided, filtering happen after constitution of the list.
+                @param post_filter a callable that return True or False and take a TrianguledObject in argument. 
+                @return list that contain a maximum of nb_neighbors neighbors in nearer-first order.
+                @note if post_filter provided, filtering happen after constitution of the list.
                 """
                 return (TrianguledObject.of(_) for _ in self.virtual_vertex.nearerNeighbors(nb_neighbors) if self.virtual_vertex.id() !=  _.id() and predicat(TrianguledObject.of(_)))
 
@@ -94,6 +95,12 @@ class TrianguledObject(object):
                 """
                 return (TrianguledObject.of(_) for _ in self.virtual_vertex.neighborsAt(max_distance, min_distance) if self.virtual_vertex.id() !=  _.id() and predicat(TrianguledObject.of(_)))
                         
+
+        def virtualVertex(self):
+                """
+                @return virtual vertex associated with this instance
+                """
+                return self.virtual_vertex
 
 
 
@@ -109,7 +116,7 @@ class TrianguledObject(object):
 # CLASS METHOD ################################################################
         @staticmethod
         def of(virtual_vertex):
-                return TrianguledObject.VRTL_VRTX_TO_TRNGLD_OBJCT[virtual_vertex.id()] 
+                return TrianguledObject.refs[virtual_vertex.id()] if virtual_vertex is not None else None 
 
 
 
@@ -132,6 +139,7 @@ def trianguledObjects(self):
         @return iterable of objects
         """
         return (TrianguledObject.of(_) for _ in self.virtualVertices())
+# this function is now part of Delaunator API
 Delaunator.trianguledObjects = trianguledObjects
 
 
@@ -149,12 +157,12 @@ def addTrianguledObject(self, tri_obj, coords):
                 coords = Coordinates(*coords)
         # add the trianguled object
         if tri_obj is not None and coords is not None:
-                tri_obj.virtual_vertex  = self.addVirtualVertex(coords)
-                if tri_obj.virtual_vertex is not None:
-                        # all is ok, object is added !
-                        TrianguledObject.VRTL_VRTX_TO_TRNGLD_OBJCT[tri_obj.virtual_vertex.id()] = tri_obj
+                tri_obj.virtual_vertex = self.addVirtualVertex(coords)
+                if tri_obj.virtual_vertex is not None: # all is ok, object is added !
                         added = tri_obj.virtual_vertex.id()
+                        TrianguledObject.refs[added] = tri_obj
         return added
+# this function is now part of Delaunator API
 Delaunator.addTrianguledObject = addTrianguledObject
 
 
@@ -166,10 +174,11 @@ def delTrianguledObject(self, tri_obj):
         Detach tri_obj of self. Destroy associated VirtualVertex.
         """
         if tri_obj.virtual_vertex is not None:
-                # delete entry in dictionnary
-                del TrianguledObject.VRTL_VRTX_TO_TRNGLD_OBJCT[tri_obj.virtual_vertex.id()]
+                # delete references between virtual vertex and Trianguled object
+                del TrianguledObject.refs[tri_obj.virtual_vertex.id()]
                 self.delVirtualVertex(tri_obj.virtual_vertex)
                 tri_obj.virtual_vertex = None
+# this function is now part of Delaunator API
 Delaunator.delTrianguledObject = delTrianguledObject
        
 
