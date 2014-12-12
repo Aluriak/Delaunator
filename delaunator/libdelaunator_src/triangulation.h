@@ -84,7 +84,7 @@ class Triangulation {
                 void DEBUG_tests() const;
 #endif
 	// ACCESSORS
-                std::list<Edge*> getEdges()  const { return this->edges; }
+                std::list<VirtualVertex*> getVirtualVertices() const;
                 unsigned int getVerticeCount() const { return this->vertices.size(); }
                 float getXmin() const { return this->xmin; }
                 float getXmax() const { return this->xmax; }

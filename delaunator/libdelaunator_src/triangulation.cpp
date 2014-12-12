@@ -654,6 +654,20 @@ void Triangulation::DEBUG_tests() const {
  * ACCESSORS
  ***************************************************/
 /**
+ * @return list of adresses of all VirtualVertex contained by all Vertices of this instance
+ */
+std::list<VirtualVertex*> Triangulation::getVirtualVertices() const {
+        std::list<VirtualVertex*> finded_vv;
+        for(auto vertex : this->vertices) {
+                for(auto vv : vertex->getObjects()) {
+                        finded_vv.push_back(vv);
+                }
+        }
+        return finded_vv;
+}
+
+
+/**
  * @return VertexFinderMode value, that described method used by this instance.
  */
 VertexFinderMode Triangulation::getFinderMode() const { 
