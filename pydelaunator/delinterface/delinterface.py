@@ -232,7 +232,7 @@ class Delinterface(Thread):
 
     def getPointAt(self, x, y):
         """Return point that is at given coordinates (about MOUSE_PRECISION)"""
-        return TrianguledObject.of(self.dt.virtualVertexAt(x, y, MOUSE_PRECISION))
+        return self.dt.trianguledObjectAt((x, y), MOUSE_PRECISION)
 
     
     def movePoint(self, x, y, p=None):
