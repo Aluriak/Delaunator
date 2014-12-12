@@ -374,11 +374,17 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
  * @note never return the corners Vertex
  */
 Vertex* Triangulation::vertexAt(float x, float y, float precision) const {
-        Vertex *target = NULL, *current = NULL;
-        for(IteratorOnVertices_read it = this->iterVertices_read(); target == NULL && it != it.end(); it++) {
-                current = *it;
-                if(fabs(x-current->x()) < (precision+EPSILON) && fabs(y-current->y()) < (precision+EPSILON))
-                        target = current;
+        Vertex *target = NULL;
+        // pass the fourth first vertices, that defines the mesh
+        auto it = this->vertices.cbegin();
+        it++;
+        it++;
+        it++;
+        it++;
+        // look for target
+        for(; target == NULL && it != this->vertices.cend(); it++) {
+                if(fabs(x-(*it)->x()) < (precision+EPSILON) && fabs(y-(*it)->y()) < (precision+EPSILON))
+                        target = (*it);
         }
         return target;
 }
