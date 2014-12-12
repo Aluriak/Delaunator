@@ -12,7 +12,7 @@
 #include "vertex.h"
 #include "face.h"
 #include "edge.h"
-#include "iterators.h"
+//#include "iterators.h"
 
 
 
@@ -108,33 +108,6 @@ class Triangulation {
                 bool opt_follow_search() const { return false; }
 #endif
 
-
-        // ITERATORS
-                IteratorVertexToNeighbourVertices getNeighbors(Vertex*);
-                // edges necessary for user
-                IteratorOnEdges iterEdges()             { return IteratorOnEdges(&this->edges); }
-                IteratorOnEdges_read iterEdges_read() const
-                                                        { return IteratorOnEdges_read(&this->edges); }
-                // all edges, including the externals ones
-                IteratorOnAllEdges iterAllEdges()       { return IteratorOnAllEdges(&this->edges); }
-                IteratorOnAllEdges_read iterAllEdges_read() const
-                                                        { return IteratorOnAllEdges_read(&this->edges); }
-                // faces that are visible to user
-                IteratorOnFaces iterFaces()             { return IteratorOnFaces(&this->faces); }
-                IteratorOnFaces_read iterFaces_read() const
-                                                        { return IteratorOnFaces_read(&this->faces); }
-                // all faces, including the unvisible ones
-                IteratorOnAllFaces iterAllFaces()       { return IteratorOnAllFaces(&this->faces); }
-                IteratorOnAllFaces_read iterAllFaces_read() const
-                                                        { return IteratorOnAllFaces_read(&this->faces); }
-                // vertices placed by user
-                IteratorOnVertices iterVertices()       { return IteratorOnVertices(&this->vertices); }
-                IteratorOnVertices_read iterVertices_read() const 
-                                                        { return IteratorOnVertices_read(&this->vertices); }
-                // all vertices, including the 4 used for create and maintain the mesh
-                IteratorOnAllVertices iterAllVertices() { return IteratorOnAllVertices(&this->vertices); }
-                IteratorOnAllVertices_read iterAllVertices_read() const 
-                                                        { return IteratorOnAllVertices_read(&this->vertices); }
 
 
 

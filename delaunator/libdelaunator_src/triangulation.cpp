@@ -137,15 +137,9 @@ Triangulation::Triangulation(const float xmin, const float xmax,
  */
 Triangulation::~Triangulation() {
         // free's !
-        for(Face* it : this->faces) {
-                delete it;
-        }
-        for(Vertex* it : this->vertices) {
-                delete it;
-        }
-        for(Edge* it : this->edges) {
-                delete it;
-        }
+        for(auto it : this->faces)      delete it;
+        for(auto it : this->vertices)   delete it;
+        for(auto it : this->edges)      delete it;
 }
 
 
@@ -172,7 +166,7 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
 
 // find container of vertex ( container>, >p )
 #ifdef FOLLOW_SEARCH
-        for(IteratorOnAllEdges it = this->iterAllEdges(); it != it.end(); it++) {
+        for(auto it = this->edges.cbegin(); it != this->edges.cend(); it++) {
                 (*it)->passing = false;
         }
 #endif
@@ -728,14 +722,6 @@ bool Triangulation::collideAt(Coordinates c) const {
 /***************************************************
  * ITERATORS
  ***************************************************/
-/**
- * Infinite iteration on all neighbour vertices of a given Vertex.
- * @param v the targeted Vertex
- * @return an IteratorVertexToNeighbourVertices that iter on neighbors of target
- */
-IteratorVertexToNeighbourVertices Triangulation::getNeighbors(Vertex* v) {
-        return IteratorVertexToNeighbourVertices(v);
-}
 
 
 
