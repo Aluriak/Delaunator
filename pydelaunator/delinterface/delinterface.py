@@ -217,9 +217,8 @@ class Delinterface(Thread):
             coords = Coordinates(randint(self.dt.getXmin(), self.dt.getXmax()), randint(self.dt.getYmin(), self.dt.getYmax()))
         else:
             coords = Coordinates(x, y)
-        # creat color
+        # creat color & object
         color = (randint(1, 255), randint(1, 255), randint(1, 255))
-        # creat object
         self.dt.addTrianguledObject(Point(color), coords)
 
 
