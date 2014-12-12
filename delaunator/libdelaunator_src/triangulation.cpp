@@ -398,10 +398,6 @@ Vertex* Triangulation::vertexAt(float x, float y, float precision) const {
  * @param del_vrtx targeted Vertex
  */
 void Triangulation::delVertex(Vertex* del_vrtx) {
-        // ALGORITHM:
-        // for all direct neighbour:
-        //      if the triangle formed by three consecutiv neighbors DOESN'T contain del_vrtx:
-        //              TODO
 // INIT
 #ifdef DEBUG
         assert(del_vrtx != NULL);
