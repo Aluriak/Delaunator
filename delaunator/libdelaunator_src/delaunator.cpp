@@ -86,11 +86,11 @@ void Delaunator::delVirtualVertex(VirtualVertex* obj) {
         Vertex* vtx = obj->vertex();
         if(vtx != NULL) {
                 vtx->forget(obj);
-                if(vtx->getObjectCount() == 0) 
+                if(vtx->getObjectCount() == 0) {
                         this->triangulation->delVertex(vtx);
+                }
+                this->object_count--;
         }
-        delete obj;
-        this->object_count--;
 }
 
 
@@ -244,16 +244,7 @@ float Delaunator::distanceMax() const {
  * ITERATORS
  ***************************************************/
 std::list<VirtualVertex*> Delaunator::virtualVertices() const {
-        std::list<VirtualVertex*> lret;
-        // for each Vertex of Triangulation
-        IteratorOnVertices_read it = this->triangulation->iterVertices_read();
-        while(it != it.end()) {
-                // add VirtualVertex of Vertex to lret
-                lret.splice(lret.end(), (*it)->getObjects());
-                it++;
-        }
-        return lret;
-        
+        return this->triangulation->getVirtualVertices();
 }
 
 
