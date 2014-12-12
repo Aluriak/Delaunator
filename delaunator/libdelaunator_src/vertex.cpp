@@ -76,7 +76,7 @@ void Vertex::giveVirtualVerticesTo(Vertex* v) {
 
 
 /**
- * @param trob a VirtualVertex that will be added in list of this
+ * @param trob a shared pointer of VirtualVertex that will be added in list of this
  * @param ancient the Vertex that have trob, and that will forget it, or NULL (default value)
  * @note trob is modified by a call to setVertex(this)
  */
@@ -139,7 +139,7 @@ std::list<VirtualVertex*> Vertex::getObjects(unsigned int nb) const {
  * @return a VirtualVertex pointer, or NULL if no Object referenced
  */
 VirtualVertex* Vertex::getFirstObject() const {
-        return this->objects.front() != NULL ? this->objects.front() : NULL;
+        return this->objects.size() > 0 ? this->objects.front() : NULL;
 }
 
 
