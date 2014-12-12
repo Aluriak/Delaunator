@@ -31,13 +31,14 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 - [ ] manage groups of vertices that moves together; [Next goal]
 - [ ] support constraints; [Next goal]
 - [ ] built in collision management; [Next goal]
-- [ ] access in constant complexity to nearer neighbour; [PoC on a branch]
+- [ ] access in constant complexity to nearer neighbour; [PoC on a branch ; not interesting result]
 - [ ] use threads; [One day]  
 - [ ] permit to user to choose preprocessor options by config files or other useful way;  [One day] 
 - [ ] improve API documentation; [One day]
 - [ ] improve spec file; [One day]
 - [ ] implement MultiTrianguledObject, that can be present in multiple Delaunator instances; [One day]
 - [ ] find a way to retract Face class (because its useless for user); [One day]
+- [ ] improve VirtualVertex container in Vertex class; [In progress]
 
 
 ## MAYBE-A-DAY DO LIST
