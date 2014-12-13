@@ -52,6 +52,9 @@ class Delaunator {
                 VirtualVertex* virtualVertexAt(float, float, float=EPSILON) const;
                 std::list<VirtualVertex*> virtualVerticesAt(Coordinates,  float=EPSILON) const;
                 std::list<VirtualVertex*> virtualVerticesAt(float, float, float=EPSILON) const;
+                // frees
+                void clear();
+                void freeAll();
 	// ACCESSORS
                 /** @return total number of VirtualVertex in Delaunator */
                 unsigned int objectCount() const { return this->object_count; }

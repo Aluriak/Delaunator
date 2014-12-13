@@ -196,6 +196,42 @@ std::list<VirtualVertex*> Delaunator::virtualVerticesAt(float x, float y, float 
 
 
 
+/**
+ * Clear all triangulation.
+ */
+void Delaunator::clear() {
+        // save parameters of triangulation
+        float xmin = this->getXmin(), xmax = this->getXmax(), ymin = this->getYmin(), ymax = this->getYmax();
+        VertexFinderMode finder_mode = this->triangulation->getFinderMode();
+        // forget all virtual vertices
+        for(auto it : this->virtualVertices()) it->setVertex(NULL);
+        object_count = 0;
+        // delete it and create a new triangulation
+        delete this->triangulation;
+        this->triangulation = new Triangulation(xmin, xmax, ymin, ymax, finder_mode);
+}
+
+
+
+
+/**
+ * Remove all contained VirtualVertices, and call delete on them.
+ */
+void Delaunator::freeAll() {
+        // save parameters of triangulation
+        float xmin = this->getXmin(), xmax = this->getXmax(), ymin = this->getYmin(), ymax = this->getYmax();
+        VertexFinderMode finder_mode = this->triangulation->getFinderMode();
+        // free and forget all virtual vertices
+        for(auto it : this->virtualVertices()) delete it;
+        object_count = 0;
+        // delete it and create a new triangulation
+        delete this->triangulation;
+        this->triangulation = new Triangulation(xmin, xmax, ymin, ymax, finder_mode);
+}
+
+
+
+
 
 
 
