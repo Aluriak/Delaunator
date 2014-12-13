@@ -146,43 +146,18 @@ class Triangulation {
                 // Methods for manipulate lists of components
                 /** Destroy and forget given Vertex */
                 inline void removeVertexFromVertices(Vertex* v) {
-                        delete v;
                         this->vertices.erase(std::find(this->vertices.begin(), this->vertices.end(), v));
-
-                        //for(auto it = this->vertices.begin(); it != this->vertices.end(); it++) {
-                                //if((*it) == v) {
-                                        //this->vertices.erase(it);
-                                        //it = this->vertices.end();
-                                        //delete v;
-                                        //it--;
-                                //}
-                        //}
+                        delete v;
                 }
                 /** Destroy and forget given Edge */
                 inline void removeEdgeFromEdges(Edge* e) {
-                        delete e;
                         this->edges.erase(std::find(this->edges.begin(), this->edges.end(), e));
-                        //for(auto it = this->edges.begin(); it != this->edges.end(); it++) {
-                                //if((*it) == e) {
-                                        //this->edges.erase(it);
-                                        //delete e;
-                                        //it = this->edges.end();
-                                        //it--;
-                                //}
-                        //}
+                        delete e;
                 }
                 /** Destroy and forget given Face */
                 inline void removeFaceFromFaces(Face* f) {
-                        delete f;
                         this->faces.erase(std::find(this->faces.begin(), this->faces.end(), f));
-                        //for(auto it = this->faces.begin(); it != this->faces.end(); it++) {
-                                //if((*it) == f) {
-                                        //this->faces.erase(it);
-                                        //delete f;
-                                        //it = this->faces.end();
-                                        //it--;
-                                //}
-                        //}
+                        delete f;
                 }
                 /*
                  * Replace given vertex coords by given values.
