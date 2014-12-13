@@ -1,4 +1,7 @@
-e	meshGenerator.h
+e	main.h
+vsp	main.cpp
+
+tabnew	meshGenerator.h
 vsp	meshGenerator.cpp
 
 tabnew	delaunator.h
