@@ -11,6 +11,7 @@
 #include <cstdlib>
 // LOCAL MODULES
 #include "delaunator.h"
+#include "meshGenerator.h"
 
 
 
@@ -25,6 +26,7 @@
 /*
  * PREDECLARATIONS
  */
+float density(float x, float y, void* data);
 
 
 
