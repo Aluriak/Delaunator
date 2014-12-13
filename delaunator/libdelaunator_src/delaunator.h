@@ -28,9 +28,12 @@
 
 
 /**
- * Delaunay class definition.  
- * Provide iterators, access to VirtualVertexs…
- * Have all methods for add, delete and move Objects.
+ * Delaunator is the container of VirtualVertex.
+ * As a container, Delaunator object provides 
+ * methods for adding, finding and removing objects.
+ * With use of a delaunay triangulation, Delaunator object provides
+ * access in almost constant complexity to the nearer neighbors of an objects.
+ *
  */
 class Delaunator {
 	public:
