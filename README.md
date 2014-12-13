@@ -53,7 +53,7 @@ __Portability:__ code and tests on Debian Stable, with c++11, gcc 4.7.2, make 3.
 
 
 ## EXAMPLE OF USE
-See github repo, pydelaunator repertory, for built-in example.
+API will be improved with time and ideas.
 
 
         from random import randint
@@ -96,12 +96,18 @@ See github repo, pydelaunator repertory, for built-in example.
         dt.delTrianguledObject(man)
 
 
-API will be improved with time and ideas.
+See github repo, pydelaunator repertory, for more complex built-in example, with GUI and direct data manipulation.
 
 
 
 
 ## CHANGE LOG
+- 1.0.4: 
+    - C++ unit tests created;
+    - first approach of mesh generation (C++ only);
+    - internal ownership of VirtualVertex corrected;
+    - new STL container like method: clear;
+    - fix bugs about moving of vertex on another;
 - 1.0.3: 
     - no more segfault when movements around corners with confounded VirtualVertices;
     - algorithmic correction of VirtualVertex::nearerNeighbors() and remove useless parameter;
