@@ -1,4 +1,4 @@
-#FLAGS=-DDEBUG -DVERBOSE
+FLAGS=-DDEBUG -DVERBOSE
 OPTMS=-O3 -flto
 
 all: compile link v
