@@ -69,6 +69,10 @@ unsigned int Vertex::neighbourCount() const {
  * @param v a Vertex that will receive all VirtualVertex of this
  */
 void Vertex::giveVirtualVerticesTo(Vertex* v) {
+        // all objects of this reference v
+        for(auto object : this->objects) {
+                object->setVertex(v);
+        }
         // splice: add all objects of this at the end of v
         v->objects.splice(v->objects.end(), this->objects);
 }
