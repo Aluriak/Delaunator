@@ -31,8 +31,8 @@
  * Methods for automatic generation of Delaunator intances
  */
 namespace MeshGenerator {
-    Delaunator* fromDensityFunction(float (*)(float, float), unsigned int, unsigned int, 
-                                    unsigned int, unsigned int, float);
+    Delaunator* fromDensityFunction(float (*)(float, float, void*), unsigned int, unsigned int, 
+                                    unsigned int, unsigned int, float, void*);
 
 }
 

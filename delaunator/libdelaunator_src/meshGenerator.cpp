@@ -16,17 +16,17 @@
  * @param step the minimal distance between two points
  * @return address of a new and initialized Delaunator object
  */
-Delaunator* MeshGenerator::fromDensityFunction(float (*fDensity)(float, float), 
+Delaunator* MeshGenerator::fromDensityFunction(float (*fDensity)(float, float, void*), 
                 unsigned int bound_minx, unsigned int bound_maxx, 
-                unsigned int bound_miny, unsigned int bound_maxy, float step) {
+                unsigned int bound_miny, unsigned int bound_maxy, float step, void* data) {
 // INIT
         Delaunator* dt = new Delaunator(bound_minx, bound_maxx, bound_miny, bound_maxy);
         float ci = bound_minx, cj = bound_miny;
 // TREATMENT
         for(; ci <= bound_maxx; ci += step) {
-                for(; cj <= bound_maxy; cj += step) {
+                for(cj = 0; cj <= bound_maxy; cj += step) {
                         // get random number in [0;1]
-                        if(rand() <= (fDensity(ci, cj) * 100)) {
+                        if(((float)randN(101)) <= (fDensity(ci, cj, data) * 100)) {
                                 dt->addVirtualVertex(Coordinates(ci, cj));
                         }
                 }
