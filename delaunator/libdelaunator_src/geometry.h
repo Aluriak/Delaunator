@@ -55,6 +55,11 @@ namespace geometry {
         bool pointInsideCircle(Coordinates A, Coordinates C, float radius);
 
         bool pointOnCircle(Coordinates A, Coordinates C, float radius);
+
+        bool pointInCounterClockwiseOrder(const unsigned int, ...);
+        bool pointInClockwiseOrder(const unsigned int, ...);
+        bool pointInCounterClockwiseOrder(const std::vector<Coordinates*>);
+        bool pointInClockwiseOrder(const std::vector<Coordinates*>);
         
         bool collisionBetweenSegmentAndCircle(Coordinates A, Coordinates B, Coordinates C, float radius);
         

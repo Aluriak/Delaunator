@@ -549,6 +549,133 @@ bool geometry::pointOnCircle(Coordinates A, Coordinates C, float radius) {
 
 
 
+/***************************************************
+ * POINT IN COUNTER CLOCKWISE ORDER
+ ***************************************************/
+/**
+ * @param n the number of Coordinates sended
+ * @param ... Coordinates 
+ * @return true iff n == 0 or received Coordinates are given in Counter Clockwise order
+ * @note consider that Y axis is inverted. Else, returned value is false
+ */
+bool geometry::pointInCounterClockwiseOrder(const unsigned int n, ...) {
+        // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
+        // Note that Y axis is considered inverted
+        va_list args;
+        float sum = 0;
+        Coordinates first, prevs, crrnt;
+        va_start(args, n); 
+
+        if(n == 1) {
+                va_arg(args, Coordinates);
+        } else if(n > 1) {
+                first = va_arg(args, Coordinates);
+                prevs = first;
+                for(unsigned int j = 1; j < n; j++) {
+                        crrnt = va_arg(args, Coordinates);
+                        sum += (crrnt.x()-prevs.x()) * (crrnt.y()+prevs.y());
+                        prevs = crrnt;
+                }
+                crrnt = first;
+                sum += (crrnt.x()-prevs.x()) * (crrnt.y()+prevs.y());
+        }
+
+        va_end(args);
+        return sum >= 0.; // if negativ, its clockwise.
+}
+
+
+
+/**
+ * @param coords Coordinates that will be tested
+ * @return true iff Coordinates are stored in Counter Clockwise order
+ * @note consider that Y axis is inverted. Else, returned value is false
+ */
+bool geometry::pointInCounterClockwiseOrder(const std::vector<Coordinates*> coords) {
+        // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
+        // Note that Y axis is considered inverted
+        float sum = 0;
+        if(coords.size() > 1) {
+                unsigned int summed = 1;
+                for(; summed < coords.size(); summed++) {
+                        sum += (coords[summed]->x() - coords[summed-1]->x()) 
+                                * (coords[summed]->y() + coords[summed-1]->y());
+                }
+                summed--; // target is the last one
+                sum += (coords[0]->x()-coords[summed]->x()) 
+                        * (coords[0]->y()+coords[summed]->y());
+        }
+        return sum >= 0.; // if positiv, its counter-clockwise.
+}
+
+
+
+
+/***************************************************
+ * POINT IN CLOCKWISE ORDER
+ ***************************************************/
+/**
+ * @param n the number of Coordinates sended
+ * @param ... Coordinates 
+ * @return true iff n == 0 or received Coordinates are given in Clockwise order
+ * @note consider that Y axis is inverted. Else, returned value is false
+ */
+bool geometry::pointInClockwiseOrder(const unsigned int n, ...) {
+        // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
+        // Note that Y axis is considered inverted
+        va_list args;
+        float sum = 0;
+        Coordinates first, prevs, crrnt;
+        va_start(args, n); 
+
+        if(n == 1) {
+                va_arg(args, Coordinates);
+        } else if(n > 1) {
+                first = va_arg(args, Coordinates);
+                prevs = first;
+                for(unsigned int j = 1; j < n; j++) {
+                        crrnt = va_arg(args, Coordinates);
+                        sum += (crrnt.x()-prevs.x()) * (crrnt.y()+prevs.y());
+                        prevs = crrnt;
+                }
+                crrnt = first;
+                sum += (crrnt.x()-prevs.x()) * (crrnt.y()+prevs.y());
+        }
+
+        va_end(args);
+        return sum <= 0.; // if positiv, its counterclockwise.
+}
+
+
+
+/**
+ * @param coords Coordinates that will be tested
+ * @return true iff Coordinates are stored in Clockwise order
+ * @note consider that Y axis is NOT inverted. Else, returned value is false
+ */
+bool geometry::pointInClockwiseOrder(const std::vector<Coordinates*> coords) {
+        // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
+        // Note that Y axis is considered inverted
+        float sum = 0;
+        if(coords.size() > 1) {
+                unsigned int summed = 1;
+                for(; summed < coords.size(); summed++) {
+                        sum += (coords[summed]->x() - coords[summed-1]->x()) 
+                                * (coords[summed]->y() + coords[summed-1]->y());
+                }
+                summed--; // target is the last one
+                sum += (coords[0]->x()-coords[summed]->x()) 
+                        * (coords[0]->y()+coords[summed]->y());
+        }
+        return sum <= 0.; // if negativ, its clockwise.
+}
+
+
+
+
+
+
+
 
 /***************************************************
  * COLLISION BETWEEN SEGMENT AND CIRCLE
