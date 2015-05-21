@@ -79,7 +79,7 @@ class TrianguledObject(object):
         def nearerNeighbors(self, nb_neighbors, post_filter=lambda t: True):
                 """
                 @param nb_neighbors a positiv integer
-                @param post_filter a callable that return True or False and take a TrianguledObject in argument. 
+                @param post_filter a callable that return True or False and take a TrianguledObject in argument.
                 @return list that contain a maximum of nb_neighbors neighbors in nearer-first order.
                 @note if post_filter provided, filtering happen after constitution of the list.
                 """
@@ -88,13 +88,13 @@ class TrianguledObject(object):
 
         def neighborsAt(self, max_distance, min_distance = 0, predicat=lambda t: True):
                 """
-                @param max_distance number that give the limit distance 
+                @param max_distance number that give the limit distance
                 @param min_distance number that give the low limit. No low limit if equal to zero (default value is zero)
-                @param predicat a callable that return True or False and take a TrianguledObject in argument. 
+                @param predicat a callable that return True or False and take a TrianguledObject in argument.
                 @return list that contain the TrianguledObject that are at max_distance at most of self, min_distance at least of self, and that respect the given predicat
                 """
                 return (TrianguledObject.of(_) for _ in self.virtual_vertex.neighborsAt(max_distance, min_distance) if self.virtual_vertex.id() !=  _.id() and predicat(TrianguledObject.of(_)))
-                        
+
 
         def virtualVertex(self):
                 """
@@ -116,7 +116,7 @@ class TrianguledObject(object):
 # CLASS METHOD ################################################################
         @staticmethod
         def of(virtual_vertex):
-                return TrianguledObject.refs[virtual_vertex.id()] if virtual_vertex is not None else None 
+                return TrianguledObject.refs[virtual_vertex.id()] if virtual_vertex is not None else None
 
 
 
@@ -149,7 +149,7 @@ def addTrianguledObject(self, tri_obj, coords):
         """
         @param tri_obj TrianguledObject to add
         @param coords (x,y) where tri_obj will be place
-        @return the id of tri_obj in self instance, or None iff coords invalid 
+        @return the id of tri_obj in self instance, or None iff coords invalid
         """
         added = None
         # transform user coords into Coordinates object
@@ -180,7 +180,7 @@ def delTrianguledObject(self, tri_obj):
                 tri_obj.virtual_vertex = None
 # this function is now part of Delaunator API
 Delaunator.delTrianguledObject = delTrianguledObject
-       
+
 
 
 
@@ -208,7 +208,7 @@ def trianguledObjectAt(self, coords, precision=None):
         @return TrianguledObject find at given coords, or None if not found
         """
         # transform precision in a valid value
-        if precision is None: 
+        if precision is None:
                 precision = self.epsilon()
         # transform user coords into Coordinates object
         if not isinstance(coords, Coordinates):
