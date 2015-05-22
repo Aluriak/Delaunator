@@ -1,2 +1,3 @@
 libdelaunator.py
 libdelaunator_wrap.cpp
+*.dot
