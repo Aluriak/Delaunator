@@ -28,7 +28,11 @@
  * DEFINES
  */
 #define FILE_LOGS "logs"
+#ifdef DEBUG
 #define LOGOK fprintf(stderr,"OK:%s:%u\n", __FILE__, __LINE__);
+#else
+#define LOGOK
+#endif
 //extern unsigned short VERBOSE_LEVEL = 0; // greater it is, more logs there is.
 
 
