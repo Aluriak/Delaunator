@@ -17,6 +17,7 @@
 #include <cstring>	/* string function */
 #include <queue>	/* queue type */
 #include <cfloat>       /* FLT_MAX */
+#include <cstdarg>      /* variadic functions */
 #ifdef __GNUC__
 #include <unistd.h> 	/* sleep (GNUC) */
 #endif
