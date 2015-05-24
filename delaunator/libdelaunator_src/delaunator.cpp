@@ -57,10 +57,10 @@ VirtualVertex* Delaunator::addVirtualVertex(Coordinates coords, VirtualVertex* v
  * @param y coordinate in y-axis
  * @param vv address of a VirtualVertex object that will be added to triangulation (default: NULL)
  * @return VirtualVertex added object, if vv provided, vv is returned
- * @note if no object provided, a pure VirtualVertex will be create and added
+ * @note if no object provided, a pure VirtualVertex will be create and add
  */
 VirtualVertex* Delaunator::addVirtualVertex(float x, float y, VirtualVertex* vv) {
-        Vertex* new_vtx = this->triangulation->addVertexAt(x, y); 
+        Vertex* new_vtx = this->triangulation->addVertexAt(x, y);
         if(new_vtx != NULL) {
                 // create object, and assign it the Vertex
                 if(vv == NULL) {
@@ -68,7 +68,7 @@ VirtualVertex* Delaunator::addVirtualVertex(float x, float y, VirtualVertex* vv)
                 } else { // vv is provided by user
                         vv->setVertex(new_vtx);
                 }
-                new_vtx->take(vv);    
+                new_vtx->take(vv);
                 this->object_count++;
         } // else: dramatic error: triangulation can't provide vertices…
         return new_vtx == NULL ? NULL : vv; // return added object iff added
@@ -233,11 +233,67 @@ void Delaunator::freeAll() {
 
 
 
+/**
+ * Perform unit tests on instance.
+ * Crash with help of assert calls.
+ */
+void Delaunator::unittests() const {
+        this->triangulation->unittests();
+}
+
+
+/**
+ * Generate dot representation of graph
+ */
+void Delaunator::representation() const {
+        this->triangulation->representation();
+}
 
 
 
 /***************************************************
  * ACCESSORS
+ ***************************************************/
+/**
+ * @return the maximum distance reachable in triangulation
+ * @note that distance is equal to distance between (xmin;ymin) and (xmax;ymax)
+ */
+float Delaunator::distanceMax() const {
+        return Coordinates(this->getXmin(), this->getYmin()).distanceTo(
+                        Coordinates(this->getXmax(), this->getYmax())
+                );
+} 
+
+
+
+/**
+ * @return VertexFinderMode used by triangulation.
+ */
+VertexFinderMode Delaunator::getFinderMode() const { 
+        return this->triangulation->getFinderMode();
+}
+
+
+/**
+ * @param m VertexFinderMode value, that tell mode of searching will be used by triangulation.
+ */
+void Delaunator::setFinderMode(VertexFinderMode m) { 
+        this->triangulation->setFinderMode(m);
+}
+
+
+
+/**
+ * @return list of copy of address of VirtualVertex contained in this Delaunator instance.
+ */
+std::list<VirtualVertex*> Delaunator::virtualVertices() const {
+        return this->triangulation->getVirtualVertices();
+}
+
+
+
+/***************************************************
+ * PREDICATS
  ***************************************************/
 /**
  * @param v tested Vertex 
@@ -259,31 +315,11 @@ bool Delaunator::collideAt(Coordinates c) const {
 }
 
 
-/**
- * @return the maximum distance reachable in triangulation
- * @note that distance is equal to distance between (xmin;ymin) and (xmax;ymax)
- */
-float Delaunator::distanceMax() const {
-        return Coordinates(this->getXmin(), this->getYmin()).distanceTo(
-                        Coordinates(this->getXmax(), this->getYmax())
-                );
-} 
-
-
-
-/***************************************************
- * PREDICATS
- ***************************************************/
 
 
 /***************************************************
  * ITERATORS
  ***************************************************/
-std::list<VirtualVertex*> Delaunator::virtualVertices() const {
-        return this->triangulation->getVirtualVertices();
-}
-
-
 /***************************************************
  * PRIVATE METHODS
  ***************************************************/

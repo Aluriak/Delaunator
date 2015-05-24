@@ -45,7 +45,7 @@ class Delaunator {
 		~Delaunator();
 	// PUBLIC METHODS
                 // modify triangulation
-                VirtualVertex* addVirtualVertex(Coordinates, VirtualVertex* = NULL);
+                VirtualVertex* addVirtualVertex(Coordinates,  VirtualVertex* = NULL);
                 VirtualVertex* addVirtualVertex(float, float, VirtualVertex* = NULL);
                 void           delVirtualVertex(VirtualVertex*);
                 VirtualVertex* movVirtualVertex(VirtualVertex*, Coordinates);
@@ -58,6 +58,9 @@ class Delaunator {
                 // frees
                 void clear();
                 void freeAll();
+                // others
+                void unittests() const;
+                void representation() const;
 	// ACCESSORS
                 /** @return total number of VirtualVertex in Delaunator */
                 unsigned int objectCount() const { return this->object_count; }
@@ -67,9 +70,10 @@ class Delaunator {
                 float getYmax() const { return this->triangulation->getYmax(); }
                 float epsilon() const { return EPSILON; }
                 float distanceMax() const;
-                //TriangulationVertexFinderMode getFinderMode() const;
-                //void setFinderMode(TriangulationVertexFinderMode); 
+                VertexFinderMode getFinderMode() const;
+                void setFinderMode(VertexFinderMode); 
                 std::list<VirtualVertex*> virtualVertices() const;
+                std::list<Edge*> edges() const { return triangulation->getEdges(); }
 
         // PREDICATS
                 bool haveVertex(Vertex*) const;
