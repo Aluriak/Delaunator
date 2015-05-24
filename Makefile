@@ -4,10 +4,10 @@
 all: build install 
 
 build: clear
-	python3.2 setup.py build
+	python3 setup.py build
 
 install:
-	python3.2 setup.py install
+	python3 setup.py install
 
 
 
@@ -23,7 +23,7 @@ deac:
 	- rm -r lib include bin
 
 upload: clear
-	python3.2 setup.py sdist upload
+	python3 setup.py sdist upload
 
 
 gendoc:
@@ -33,7 +33,7 @@ gendoc:
 updoc:
 	# DOESN'T WORK for a curious reason
 	# see setup.cfg for exact configuration
-	python3.2 setup.py upload_docs 
+	python3 setup.py upload_docs 
 
 
 clear:
