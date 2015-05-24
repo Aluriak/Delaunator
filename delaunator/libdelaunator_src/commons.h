@@ -6,8 +6,6 @@
 /*
  * LIBRARIES
  */
-// Python, for embedding (not needed for SWIG)
-#include <Python.h>
 // STD LIB
 #include <iostream>
 #include <cstdlib>
