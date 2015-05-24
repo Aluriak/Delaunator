@@ -418,14 +418,20 @@ inline float collideAt_squareDistancePointToSegment(float x1, float y1, float x2
         else
                 return (x - x2)*(x - x2) + (y - y2)*(y - y2);
 }
+
 /**
  * @param p1 Coordinates of a point of triangle
  * @param p2 Coordinates of a point of triangle
  * @param p3 Coordinates of a point of triangle
  * @param p0 Coordinates of tested point
  * @return true iff tested point is in triangle composed by p1, p2 and p3.
+ * @note assume that p1, p2 and p3 are given in counterclockwise order
  */
 bool geometry::pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0) {
+#ifdef DEBUG
+        std::vector<Coordinates*> assert_data = {&p1, &p2, &p3};
+        assert(geometry::pointInCounterClockwiseOrder(assert_data));
+#endif
         bool collide = false;
         float x1 = p1.x(), y1 = p1.y();
         float x2 = p2.x(), y2 = p2.y();
