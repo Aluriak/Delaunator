@@ -14,7 +14,10 @@
 %include "utils.h"
 %include "commons.h"
 
+%rename(__coordinates__) Vertex::operator Coordinates;
 %include "vertex.h"
+/* some operators are defined, which are no compatible with target language */
+/* more pythonic interface */
 %extend Coordinates {
         /* for have x and y as property in pythons modules */
         %pythoncode %{
