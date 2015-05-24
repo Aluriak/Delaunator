@@ -313,68 +313,80 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         //                      - move to middle of the edge, and recursiv recall
         //
 // INIT
-        Edge* col_edge = NULL; // collision edge
-        Edge* cur_edge = NULL; // currently studied edge
-        Edge* lmt_edge = NULL; // limiter edge accessed from cur_edge
+        Edge* collidd_edge = NULL; // collided edge
+        Edge* current_edge = NULL; // currently studied edge
+        Edge* limiter_edge = NULL; // limiter edge accessed from current_edge
 
         if((*mv_vrtx) != new_position) {
 // LIMIT MOVE
-        //logs("LIMIT MOVE\n");
+        logs("LIMIT MOVE\n");
         new_position = this->coordinateCorrection(new_position);
 
-// FIND COLLISION WITH A LIMITER EDGES 
-        //logs("FIND COLLISION WITH A LIMITER EDGES\n");
+// FIND COLLISION WITH A LIMITER EDGES
+        logs("FIND COLLISION WITH A LIMITER EDGES\n");
         // limiter edges are the next left edges of all edge that have mv_vrtx as origin.
-        cur_edge = mv_vrtx->getEdge();
+        current_edge = mv_vrtx->getEdge();
         do {
-                cur_edge = cur_edge->rotLeftEdge();
-                lmt_edge = cur_edge->nextLeftEdge();
-                // if collision, col_edge is finded !
+                current_edge = current_edge->rotLeftEdge();
+                limiter_edge = current_edge->nextLeftEdge();
+                // if collision, collidd_edge is finded !
                 if(geometry::collisionBetweenSegmentAndSegment(
-                                        *lmt_edge->originVertex(), 
-                                        *lmt_edge->destinVertex(),
+                                        *limiter_edge->originVertex(),
+                                        *limiter_edge->destinVertex(),
                                         *mv_vrtx, new_position)) {
-                        col_edge = lmt_edge;
+                        collidd_edge = limiter_edge;
                 }
-        } while(col_edge == NULL && cur_edge != mv_vrtx->getEdge());
+        } while(collidd_edge == NULL && current_edge != mv_vrtx->getEdge());
 
         // if targeted position is exactly a Vertex, next algorithm step need to manage that.
-        // Help it: garantee that the targeted Vertex is the origin vertex of lmt_edge
-        // For do that, just get opposite edge of lmt_edge if lmt_edge's destination vertex is
+        // Help it: garantee that the targeted Vertex is the origin vertex of limiter_edge
+        // For do that, just get opposite edge of limiter_edge if limiter_edge's destination vertex is
         //  at new_position
-        if(col_edge != NULL && *col_edge->destinVertex() == new_position) {
-                col_edge = col_edge->oppositeEdge();
+        if(collidd_edge != NULL && *collidd_edge->destinVertex() == new_position) {
+                collidd_edge = collidd_edge->oppositeEdge();
 #ifdef DEBUG
-                assert(*col_edge->originVertex() == new_position);
+                assert(*collidd_edge->originVertex() == new_position);
 #endif
         }
 
 // MOVE MV_VRTX TO NEW LOCATION
-        //logs("MOVE MV_VRTX TO NEW LOCATION\n");
-        if(col_edge == NULL) {
+        logs("MOVE MV_VRTX TO NEW LOCATION\n");
+        if(collidd_edge == NULL) {
+                LOGOK
                 // next step is the end
                 this->moveVertex_pure(mv_vrtx, new_position);
 
-        } else if(*col_edge->originVertex() == new_position) { // if target place is already habited
+        } else if(*collidd_edge->originVertex() == new_position) { // if target place is already habited
+                LOGOK
 #ifdef DEBUG
-                assert(mv_vrtx != col_edge->originVertex());
-                assert(not col_edge->originVertex()->isACorner());
+                assert(mv_vrtx != collidd_edge->originVertex());
+                assert(not this->haveCorner(collidd_edge->originVertex()));
 #endif
                 // give all to this existant Vertex
-                mv_vrtx->giveVirtualVerticesTo(col_edge->originVertex());
+                LOGOK
+                mv_vrtx->giveVirtualVerticesTo(collidd_edge->originVertex());
+                LOGOK
 #ifdef DEBUG
                 assert(mv_vrtx->getObjectCount() == 0);
 #endif
+                logs("(%f;%f) (%f;%f)\n",
+                                mv_vrtx->x(), mv_vrtx->y(),
+                                collidd_edge->originVertex()->x(),
+                                collidd_edge->originVertex()->y()
+                );
+                LOGOK
                 // del mv_vrtx, because we don't need it anymore
                 this->delVertex(mv_vrtx);
+                LOGOK
                 // the mv_vrtx is now the existant one (and don't need to be moved anymore)
-                mv_vrtx = col_edge->originVertex();
+                mv_vrtx = collidd_edge->originVertex();
 
-        } else if(col_edge->length() > 2*EPSILON) { // must be dividable
+        } else if(collidd_edge->length() > 2*EPSILON) { // must be dividable
+                LOGOK
                 // get current middle of collision edge as the next step
-                Coordinates next_step = col_edge->middle();
+                Coordinates next_step = collidd_edge->middle();
                 // operate flip on collision edge (can break Delaunay condition)
-                this->operateFlip(col_edge);
+                this->operateFlip(collidd_edge);
                 // go in the next step (Delaunay condition repaired)
                 this->moveVertex_pure(mv_vrtx, next_step);
                 // recursiv call, lets go to the next step !
@@ -382,16 +394,16 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
 
         } else { // hard way
                 // add new vertex
-                Vertex* new_vrtx = this->addVertexAt(new_position, col_edge);
+                Vertex* new_vrtx = this->addVertexAt(new_position, collidd_edge);
                 // give all VirtualVertices to it
                 mv_vrtx->giveVirtualVerticesTo(new_vrtx);
                 // del the asked to move Vertex
                 this->delVertex(mv_vrtx);
                 // and finally break recursiv recall
-                mv_vrtx = new_vrtx; 
+                mv_vrtx = new_vrtx;
                 // no anymore move required !
         }
-        
+
 // ENDING
         }
         return mv_vrtx;
