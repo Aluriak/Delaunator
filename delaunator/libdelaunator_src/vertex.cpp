@@ -185,15 +185,6 @@ bool Vertex::isNeighbourOf(Vertex* v) const {
 
 
 /**
- * @return true iff this is referenced by triangulation and is one of the four corner vertice
- */
-bool Vertex::isACorner() const {
-        return this->getID() <= 4;
-}
-
-
-
-/**
  * @param vv a VirtualVertex address
  * @return true iff this have vv in objects list
  */

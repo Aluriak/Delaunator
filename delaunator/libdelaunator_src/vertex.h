@@ -101,6 +101,8 @@ class Vertex : public Coordinates {
         // PREDICATS
                 bool isNeighbourOf(Vertex*) const;
                 bool have(VirtualVertex*) const;
+        // OPERATORS
+                operator Coordinates() const { return Coordinates(this->x(), this->y()); }
         private:
         // ATTRIBUTES
                 Edge* edge; // edge has this Vertex as origin.
