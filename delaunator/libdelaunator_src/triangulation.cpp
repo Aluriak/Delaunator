@@ -14,10 +14,10 @@
  * @param finder_mode for choose which mode of finder will be used for search Coordinates, LAST by default
  * @see VertexFinderMode
  */
-Triangulation::Triangulation(const float xmin, const float xmax, 
-                             const float ymin, const float ymax, 
-                             const VertexFinderMode finder_mode) : 
-                                   xmin(xmin), xmax(xmax), 
+Triangulation::Triangulation(const float xmin, const float xmax,
+                             const float ymin, const float ymax,
+                             const VertexFinderMode finder_mode) :
+                                   xmin(xmin), xmax(xmax),
                                    ymin(ymin), ymax(ymax) {
 #ifdef DEBUG
         assert(xmin < xmax);
@@ -30,10 +30,16 @@ Triangulation::Triangulation(const float xmin, const float xmax,
         Vertex* vne = new Vertex(xmax+1, ymin-1); // NORTH-EAST
         Vertex* vse = new Vertex(xmax+1, ymax+1); // SOUTH-EAST
         Vertex* vsw = new Vertex(xmin-1, ymax+1); // SOUTH-WEST
-        this->vertices.push_back(vnw); 
-        this->vertices.push_back(vne); 
-        this->vertices.push_back(vse); 
-        this->vertices.push_back(vsw); 
+        this->vertices.push_back(vnw);
+        this->vertices.push_back(vne);
+        this->vertices.push_back(vse);
+        this->vertices.push_back(vsw);
+#if DEBUG
+        assert(this->haveCorner(vnw));
+        assert(this->haveCorner(vne));
+        assert(this->haveCorner(vse));
+        assert(this->haveCorner(vsw));
+#endif
 
 // Creation of Edges that rely vertices.
         Edge* eNW2NE = new Edge(vnw) ;
@@ -124,9 +130,9 @@ Triangulation::Triangulation(const float xmin, const float xmax,
         assert(eNE2SW->leftFace() != eSE2SW->leftFace()); // but all inequality are not tested
         assert(eSE2SW->leftFace() != eNE2SE->leftFace()); // these assert will be silent
         assert(eNE2SE->leftFace() != eSW2NE->leftFace()); // until a very big bug is detected
-        assert(eSW2NE->leftFace() != eSE2SW->leftFace());  
-        assert(eSW2NE->leftFace() != eNE2SE->leftFace());  
-        this->DEBUG_tests();
+        assert(eSW2NE->leftFace() != eSE2SW->leftFace());
+        assert(eSW2NE->leftFace() != eNE2SE->leftFace());
+        this->unittests();
 #endif
 }
 
@@ -166,8 +172,8 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
 
 // find container of vertex ( container>, >p )
 #ifdef FOLLOW_SEARCH
-        for(auto it = this->edges.cbegin(); it != this->edges.cend(); it++) {
-                (*it)->passing = false;
+        for(auto edge : this->edges) {
+                edge->passing = false;
         }
 #endif
         container = this->findContainerOf(p, first);
@@ -181,7 +187,6 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
                 else if(p == *v3) new_vertex = v3;
         // if a Vertex must be creat
                 if(new_vertex == NULL) {
-        
                 // divide in 3 triangles ( >container>, >p>, >new_vertex )
                         // References edges of container
                         Edge* p1_p2 = container->getEdge1();
@@ -191,11 +196,40 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
                         assert(p1_p2->leftFace() == container);
                         assert(p2_p3->leftFace() == container);
                         assert(p3_p1->leftFace() == container);
+                        assert(p1_p2->oppositeEdge()->rightFace() == container);
+                        assert(p2_p3->oppositeEdge()->rightFace() == container);
+                        assert(p3_p1->oppositeEdge()->rightFace() == container);
+                        assert(p1_p2->rightFace() != container);
+                        assert(p2_p3->rightFace() != container);
+                        assert(p3_p1->rightFace() != container);
+                        assert(p1_p2->originVertex() == container->getP1());
+                        assert(p2_p3->originVertex() == container->getP2());
+                        assert(p3_p1->originVertex() == container->getP3());
+                        Coordinates P1 = *container->getP1();
+                        Coordinates P2 = *container->getP2();
+                        Coordinates P3 = *container->getP3();
+                        if(not this->haveCorner(container->getP1())
+                                && not this->haveCorner(container->getP2())
+                                && not this->haveCorner(container->getP3())) {
+                                //logs("Verif counterclockwiseness %u Face: ",
+                                        //container->getID());
+                                //logs("(%f;%f) (%f;%f) (%f;%f)\n",
+                                        //P1.x(),
+                                        //P1.y(),
+                                        //P2.x(),
+                                        //P2.y(),
+                                        //P3.x(),
+                                        //P3.y()
+                                //);
+                                assert(geometry::pointInCounterClockwiseOrder
+                                                (3, P1, P2, P3)
+                                );
+                        }
 #endif
                         // Creat the new vertex
-                        this->vertices.push_back(new Vertex(p));
-                        new_vertex = this->vertices.back();
+                        new_vertex = new Vertex(p);
                         Vertex* v0 = new_vertex;
+                        this->vertices.push_back(new_vertex);
                         // Creat new faces
                         Face* f1 = container;
                         Face* f2 = new Face(NULL);
@@ -204,28 +238,25 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
                         this->faces.push_back(f3);
                         // Creat new edges(originVertex, oppositeEdge, nextleftEdge)
                         Edge* p0_p1 = new Edge(v0, NULL,  p1_p2);
-                        Edge* p0_p2 = new Edge(v0, NULL,  p2_p3); 
+                        Edge* p0_p2 = new Edge(v0, NULL,  p2_p3);
                         Edge* p2_p0 = new Edge(v2, p0_p2, p0_p1);
                         Edge* p0_p3 = new Edge(v0, NULL,  p3_p1);
                         Edge* p3_p0 = new Edge(v3, p0_p3, p0_p2);
-                        Edge* p1_p0 = new Edge(v1, p0_p1, p0_p3); 
+                        Edge* p1_p0 = new Edge(v1, p0_p1, p0_p3);
                         this->edges.push_back(p0_p1);
                         this->edges.push_back(p0_p2);
                         this->edges.push_back(p2_p0);
                         this->edges.push_back(p0_p3);
                         this->edges.push_back(p3_p0);
-                        this->edges.push_back(p1_p0); 
+                        this->edges.push_back(p1_p0);
                         // Assign next left edges
                         p1_p2->setNextLeftEdge(p2_p0);
                         p2_p3->setNextLeftEdge(p3_p0);
                         p3_p1->setNextLeftEdge(p1_p0);
                         // Assign faces
-                        f1->setEdge(p2_p0); 
+                        f1->setEdge(p2_p0);
                         f2->setEdge(p3_p0);
                         f3->setEdge(p1_p0);
-#ifdef DEBUG
-                        this->DEBUG_tests();
-#endif
 
                 // apply delaunay restrictions
                         this->applyDelaunayCondition(f1);
@@ -236,6 +267,9 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
 // ending
         } // if(container != NULL)
         } // if(this->collideAt(p))
+#ifdef DEBUG
+        this->unittests();
+#endif
         return new_vertex;
 }
 
@@ -255,8 +289,8 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
  * @return address of the Vertex, or of a new Vertex if given was freed
  * @note given Vertex can be deleted, but data is keeped in returned Vertex.
  */
-Vertex* Triangulation::moveVertex(Vertex* mv_vrtx, float x, float y) { 
-        return this->moveVertexTo(mv_vrtx, Coordinates(mv_vrtx->x()+x, mv_vrtx->y()+y)); 
+Vertex* Triangulation::moveVertex(Vertex* mv_vrtx, float x, float y) {
+        return this->moveVertexTo(mv_vrtx, Coordinates(mv_vrtx->x()+x, mv_vrtx->y()+y));
 }
 
 
@@ -399,66 +433,138 @@ Vertex* Triangulation::vertexAt(float x, float y, float precision) const {
  */
 void Triangulation::delVertex(Vertex* del_vrtx) {
 // INIT
+        logs("\n%u:delVertex(%p==(%u:%f;%f) {\n", __LINE__,
+                del_vrtx, del_vrtx->getID(), del_vrtx->x(), del_vrtx->y());
 #ifdef DEBUG
         assert(del_vrtx != NULL);
         assert(this->have(del_vrtx));
-        assert(!del_vrtx->isACorner());
+        assert(not this->haveCorner(del_vrtx));
 #endif
         // Creat some container
         std::vector<Face*> modified_faces(0); // modified faces that can break Delaunay condition
         std::vector<Edge*> nei_edge(0);
-        std::vector<float> nei_dist(0);
         std::vector<Vertex*> nei_vrtx(0);
         // Fill those that refer neighbors, edge to neighbors or distance to neighbors
         Edge* edge = del_vrtx->getEdge();
         do {    nei_edge.push_back(edge);
                 nei_vrtx.push_back(edge->destinVertex());
-                nei_dist.push_back(edge->destinVertex()->distanceTo(*del_vrtx));
                 edge = edge->rotLeftEdge();
+#if DEBUG
+                assert(edge->originVertex() == del_vrtx);
+#endif
         } while(edge != del_vrtx->getEdge());
 
 // SIMPLIFY LOCAL TRIANGULATION
         // When we can't do something, it's when the del_vrtx is linked to three or four points exactly.
-        // The end of local simplification is when no modification is done.
+        // The end of local simplification is when no modification is done, or if del_vrtx have exactly 3 neighbors.
         // At this time of the algo, Delaunay condition is breaked, and suppression of the point
         // is easy. (point will be in a triangle, or on an edge exactly)
-        unsigned int prev_size = 3;
-        while(prev_size != nei_vrtx.size()) {
+        logs("%u:Neighbors of (%u;%f;%f) are %i:\n", __LINE__, del_vrtx->getID(),
+                del_vrtx->x(), del_vrtx->y(), nei_vrtx.size());
+        for(auto it : nei_vrtx) {
+                logs("\t(%u;%f;%f)\n", it->getID(), it->x(), it->y());
+        }
+        unsigned int prev_size = 0; // impossible value
+        while(prev_size != nei_vrtx.size() && nei_vrtx.size() != 3) {
                 prev_size = nei_vrtx.size();
+                assert(nei_vrtx.size() == nei_edge.size());
+                std::vector<Coordinates*> triangle_del = {NULL, NULL, NULL};
+                std::vector<Coordinates*> triangle_id2 = {NULL, NULL, NULL};
                 // For each neighbour
-                for(unsigned int target = 0; target < nei_edge.size(); target++) {
+                for(unsigned int target = 0; target < nei_vrtx.size() && nei_vrtx.size() > 3; target++) {
+                        assert(nei_vrtx.size() > 3);
                         // take tree consecutivs neighbors indexes
                         unsigned int id1 = target;
-                        unsigned int id2 = (target+1) % nei_dist.size();
-                        unsigned int id3 = (target+2) % nei_dist.size();
+                        unsigned int id2 = (target+1) % nei_vrtx.size();
+                        unsigned int id3 = (target+2) % nei_vrtx.size();
+                        // stock in counterclockwise order the three points of each triangle
+                        triangle_del = { nei_vrtx[id1], del_vrtx     , nei_vrtx[id3] };
+                        triangle_id2 = { nei_vrtx[id1], nei_vrtx[id2], nei_vrtx[id3] };
+                        if(not geometry::pointInCounterClockwiseOrder(triangle_del)) {
+                                // swap first and second values (do the same for the two triangles)
+                                Coordinates* tmp = triangle_del[0];
+                                triangle_del[0] = triangle_del[2];
+                                triangle_del[2] = tmp;
+                                logs("%u:Invertion performed between %u and %u (triangle del)\n",
+                                    __LINE__, nei_vrtx[id1]->getID(), nei_vrtx[id3]->getID());
+                        } if(not geometry::pointInCounterClockwiseOrder(triangle_id2)) {
+                                Coordinates* tmp = triangle_id2[0];
+                                triangle_id2[0] = triangle_id2[2];
+                                triangle_id2[2] = tmp;
+                                logs("%u:Invertion performed between %u and %u (triangle id2)\n",
+                                    __LINE__, nei_vrtx[id1]->getID(), nei_vrtx[id3]->getID());
+                        }
+#ifdef DEBUG
+                        assert(geometry::pointInCounterClockwiseOrder(triangle_del));
+                        assert(geometry::pointInCounterClockwiseOrder(triangle_id2));
+#endif
+                        logs("%u:IDS: {%u,%u,%u%%%u}=>{%u,%u,%u}\n", __LINE__,
+                                target, target+1, target+2, nei_vrtx.size(), id1, id2, id3);
+                        logs("Tested neighbors of (%u,%f;%f):\n", del_vrtx->getID(),
+                                del_vrtx->x(), del_vrtx->y());
+                        logs("\t(%u:%f;%f)\n", nei_vrtx[id1]->getID(),
+                                nei_vrtx[id1]->x(), nei_vrtx[id1]->y());
+                        logs("\t(%u:%f;%f)\n", nei_vrtx[id2]->getID(),
+                                nei_vrtx[id2]->x(), nei_vrtx[id2]->y());
+                        logs("\t(%u:%f;%f)\n", nei_vrtx[id3]->getID(),
+                                nei_vrtx[id3]->x(), nei_vrtx[id3]->y());
+
                         // collision between del_vrtx and triangle formed by neighbors
-                        bool del_vrtx_not_in_triangle = not geometry::pointInTriangle(
-                                        *nei_vrtx[id1], *nei_vrtx[id2], *nei_vrtx[id3], *del_vrtx
+                        bool del_vrtx_not_in_triangle_id2 = not geometry::pointInTriangle(
+                            *triangle_id2[0], *triangle_id2[1], *triangle_id2[2], *del_vrtx
                         );
-                        // if middle point is farthest than at least one of the two others from del_vrtx
-                        //      AND del_vrtx is not in triangle formed by the tree neighbors
-                        if(del_vrtx_not_in_triangle &&
-                                (nei_dist[id2] >= nei_dist[id1] || nei_dist[id2] >= nei_dist[id3])) {
-                                // these tree points will be a triangle !
-                                // so, operate flip on the middle edge
+                        LOGOK
+                        // collision between middle neighbor and triangle formed by the 3 others
+                        bool id2_not_in_triangle_del = not geometry::pointInTriangle(
+                            *triangle_del[0], *triangle_del[1], *triangle_del[2], *nei_vrtx[id2]
+                        );
+                        LOGOK
+                        // if neighbors are aligned, no operation will be performed.
+                        bool not_aligned_neighbors = not geometry::alignedPoints(
+                                *nei_vrtx[id1], *nei_vrtx[id2], *nei_vrtx[id3]);
+                        logs("\t%u:In triangle(del): %i\n", __LINE__,
+                                (int)(!del_vrtx_not_in_triangle_id2));
+                        logs("\t%u:In triangle(id2): %i\n", __LINE__,
+                                (int)(!id2_not_in_triangle_del));
+                        logs("\t%u:Aligned neighbors: %i\n", __LINE__,
+                                (int)(!not_aligned_neighbors));
+                        // if del_vrtx not in triangle formed by the three neighbors,
+                        //   and id2 is not in triangle formed by id1, id3 and del_vrtx,
+                        //   and id1, id2 and id3 are not aligned,
+                        //   then the edge [del_vrtx,id2] can be flipped.
+                        //   it will break the delaunay condition, but remove one
+                        //   neighbor for del_vrtx.
+                        if(del_vrtx_not_in_triangle_id2 && id2_not_in_triangle_del && not_aligned_neighbors) {
+                                LOGOK
+                                // operate flip on the middle edge
                                 this->operateFlip(nei_edge[id2]);
+                                LOGOK
+                                // The modified faces must be referenced :
+                                //   it probably break the Delaunay condition
+                                //   the face used must not be adjacent to deleted point !
+                                modified_faces.push_back(nei_edge[id3]->nextLeftEdge()->rightFace());
+                                logs("%u:Neighbor %u discarded ; remain neighbors = %i\n",
+                                        __LINE__, nei_vrtx[id2]->getID(), nei_vrtx.size()-1);
+                                LOGOK
                                 // remove middle vertex (id2) from neighbors lists
                                 nei_edge.erase(nei_edge.begin() + id2);
-                                nei_dist.erase(nei_dist.begin() + id2);
                                 nei_vrtx.erase(nei_vrtx.begin() + id2);
-                                // The modified faces must be referenced : maybe it break the Delaunay condition
-                                modified_faces.push_back(nei_edge[id1]->nextLeftEdge()->rightFace());
+                                assert(nei_vrtx.size() == nei_edge.size());
                         }
                 }
         }
-        //logs("\nNeighbors reduced to %i\n", nei_vrtx.size());
+        logs("%u:Neighbors of (%u;%f;%f) reduced to %i:\n", __LINE__, del_vrtx->getID(),
+                del_vrtx->x(), del_vrtx->y(), nei_vrtx.size());
+        for(auto it : nei_vrtx) {
+                logs("\t(%u;%f;%f)\n", it->getID(), it->x(), it->y());
+        }
 #ifdef DEBUG
-                // Some tests
-                // del_vrtx is in a triangle or in a square and aligned with at least two neighbors
-                assert(nei_vrtx.size() == 4 || nei_vrtx.size() == 3);
-                this->DEBUG_tests();
+        // Some tests
+        // del_vrtx is in a triangle or in a square and aligned with at least two neighbors
+        assert(nei_vrtx.size() == 4 || nei_vrtx.size() == 3);
+        this->unittests();
 #endif
-        
+
 // DELETE POINT FROM TRIANGLE CONTAINER
         if(nei_vrtx.size() == 3) { // triangle
                 // Container of del_vrtx is composed by the three neighbors contains in nei_vrtx
@@ -537,12 +643,12 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
                 side4->originVertex()->setEdge(side4);
                 // Set next left edge
                 // side1 -> edge1 -> side4 == one triangle
-                side1->setNextLeftEdge(edge1); 
-                edge1->setNextLeftEdge(side4); 
-                side4->setNextLeftEdge(side1); 
-                // side2 -> side3 -> edge1->oppositeEdge() == second trianglev
-                side2->setNextLeftEdge(side3); 
-                side3->setNextLeftEdge(edge1->oppositeEdge()); 
+                side1->setNextLeftEdge(edge1);
+                edge1->setNextLeftEdge(side4);
+                side4->setNextLeftEdge(side1);
+                // side2 -> side3 -> edge1->oppositeEdge() == second triangle
+                side2->setNextLeftEdge(side3);
+                side3->setNextLeftEdge(edge1->oppositeEdge());
                 edge1->oppositeEdge()->setNextLeftEdge(side2);
                 // Set face's Edge reference to a valide side, and reference it as a modified face
                 face1->setEdge(side1);
@@ -565,12 +671,14 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
 
 // RESTORE DELAUNAY CONDITION
         // Delaunay condition was break. It's time to restore it.
-        for(Face* face : modified_faces) 
+        LOGOK
+        for(Face* face : modified_faces) {
                 this->applyDelaunayCondition(face);
+        }
 
 // END
 #ifdef DEBUG
-        this->DEBUG_tests();
+        this->unittests();
 #endif
 }
 
@@ -599,7 +707,7 @@ void Triangulation::mergeVertex(Vertex* v, Vertex* v_destroyed) {
 
 /**
  * Correct Coordinates
- * @param c Coordinates 
+ * @param c Coordinates
  * @return Coordinates that are equal to c, or, if c is out of bounds, a projection of c on this.
  */
 Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
@@ -618,31 +726,110 @@ Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
 /*
  * DEBUG TESTS.
  */
-void Triangulation::DEBUG_tests() const {
-        for(auto it = this->edges.cbegin(); it != this->edges.cend(); it++) {
-                assert((*it)->originVertex() != NULL);
-                assert((*it)->oppositeEdge() != NULL);
-                assert((*it)->leftFace() != NULL);
-                if((*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() != (*it)) {
-                        logs("%u, ", (*it)->getID());
-                        logs("%u, ", (*it)->nextLeftEdge()->getID());
-                        logs("%u, ", (*it)->nextLeftEdge()->nextLeftEdge()->getID());
-                        logs("%u, ", (*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge()->getID());
-                        assert((*it)->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == (*it));
+void Triangulation::unittests() const {
+        for(auto edge : this->edges) {
+                assert(edge->originVertex() != NULL);
+                assert(edge->oppositeEdge() != NULL);
+                assert(edge->leftFace() != NULL);
+                if(edge->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() != edge) {
+                        logs("%u, ", edge->getID());
+                        logs("%u, ", edge->nextLeftEdge()->getID());
+                        logs("%u, ", edge->nextLeftEdge()->nextLeftEdge()->getID());
+                        logs("%u, ", edge->nextLeftEdge()->nextLeftEdge()->nextLeftEdge()->getID());
+                        assert(edge->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == edge);
+                        assert(edge->nextRightEdge()->nextRightEdge()->nextRightEdge() == edge);
                 }
         }
-        for(auto it = this->faces.cbegin(); it != this->faces.cend(); it++) {
-                assert((*it)->getEdge() != NULL);
+
+        for(auto face : this->faces) {
+                assert(face->getEdge() != NULL);
+                assert(face->getEdge()->nextLeftEdge()->nextLeftEdge()->nextLeftEdge() == face->getEdge());
+                assert(face->getEdge()->leftFace() == face);
+                assert(face->getEdge()->nextLeftEdge()->leftFace() == face);
+                assert(face->getEdge()->nextLeftEdge()->nextLeftEdge()->leftFace() == face);
+                assert(face->getEdge()->oppositeEdge()->rightFace() == face);
+                assert(face->getEdge()->oppositeEdge()->nextRightEdge()->rightFace() == face);
+                assert(face->getEdge()->oppositeEdge()->nextRightEdge()->nextRightEdge()->rightFace() == face);
+                if(face->isVisible()) {
+                        geometry::pointInCounterClockwiseOrder(3,
+                                        face->getP1(), face->getP2(), face->getP3()
+                        );
+                } else { // one of the two invisible faces
+                        geometry::pointInClockwiseOrder(3,
+                                        face->getP1(), face->getP2(), face->getP3()
+                        );
+                }
         }
-        for(auto it = this->vertices.cbegin(); it != this->vertices.cend(); it++) {
-                assert((*it)->getEdge() != NULL);
-                assert((*it)->getEdge()->originVertex() == (*it));
-                assert((*it)->getEdge()->leftFace()->collideAt(*(*it)));
+
+        //for(auto vertex : this->vertices) {
+                //logs("\t(%u:%f;%f)\n",
+                        //vertex->getID(),
+                        //vertex->x(),
+                        //vertex->y()
+                //);
+        //}
+
+        for(auto vertex : this->vertices) {
+                assert(vertex->getEdge() != NULL);
+                assert(vertex->getEdge()->originVertex() == vertex);
+                assert(vertex->getEdge()->leftFace()->collideAt(*vertex));
+                if(this->haveCorner(vertex)) {
+                        assert(vertex->getObjectCount() == 0);
+                        assert((*vertex) != this->coordinateCorrection(*vertex));
+                }
+                // all visible neighbors of visible vertices must be
+                // in counter clockwise order, when given by left rotation
+                else {
+                        std::vector<Coordinates*> neis(0);
+                        Edge* cur_edge = vertex->getEdge();
+                        //logs("Verif counterclockwiseness around (%f;%f):\n",
+                                //vertex->x(), vertex->y()
+                        //);
+                        do {
+                                neis.push_back(cur_edge->destinVertex());
+                                //std::cout << "\t" << *(cur_edge->destinVertex()) << std::endl;
+                                cur_edge = cur_edge->rotLeftEdge();
+                                assert(cur_edge->originVertex() == vertex);
+                        } while(cur_edge != vertex->getEdge());
+                        assert(geometry::pointInCounterClockwiseOrder(neis));
+                        // test clockwiseness when given by right rotation
+                        neis.clear();
+                        //logs("… And clockwiseness:\n");
+                        do {
+                                neis.push_back(cur_edge->destinVertex());
+                                //std::cout << "\t" << *(cur_edge->destinVertex()) << std::endl;
+                                cur_edge = cur_edge->rotRightEdge();
+                                assert(cur_edge->originVertex() == vertex);
+                        } while(cur_edge != vertex->getEdge());
+                        assert(geometry::pointInClockwiseOrder(neis));
+                }
         }
 }
 #endif
 
 
+
+/**
+ * Generate dot representation of graph
+ */
+void Triangulation::representation() const {
+        std::ofstream f;
+        f.open("DT_representation.dot");
+        f << "digraph G {" << std::endl;
+        Edge* ref_edge = NULL;
+        Edge* cur_edge = NULL;
+        for(auto vertex : this->vertices) {
+                ref_edge = vertex->getEdge();
+                cur_edge = ref_edge;
+                do {
+                        f << vertex->getID() << " -> " << cur_edge->destinVertex()->getID() << ";" << std::endl;
+                        std::cout << vertex->getID() << " -> " << cur_edge->destinVertex()->getID() << ";" << std::endl;
+                        cur_edge = cur_edge->rotLeftEdge();
+                } while(ref_edge != cur_edge);
+        }
+        f << "}" << std::endl;
+        f.close();
+}
 
 
 
@@ -670,8 +857,8 @@ std::list<VirtualVertex*> Triangulation::getVirtualVertices() const {
 /**
  * @return VertexFinderMode value, that described method used by this instance.
  */
-VertexFinderMode Triangulation::getFinderMode() const { 
-        VertexFinderMode finder_mode = VERTEX_FINDER_MODE_RANDOM; 
+VertexFinderMode Triangulation::getFinderMode() const {
+        VertexFinderMode finder_mode = VERTEX_FINDER_MODE_RANDOM;
         // testing pointer with different values it can took is necessary for find the mode
         if(this->finderInitialEdge == &Triangulation::finderInitial_middle)
                 finder_mode = VERTEX_FINDER_MODE_MIDDLE;
@@ -685,7 +872,7 @@ VertexFinderMode Triangulation::getFinderMode() const {
 /**
  * @param m VertexFinderMode value, that tell which Edge this instance will used as first Edge for search
  */
-void Triangulation::setFinderMode(VertexFinderMode m) { 
+void Triangulation::setFinderMode(VertexFinderMode m) {
         switch(m) {
                 case VERTEX_FINDER_MODE_RANDOM:
                         this->finderInitialEdge = &Triangulation::finderInitial_random;
@@ -713,11 +900,25 @@ void Triangulation::setFinderMode(VertexFinderMode m) {
  * PREDICATS
  ***************************************************/
 /**
- * @param v tested Vertex 
+ * @param v tested Vertex
  * @return true iff tested Vertex is referenced by triangulation
  */
 bool Triangulation::have(Vertex* v) const {
         return std::find(this->vertices.begin(), this->vertices.end(), v) != this->vertices.end();
+}
+
+
+
+/**
+ * @param v tested Vertex
+ * @return true iff tested Vertex is referenced by triangulation
+ * as a Corner Vertex, generally inaccessible from user.
+ */
+bool Triangulation::haveCorner(Vertex* vertex) const {
+        return vertex == this->vertices.front()
+            || vertex == *(std::next(this->vertices.cbegin(), 1))
+            || vertex == *(std::next(this->vertices.cbegin(), 2))
+            || vertex == *(std::next(this->vertices.cbegin(), 3));
 }
 
 
@@ -775,13 +976,13 @@ Face* Triangulation::findContainerOf(Coordinates target, Edge* edge_cur) const {
                 // if on the right of target
                 if(edge_cur->coordOnTheLeft(target)) {
                         counter_left++; // the edge was the better way without rotation.
-                        // churn until be on the left of target, 
+                        // churn until be on the left of target,
                         do {
-                                edge_cur = edge_cur->rotLeftEdge(); 
+                                edge_cur = edge_cur->rotLeftEdge();
                         } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictLeft(target));
                         if(edge_cur->coordOnTheStrictLeft(target)) {
-                                do { 
-                                        edge_cur = edge_cur->rotLeftEdge(); 
+                                do {
+                                        edge_cur = edge_cur->rotLeftEdge();
                                 } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictLeft(target));
                                 counter_left = 0; // we are not currently running around the container.
                         }
@@ -789,7 +990,7 @@ Face* Triangulation::findContainerOf(Coordinates target, Edge* edge_cur) const {
                         edge_nxt = edge_cur->rotRightEdge();
                 } else {
                         counter_left = 0; // we are not currently running around the container.
-                        do { edge_cur = edge_cur->rotRightEdge(); 
+                        do { edge_cur = edge_cur->rotRightEdge();
                         } while((not edge_cur->isVisible()) || edge_cur->coordOnTheStrictRight(target));
                         // And then churn to left for get the better way.
                         edge_nxt = edge_cur;
@@ -828,59 +1029,57 @@ Face* Triangulation::findContainerOf(Coordinates target, Edge* edge_cur) const {
  * Operate Delaunay Flip Algorithm on Face if necessary.
  * Recursiv call on new triangles created by flip.
  * @param f_ref a reference to a Face that can't be NULL and must be integrated in triangulation
- * @param ttl time-to-live, or number of recursiv call operated
  * @return true if modifications operate on tiangulation
  */
-#ifdef DEBUG
-bool Triangulation::applyDelaunayCondition(Face* f_ref, unsigned int ttl) {
+bool Triangulation::applyDelaunayCondition(Face* f_ref, std::unordered_set<Face*>* processed_faces) {
+// PRECONDITIONS: no processing necessary if this face was already processed
         assert(f_ref != NULL && f_ref->getEdge() != NULL);
-#else 
-bool Triangulation::applyDelaunayCondition(Face* f_ref) {
-#endif
+        if(processed_faces != NULL && processed_faces->find(f_ref) != processed_faces->end())
+            { return false; }
 // INITIALIZATION
-        bool flip_done = true; // we are optimist.
+        bool newly_created_set = (processed_faces == NULL); // true if its the root call
+        bool delaunay_breaked = true; // optimist start
         Edge* illegal_edge = NULL; // illegal edge that relie the illegal vertex and the f_ref's vertex.
+        // for restore the delaunay condition, flip the illegal edge is enough
 
 // CONDITION: in circumcircle
         if(f_ref->isVisible()) {
-                // FIRST NEIGHBOUR
+                // FIRST NEIGHBOR
                 if(f_ref->circumcircleContainCoords(*f_ref->getEdge1()->nextRightEdge()->destinVertex())) {
                         illegal_edge = f_ref->getEdge1();
 
-                // SECOND NEIGHBOUR
+                // SECOND NEIGHBOR
                 } else if(f_ref->circumcircleContainCoords(*f_ref->getEdge2()->nextRightEdge()->destinVertex())) {
                         illegal_edge = f_ref->getEdge2();
 
-                // THIRD NEIGHBOUR
+                // THIRD NEIGHBOR
                 } else if(f_ref->circumcircleContainCoords(*f_ref->getEdge3()->nextRightEdge()->destinVertex())) {
                         illegal_edge = f_ref->getEdge3();
 
                 // NO ILLEGAL SIDE
-                } else  flip_done = false;
-        } else flip_done = false;
+                } else { delaunay_breaked = false; }
+        } else { delaunay_breaked = false; }
 
 
 // MODIFICATION OF FACES
-        if(flip_done) {
+        if(delaunay_breaked) {
+                // restore delaunay condition
                 this->operateFlip(illegal_edge);
+                // create set of Face* if its the root call
+                if(newly_created_set) { processed_faces = new std::unordered_set<Face*>(); }
                 // Recursiv call on the updated faces
-#ifdef DEBUG
-                // protection against infinite recursive call.
-                if(ttl < this->faces.size() / 2) {
-                        this->applyDelaunayCondition(illegal_edge->leftFace(), ttl+1);
-                        this->applyDelaunayCondition(illegal_edge->rightFace(), ttl+1);
-                } else {
-                        logs("TTL %u reached !\n", ttl);
-                }
-#else
-                this->applyDelaunayCondition(illegal_edge->leftFace());
-                this->applyDelaunayCondition(illegal_edge->rightFace());
-#endif
+                this->applyDelaunayCondition(illegal_edge->leftFace(), processed_faces);
+                this->applyDelaunayCondition(illegal_edge->rightFace(), processed_faces);
+                // delete set of Face* if its the root call
+                if(newly_created_set) { delete processed_faces; }
+        } else if(not newly_created_set) {
+            // this face respects the delaunay condition : recursiv calls must ignore it
+            processed_faces->insert(f_ref);
         }
 
 
 // ENDING
-        return flip_done;
+        return delaunay_breaked;
 }
 
 
@@ -907,6 +1106,11 @@ void Triangulation::operateFlip(Edge* illegal_edge1) {
 
 #ifdef DEBUG
 // TESTS
+        assert(illegal_vertex2 == illegal_edge2->nextLeftEdge()->destinVertex());
+        assert(illegal_edge1->leftFace() == illegal_edge2->rightFace());
+        assert(illegal_edge2->leftFace() == illegal_edge1->rightFace());
+        assert(edge1_prev->nextLeftEdge() == edge2_next);
+        assert(edge2_prev->nextLeftEdge() == edge1_next);
         assert(illegal_edge1->originVertex() != illegal_vertex1);
         assert(illegal_edge2->originVertex() != illegal_vertex1);
         assert(illegal_edge1->originVertex() != illegal_vertex2);
@@ -919,7 +1123,6 @@ void Triangulation::operateFlip(Edge* illegal_edge1) {
         illegal_edge2->originVertex()->setEdge(edge1_prev);
 
         // Modify next left and right edges of non-illegal edges
-        // NB: use of inter vars because change the next left edge will change the result of nextRightEdge.
         edge1_prev->setNextLeftEdge(illegal_edge1);
         edge2_prev->setNextLeftEdge(illegal_edge2);
 
@@ -927,8 +1130,7 @@ void Triangulation::operateFlip(Edge* illegal_edge1) {
         edge2_next->setNextLeftEdge(edge2_prev);
 
         illegal_edge1->setNextLeftEdge(edge1_next); // Close the cycle
-        illegal_edge2->setNextLeftEdge(edge2_next); 
-
+        illegal_edge2->setNextLeftEdge(edge2_next);
 
         // assign origin vertex
         illegal_edge1->setOriginVertex(illegal_vertex1);
@@ -952,8 +1154,6 @@ void Triangulation::operateFlip(Edge* illegal_edge1) {
         assert(illegal_edge2->leftFace() == face2);
         assert(illegal_edge2->nextLeftEdge()->leftFace() == face2);
         assert(illegal_edge2->nextLeftEdge()->nextLeftEdge()->leftFace() == face2);
-
-        this->DEBUG_tests();
 #endif
 #ifdef FOLLOW_SEARCH
         illegal_edge1->passing= false;

@@ -27,7 +27,7 @@
  */
 /**
  * Finder mode for when triangulation looking for the Face that contain Coordinates 
- *   (notabily for Vertex adding).  
+ *   (notabily for Vertex adding).
  * Random: random Edge in all existing in Triangulation instance
  * First: the first added Edge
  * Middle: the Edge in the middle of the Edge list
@@ -53,24 +53,25 @@ enum VertexFinderMode {
 
 
 /**
- * Delaunay Triangulation class definition.  
+ * Delaunay Triangulation class definition.
  * Main object manipulated by user/wrapper.
- * Provide iterators, access to Vertices, Faces, Edges,...  
+ * Provide iterators, access to Vertices, Faces, Edges,...
  * Have all methods for add, delete and move Vertices.
  */
 class Triangulation {
-	public:
+        public:
         // INTERNAL CLASS TYPES
                 // define type for pointer to function that looking for initial Edge
-                typedef Edge* (Triangulation::*finderInitialEdge_mode)() const; 
+                typedef Edge* (Triangulation::*finderInitialEdge_mode)() const;
 
-	// CONSTRUCTOR
-		Triangulation(const float, const float, 
+        // CONSTRUCTOR
+                Triangulation(const float, const float,
                            const float, const float, const VertexFinderMode = VERTEX_FINDER_MODE_LAST);
-		~Triangulation();
-	// PUBLIC METHODS
+                ~Triangulation();
+        // PUBLIC METHODS
+                // vertex managing
                 Vertex* addVertexAt(Coordinates, Edge* = NULL);
-                Vertex* addVertexAt(float x, float y, Edge* e = NULL) 
+                Vertex* addVertexAt(float x, float y, Edge* e = NULL)
                         { return this->addVertexAt(Coordinates(x, y), e); }
                 Vertex* vertexAt(float, float, float=EPSILON) const;
                 Vertex* vertexAt(Coordinates c, float p=EPSILON) const { return this->vertexAt(c.x(), c.y(), p); }
@@ -80,11 +81,11 @@ class Triangulation {
                 void delVertex(Vertex* v);
                 void mergeVertex(Vertex* v, Vertex* v_destroyed);
                 Coordinates coordinateCorrection(Coordinates) const;
-#ifdef DEBUG // some tests with assertions
-                void DEBUG_tests() const;
-#endif
-	// ACCESSORS
-                //std::list<Edge*> getEdges()  const { return this->edges; }
+                // others
+                void unittests() const;
+                void representation() const;
+        // ACCESSORS
+                std::list<Edge*> getEdges()  const { return this->edges; }
                 std::list<Vertex*> getVertices()  const { return this->vertices; }
                 std::list<VirtualVertex*> getVirtualVertices() const;
                 unsigned int getVerticeCount() const { return this->vertices.size(); }
@@ -98,6 +99,7 @@ class Triangulation {
 
         // PREDICATS
                 bool have(Vertex*) const;
+                bool haveCorner(Vertex*) const;
                 bool collideAt(Coordinates) const;
 #ifdef DEBUG
                 bool opt_isdebug()       const { return true; }
@@ -115,14 +117,14 @@ class Triangulation {
 
 
 // PRIVATE
-	private:
-	// ATTRIBUTES
+        private:
+        // ATTRIBUTES
                 float xmin, xmax, ymin, ymax;
                 std::list<Vertex*> vertices;
                 std::list<Edge*> edges;
                 std::list<Face*> faces;
                 finderInitialEdge_mode finderInitialEdge = NULL; // pointer to func that looking for initial Edge
-	// PRIVATE METHODS
+        // PRIVATE METHODS
                 Face* findContainerOf(Coordinates, Edge* = NULL) const;
                 // methods for choose initial Edges. The effectively used is pointed by finderInitialEdge.
                 Edge* finderInitial_random() const { 
@@ -137,11 +139,8 @@ class Triangulation {
                 }
                 Edge* finderInitial_first () const { return this->edges.front(); }
                 Edge* finderInitial_last  () const { return this->edges.back(); }
-#ifdef DEBUG
-                bool applyDelaunayCondition(Face*, unsigned int ttl = 0);
-#else
-                bool applyDelaunayCondition(Face*);
-#endif
+
+                bool applyDelaunayCondition(Face*, std::unordered_set<Face*>* = NULL);
                 void operateFlip(Edge*);
                 // Methods for manipulate lists of components
                 /** Destroy and forget given Vertex */
