@@ -10,11 +10,30 @@
  * @warning: assertion fail if detected problem
  */
 void geometry::unit_tests() {
-        Coordinates A = Coordinates(0, 0), B = Coordinates(1, 1), C = Coordinates(10, 10), D = Coordinates(10, 1);
+        Coordinates A = Coordinates( 0,  0), B = Coordinates( 1, 1);
+        Coordinates C = Coordinates(10, 10), D = Coordinates(10, 1);
+        std::vector<Coordinates*> coords = {&A, &B, &C};
+        LOGOK
         assert(pointInTriangle(A, C, D, B)); // B is in ACD
-        // triangle x point ok !
+        assert(pointInTriangle(
+                    Coordinates( 91,372), Coordinates(314,360), Coordinates(118,204),
+                    Coordinates(122,309)
+        ));
+        assert(pointInTriangle(
+                    Coordinates(0,0), Coordinates(2,4), Coordinates(4,0),
+                    Coordinates(1,2)
+        ));
+        assert(pointInTriangle(
+                    Coordinates(0,0), Coordinates(2,4), Coordinates(4,0),
+                    Coordinates(1,2)
+        ));
+        assert(pointInTriangle(
+                    Coordinates(0,0), Coordinates(0,2), Coordinates(2,0),
+                    Coordinates(0,0)
+        ));
+        // point in triangle ok !
 
-
+        LOGOK
         assert(alignedPoints(A, B, C));
         assert(alignedPoints(A, A, A));
         assert(alignedPoints(A, A, D));
@@ -64,23 +83,19 @@ void geometry::unit_tests() {
 
 
         LOGOK
-        assert(pointInCounterClockwiseOrder(3, Coordinates( 0,  0), Coordinates( 0,  0), Coordinates( 0,  0)));
         assert(       pointInClockwiseOrder(3, Coordinates( 0,  0), Coordinates( 0,  0), Coordinates( 0,  0)));
-        assert(pointInCounterClockwiseOrder(3, Coordinates( 1,  0), Coordinates( 1,  3), Coordinates( 1,  6)));
+        assert(pointInCounterClockwiseOrder(3, Coordinates( 0,  0), Coordinates( 0,  0), Coordinates( 0,  0)));
         assert(       pointInClockwiseOrder(3, Coordinates( 1,  0), Coordinates( 1,  3), Coordinates( 1,  6)));
-        assert(pointInCounterClockwiseOrder(3, Coordinates(-3, 10), Coordinates(-3,  3), Coordinates(-3, -5)));
+        assert(pointInCounterClockwiseOrder(3, Coordinates( 1,  0), Coordinates( 1,  3), Coordinates( 1,  6)));
         assert(       pointInClockwiseOrder(3, Coordinates(-3, 10), Coordinates(-3,  3), Coordinates(-3, -5)));
+        assert(pointInCounterClockwiseOrder(3, Coordinates(-3, 10), Coordinates(-3,  3), Coordinates(-3, -5)));
         // {counter,}clockwise order for aligned points ok
 
 
         LOGOK
-        std::vector<Coordinates*> coords;
         A = Coordinates(26, -1); // (ABC) is in counter clockwise order
         B = Coordinates(-1, 21); // when its assumed that Y axis in "inverted"
         C = Coordinates(26, 21);
-        coords.push_back(&A);
-        coords.push_back(&B);
-        coords.push_back(&C);
         assert(pointInClockwiseOrder(3,
                 *coords[0],
                 *coords[1],
