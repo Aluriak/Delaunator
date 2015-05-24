@@ -269,7 +269,7 @@ float geometry::squareDistanceBetweenPoints(Coordinates A, Coordinates B) {
  * @return true iff tested point is in circumcircle of triangle composed by p1, p2 and p3.
  * @note false iff tested point is exactly on the circle
  * @note false iff circle defined by three aligned points
- * @note assume that Y axis IS NOT inverted
+ * @note assume that Y axis IS inverted
  */
 bool geometry::pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0) {
         // Algorithm found here: https://en.wikipedia.org/wiki/Delaunay_triangulation#Algorithms
@@ -778,8 +778,10 @@ float geometry::signedPolygonArea(const std::vector<Coordinates*> coords) {
  ***************************************************/
 /**
  * @param signed_area the signed area of any polygon
- * @return true iff given signed area is 0 or an impossible area for a counter clockwise ordered polygon
+ * @return true iff given signed area is 0 or a signed area of a clockwise ordered polygon
  * @note consider that Y axis IS "inverted". Else, returned value is false
+ * @note as geometry module assume that Y axis IS inverted, positiv area returns false
+ * @see http://stackoverflow.com/a/1165943/3077939
  */
 bool geometry::clockwiseSignedPolygonArea(float signed_area) {
         return signed_area <= 0;
