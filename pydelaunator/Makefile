@@ -1,5 +1,5 @@
 all:
-	python3.2 main.py
+	python3 main.py
 
 v:
-	valgrind --leak-check=full python3.2 main.py
+	valgrind --leak-check=full python3 main.py
