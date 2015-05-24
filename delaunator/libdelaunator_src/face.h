@@ -32,15 +32,15 @@ class Edge;
  * Each Face have a unique ID.
  */
 class Face {
-	public:
-	// CONSTRUCTOR
-		Face(Edge*, bool=true);
-		~Face();
-	// PUBLIC METHODS
+        public:
+        // CONSTRUCTOR
+                Face(Edge*, bool=true);
+                ~Face();
+        // PUBLIC METHODS
                 void computeInternalValues();
                 bool collideAt(Coordinates);
                 bool circumcircleContainCoords(Coordinates) const;
-	// ACCESSORS
+        // ACCESSORS
                 //getter
                 bool isVisible()      const { return this->visible; }
                 Edge* getEdge()       const { return this->edge; }
@@ -60,14 +60,14 @@ class Face {
                 //setter
                 void setEdge(Edge*);
                 void setVisibility(bool v)      { this->visible = v; }
-	private:
-	// ATTRIBUTES
+        private:
+        // ATTRIBUTES
                 Edge* edge; // any edge that describe that face
                 bool visible; // in a graphical representation
                 Coordinates centroid, circumcenter_;
                 unsigned int id;
                 static unsigned int last_id;
-	// PRIVATE METHODS
+        // PRIVATE METHODS
 };
 
 

@@ -38,7 +38,7 @@ Face::~Face() {
 void Face::computeInternalValues() {
         // Get coordinates of the three points of this.
         Vertex *p1 = this->getP1(), *p2 = this->getP2(), *p3 = this->getP3();
-        
+
         // Deduce coordinates of Centroid.
         this->centroid.setX((p1->x() + p2->x() + p3->x()) / 3.);
         this->centroid.setY((p1->y() + p2->y() + p3->y()) / 3.);
@@ -54,7 +54,27 @@ void Face::computeInternalValues() {
  * @return true if this coollide at given coordinates
  */
 bool Face::collideAt(Coordinates c) {
-        return geometry::pointInTriangle(*this->getP1(), *this->getP2(), *this->getP3(), c);
+        bool collision = false;
+        // if not visible, there is a chance that P1, P2 and P3 are not given in
+        //   counterclockwise order. In this case, they need to be reordered before
+        //   the call of geometry primitives.
+        if(not this->isVisible()) {
+            std::vector<Coordinates*> coords = {this->getP1(), this->getP2(), this->getP3()};
+            if(geometry::pointInClockwiseOrder(coords)) {
+                // points are not in the right order : call them invertedly
+                collision = geometry::pointInTriangle(
+                        *coords[1], *coords[0], *coords[2], c);
+            } else {
+                // points are in the right order : let default behavior perform its job
+                collision = geometry::pointInTriangle(
+                        *coords[0], *coords[1], *coords[2], c);
+            }
+        } else {
+            // default behavior
+            collision = geometry::pointInTriangle(
+                    *this->getP1(), *this->getP2(), *this->getP3(), c);
+        }
+        return collision;
 }
 
 
@@ -67,9 +87,9 @@ bool Face::collideAt(Coordinates c) {
  */
 bool Face::circumcircleContainCoords(Coordinates p0) const {
         return geometry::pointInCircumcircleOf(
-                        *(this->getP1()), 
-                        *(this->getP2()), 
-                        *(this->getP3()), 
+                        *(this->getP1()),
+                        *(this->getP2()),
+                        *(this->getP3()),
                         p0
         );
 }
@@ -110,11 +130,11 @@ Edge* Face::getEdge3() const  { return this->edge->nextLeftEdge()->nextLeftEdge(
  * Set received Edge has linked Edge for this Face.
  * @param e received Edge
  */
-void Face::setEdge(Edge* e) { 
-        this->edge = e; 
-        if(e != NULL) { 
+void Face::setEdge(Edge* e) {
+        this->edge = e;
+        if(e != NULL) {
                 this->edge->setLeftFace(this);
-                this->computeInternalValues(); 
+                this->computeInternalValues();
         }
 }
 
@@ -134,7 +154,7 @@ void Face::setEdge(Edge* e) {
 #if !SWIG
 std::ostream& operator<<(std::ostream& flux, Face const &c) {
         flux << "{";
-        for(IteratorFaceToVertices it(&c); it != it.end(); it++) 
+        for(IteratorFaceToVertices it(&c); it != it.end(); it++)
                 flux << " " << **it;
         flux << " }";
         return flux;
