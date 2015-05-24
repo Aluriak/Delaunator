@@ -367,10 +367,31 @@ Coordinates geometry::circumcenterOf(Coordinates A, Coordinates B, Coordinates C
  * inlines function for slighting Face::collideAt function
  * Algorithm found on http://totologic.blogspot.fr/2014/01/accurate-point-in-triangle-test.html
  */
+/**
+ * @param x1 x coordinate of point 1
+ * @param y1 y coordinate of point 1
+ * @param x2 x coordinate of point 2
+ * @param y2 y coordinate of point 2
+ * @param x x coordinate of tested point
+ * @param y y coordinate of tested point
+ * @return result of dot product for given points
+ * @see pointInTriangle function that does an important use of this function
+ */
 inline float collideAt_side(float x1, float y1, float x2, float y2, float x, float y) {
          return (y2 - y1)*(x - x1) + (-x2 + x1)*(y - y1);
 }
-inline float collideAt_distanceSquarePointToSegment(float x1, float y1, float x2, float y2, float x, float y) {
+
+/**
+ * @param x1 x coordinate of point 1
+ * @param y1 y coordinate of point 1
+ * @param x2 x coordinate of point 2
+ * @param y2 y coordinate of point 2
+ * @param x x coordinate of tested point
+ * @param y y coordinate of tested point
+ * @return square distance between point (x,y) and segment [(x1,y1)(x2,y2)]
+ * @see pointInTriangle function that does an important use of this function
+ */
+inline float collideAt_squareDistancePointToSegment(float x1, float y1, float x2, float y2, float x, float y) {
         float p1_p2_square_dist = (x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1);
         float dotProduct = ((x - x1)*(x2 - x1) + (y - y1)*(y2 - y1)) / p1_p2_square_dist;
         if(dotProduct < 0)
