@@ -34,10 +34,10 @@ class VirtualVertex;
 struct Coordinates {
         public:
         // CONSTRUCTOR
-		Coordinates(const float x = 0., const float y = 0.) {
+                Coordinates(const float x = 0., const float y = 0.) {
                         this->setCoord(x, y);
                 }
-	// PUBLIC METHODS
+        // PUBLIC METHODS
                 float squareDistanceTo(const Coordinates& othr) const {
                         return (this->_x - othr._x)*(this->_x - othr._x)+(this->_y - othr._y)*(this->_y - othr._y);
                 }
@@ -72,7 +72,7 @@ struct Coordinates {
                         return *this + c;
                 }
         private:
-	// ATTRIBUTES
+        // ATTRIBUTES
                 float _x, _y;
 };
 
@@ -100,7 +100,6 @@ class Vertex : public Coordinates {
                 void setEdge(Edge* e);
         // PREDICATS
                 bool isNeighbourOf(Vertex*) const;
-                bool isACorner() const;
                 bool have(VirtualVertex*) const;
         private:
         // ATTRIBUTES
@@ -120,14 +119,14 @@ class Vertex : public Coordinates {
 
 
 
-// EXTERNAL TYPES
+// EXTERNAL TYPES
 /**
  * Compare Vertex by distance with reference Coordinates.
  * The nearer of reference is the better.
  */
 class VertexComparison {
         public:
-	// CONSTRUCTOR
+        // CONSTRUCTOR
                 VertexComparison(const Coordinates c) : reference(c) {}
         // PREDICATS
                 bool operator()(const Vertex* left, const Vertex* right) {
@@ -137,7 +136,7 @@ class VertexComparison {
                         return left->squareDistanceTo(this->reference) > right->squareDistanceTo(this->reference);
                 }
         private:
-	// ATTRIBUTES
+        // ATTRIBUTES
                 const Coordinates reference;
 };
 
