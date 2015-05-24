@@ -32,14 +32,14 @@ class Vertex;
  * VIRTUAL VERTEX CLASS
  */
 class VirtualVertex {
-	public:
-	// CONSTRUCTOR
+        public:
+        // CONSTRUCTOR
                 VirtualVertex(Vertex* = NULL);
                 ~VirtualVertex();
-	// PUBLIC METHODS
+        // PUBLIC METHODS
         // PREDICATS
                 bool confoundedWithAnotherObject() const;
-	// ACCESSORS
+        // ACCESSORS
                 // getter
                 Vertex* vertex() const;
                 unsigned int id() const { return this->_id; }
@@ -53,13 +53,13 @@ class VirtualVertex {
                 std::list<VirtualVertex*> directNeighbors() const;
                 std::list<VirtualVertex*> neighborsAt(const float, const float = 0) const;
                 std::list<VirtualVertex*> nearerNeighbors(const unsigned int) const;
-	private:
-	// ATTRIBUTES
+        private:
+        // ATTRIBUTES
                 Vertex* ref_vertex;
                 //PyObject* ref_pyobject;
                 unsigned int _id;
                 static unsigned int last_id;
-	// PRIVATE METHODS
+        // PRIVATE METHODS
 };
 
 
