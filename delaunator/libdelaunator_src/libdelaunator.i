@@ -46,5 +46,6 @@
 /* templates */
 namespace std {
         %template(VirtualVertexList) list<VirtualVertex*>;
+        /*%template(EdgeList) list<Edge*>;*/
 }
 
