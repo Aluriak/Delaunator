@@ -799,7 +799,7 @@ float geometry::signedPolygonArea(const std::vector<Coordinates*> coords) {
  * @see http://stackoverflow.com/a/1165943/3077939
  */
 bool geometry::clockwiseSignedPolygonArea(float signed_area) {
-        return signed_area <= 0;
+        return signed_area <= 0.;
 }
 /**
  * @param signed_area the signed area of any polygon
@@ -807,7 +807,7 @@ bool geometry::clockwiseSignedPolygonArea(float signed_area) {
  * @note consider that Y axis IS "inverted". Else, returned value is false
  */
 bool geometry::counterclockwiseSignedPolygonArea(float signed_area) {
-        if(signed_area == 0.)
+        if(abs(signed_area) < EPSILON)
                 return true;
         else    return not geometry::clockwiseSignedPolygonArea(signed_area);
 }
