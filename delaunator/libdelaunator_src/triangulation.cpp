@@ -701,14 +701,13 @@ void Triangulation::unittests() const {
                 assert(face->getEdge()->oppositeEdge()->rightFace() == face);
                 assert(face->getEdge()->oppositeEdge()->nextRightEdge()->rightFace() == face);
                 assert(face->getEdge()->oppositeEdge()->nextRightEdge()->nextRightEdge()->rightFace() == face);
+                std::vector<Coordinates*> coords;
                 if(face->isVisible()) {
-                        geometry::pointInCounterClockwiseOrder(3,
-                                        face->getP1(), face->getP2(), face->getP3()
-                        );
+                        coords = {face->getP1(), face->getP2(), face->getP3()};
+                        geometry::pointInCounterClockwiseOrder(coords);
                 } else { // one of the two invisible faces
-                        geometry::pointInClockwiseOrder(3,
-                                        face->getP1(), face->getP2(), face->getP3()
-                        );
+                        coords = {face->getP1(), face->getP2(), face->getP3()};
+                        geometry::pointInClockwiseOrder(coords);
                 }
         }
 
