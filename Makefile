@@ -1,7 +1,7 @@
 ########################
 # BUILD & INSTALL
 ########################
-all: build install 
+all: build install
 
 build: clear
 	python3 setup.py build
@@ -31,13 +31,12 @@ gendoc:
 	doxygen Doxyfile
 
 updoc:
-	# DOESN'T WORK for a curious reason
 	# see setup.cfg for exact configuration
-	python3 setup.py upload_docs 
+	python3 setup.py upload_docs
 
 
 clear:
-	- rm -r delaunator/libdelaunator_src/libdelaunator_wrap.cpp 
-	- rm -r dist build delaunator.egg-info 
-	- rm -r __pycache__/ *.pyc 
+	- rm -r delaunator/libdelaunator_src/libdelaunator_wrap.cpp
+	- rm -r dist build delaunator.egg-info
+	- rm -r __pycache__/ *.pyc
 
