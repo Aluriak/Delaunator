@@ -2,18 +2,18 @@ FLAGD=-DDEBUG -g
 FLAGS=$(FLAGD) -DVERBOSE
 #OPTMS=-O3 -flto
 
-all: build v
-build: compile link 
+all: build vt
+build: compile link
 br: build r
-rp: 
+rp:
 	dot DT_representation.dot -Tpng -o repr.png
 	ristretto repr.png
 
 compile: clearwraps
-	g++ -lpython3 -I/usr/include/python3.2/ -std=c++0x -c *.cpp $(FLAGS) $(OPTMS)
+	g++ -lpython3 -I/usr/include/python3*/ -std=c++0x -c *.cpp $(FLAGS) $(OPTMS)
 
 link:
-	g++ *.o  -I/usr/include/python3.2/ -std=c++0x $(FLAGS) $(OPTMS)
+	g++ *.o  -I/usr/include/python3*/ -std=c++0x $(FLAGS) $(OPTMS)
 
 
 r:
@@ -26,7 +26,7 @@ vt:
 	valgrind --leak-check=full --track-origins=yes  ./a.out
 
 vv:
-	valgrind --leak-check=full -v ./a.out
+	valgrind --leak-check=full -v --show-leak-kinds=all ./a.out
 
 
 clean:
