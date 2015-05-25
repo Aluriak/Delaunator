@@ -13,7 +13,6 @@ void geometry::unit_tests() {
         Coordinates A = Coordinates( 0,  0), B = Coordinates( 1, 1);
         Coordinates C = Coordinates(10, 10), D = Coordinates(10, 1);
         std::vector<Coordinates*> coords = {&A, &B, &C};
-        LOGOK
         assert(pointInTriangle(A, C, D, B)); // B is in ACD
         assert(pointInTriangle(
                     Coordinates( 91,372), Coordinates(314,360), Coordinates(118,204),
@@ -33,27 +32,21 @@ void geometry::unit_tests() {
         ));
         // point in triangle ok !
 
-        LOGOK
         assert(alignedPoints(A, B, C));
         assert(alignedPoints(A, A, A));
         assert(alignedPoints(A, A, D));
         A = Coordinates(0, 0);
-        LOGOK
         assert(alignedPoints(A, A, A));
         assert(alignedPoints(B, B, B));
-        LOGOK
         A = Coordinates(1, 2);
         B = Coordinates(0, 2);
         C = Coordinates(3, 2);
-        LOGOK
         assert(alignedPoints(A, B, C));
         assert(alignedPoints(B, C, A));
         assert(alignedPoints(A, C, A));
-        LOGOK
         // aligned point ok !
 
 
-        LOGOK
         A = Coordinates(1, 3);
         B = Coordinates(3, 3);
         C = Coordinates(3, 1);
@@ -61,18 +54,14 @@ void geometry::unit_tests() {
         // segment x segment collision ok !
 
 
-        LOGOK
         float result;
-        LOGOK
         result = geometry::signedPolygonArea(1, A);
         assert(result == 0.);
-        LOGOK
         result = geometry::signedPolygonArea(2, A, A);
         assert(result == 0.);
         // signed polygon area for one point ok
 
 
-        LOGOK
         assert(       pointInClockwiseOrder(1, Coordinates( 0,  0)));
         assert(pointInCounterClockwiseOrder(1, Coordinates( 0,  0)));
         assert(       pointInClockwiseOrder(1, Coordinates( 1, -1)));
@@ -82,7 +71,6 @@ void geometry::unit_tests() {
         // {counter,}clockwise order for one point ok
 
 
-        LOGOK
         assert(       pointInClockwiseOrder(3, Coordinates( 0,  0), Coordinates( 0,  0), Coordinates( 0,  0)));
         assert(pointInCounterClockwiseOrder(3, Coordinates( 0,  0), Coordinates( 0,  0), Coordinates( 0,  0)));
         assert(       pointInClockwiseOrder(3, Coordinates( 1,  0), Coordinates( 1,  3), Coordinates( 1,  6)));
@@ -92,7 +80,6 @@ void geometry::unit_tests() {
         // {counter,}clockwise order for aligned points ok
 
 
-        LOGOK
         A = Coordinates(26, -1); // (ABC) is in counter clockwise order
         B = Coordinates(-1, 21); // when its assumed that Y axis in "inverted"
         C = Coordinates(26, 21);
@@ -101,26 +88,22 @@ void geometry::unit_tests() {
                 *coords[1],
                 *coords[2]
         ) == pointInClockwiseOrder(coords));
-        LOGOK
         assert(not pointInClockwiseOrder(3,
                 *coords[0],
                 *coords[1],
                 *coords[2]
         ));
         // careful: not strictly equivalent to precedent assertion
-        LOGOK
         assert(pointInCounterClockwiseOrder(3,
                 *coords[0],
                 *coords[1],
                 *coords[2]
         ) == pointInCounterClockwiseOrder(coords));
-        LOGOK
         assert(pointInCounterClockwiseOrder(3,
                 *coords[0],
                 *coords[1],
                 *coords[2]
         ));
-        LOGOK
         assert(not pointInClockwiseOrder(5,
                 Coordinates(1, 0),
                 Coordinates(1, 5),
@@ -128,40 +111,31 @@ void geometry::unit_tests() {
                 Coordinates(6, 4),
                 Coordinates(5, 0)
         ));
-        LOGOK
         // pointIn{Counter,}ClockwiseOrder is ok !
 
 
-        LOGOK
         assert(pointInsideCircle(Coordinates(0, 0.9999), Coordinates(0, 0), 1));
-        LOGOK
         assert(pointInsideCircle(Coordinates(0, 0), Coordinates(0, 0), 1));
-        LOGOK
         assert(pointOnCircle(Coordinates(1, 0), Coordinates(0, 0), 1));
-        LOGOK
         assert(pointOnCircle(Coordinates(0, -1), Coordinates(0, 0), 1));
         // PointInsideCircle is ok !
 
 
         // Point in circumcircle
         // aligned points
-        LOGOK
         A = Coordinates(1, 2);
         B = Coordinates(0, 2);
         C = Coordinates(3, 2);
         D = Coordinates(1, -100);
         assert(not pointInCircumcircleOf(A, B, C, D));
-        LOGOK
         assert(not pointInCircumcircleOf(Coordinates(1,2), Coordinates(0,2),
                                 Coordinates(3,2), Coordinates(1,-100)));
-        LOGOK
         assert(not pointInCircumcircleOf(Coordinates(0,2), Coordinates(1,2),
                                 Coordinates(3,2), Coordinates(2,4)));
         assert(not pointInCircumcircleOf(Coordinates(1,2), Coordinates(0,2),
                                 Coordinates(3,2), Coordinates(2,4)));
 
         // non aligned points
-        LOGOK
         assert(not pointInCircumcircleOf(Coordinates(1,0), Coordinates(1,2),
                                 Coordinates(0,1), Coordinates(3-EPSILON,1))
         ); // 3 firsts are in counter-clockwise
@@ -171,7 +145,6 @@ void geometry::unit_tests() {
         assert(    pointInCircumcircleOf(Coordinates(1,0), Coordinates(1,2),
                                 Coordinates(0,1), Coordinates(1-EPSILON,1))
         ); // 3 firsts are in counter-clockwise
-        LOGOK
         float d = sqrt(squareDistanceBetweenSegmentAndPoint(
                 0,0, 1,1, 1,2
         ));
