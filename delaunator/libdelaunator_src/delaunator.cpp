@@ -219,7 +219,8 @@ void Delaunator::clear() {
  */
 void Delaunator::freeAll() {
         // save parameters of triangulation
-        float xmin = this->getXmin(), xmax = this->getXmax(), ymin = this->getYmin(), ymax = this->getYmax();
+        float xmin = this->getXmin(), xmax = this->getXmax();
+        float ymin = this->getYmin(), ymax = this->getYmax();
         VertexFinderMode finder_mode = this->triangulation->getFinderMode();
         // free and forget all virtual vertices
         for(auto it : this->virtualVertices()) delete it;
@@ -262,7 +263,7 @@ float Delaunator::distanceMax() const {
         return Coordinates(this->getXmin(), this->getYmin()).distanceTo(
                         Coordinates(this->getXmax(), this->getYmax())
                 );
-} 
+}
 
 
 
