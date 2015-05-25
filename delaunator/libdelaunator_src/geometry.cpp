@@ -422,9 +422,9 @@ bool geometry::pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, C
                 if(checkside1 && checkside2 && checkside3) {
                         collide = true;
                 } else {
-                        collide = collideAt_distanceSquarePointToSegment(x1, y1, x2, y2, x, y) <= EPSILON*EPSILON;
-                        collide |= collideAt_distanceSquarePointToSegment(x2, y2, x3, y3, x, y) <= EPSILON*EPSILON;
-                        collide |= collideAt_distanceSquarePointToSegment(x3, y3, x1, y1, x, y) <= EPSILON*EPSILON;
+                        collide  = collideAt_squareDistancePointToSegment(x1, y1, x2, y2, x, y) <= EPSILON;
+                        collide |= collideAt_squareDistancePointToSegment(x2, y2, x3, y3, x, y) <= EPSILON;
+                        collide |= collideAt_squareDistancePointToSegment(x3, y3, x1, y1, x, y) <= EPSILON;
                 }
         }
         return collide;
