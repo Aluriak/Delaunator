@@ -319,11 +319,9 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
 
         if((*mv_vrtx) != new_position) {
 // LIMIT MOVE
-        logs("LIMIT MOVE\n");
         new_position = this->coordinateCorrection(new_position);
 
-// FIND COLLISION WITH A LIMITER EDGES
-        logs("FIND COLLISION WITH A LIMITER EDGES\n");
+// FIND COLLISION WITH A LIMITER EDGES
         // limiter edges are the next left edges of all edge that have mv_vrtx as origin.
         current_edge = mv_vrtx->getEdge();
         do {
@@ -349,40 +347,27 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
 #endif
         }
 
-// MOVE MV_VRTX TO NEW LOCATION
-        logs("MOVE MV_VRTX TO NEW LOCATION\n");
+// MOVE MV_VRTX TO NEW LOCATION
         if(collidd_edge == NULL) {
-                LOGOK
                 // next step is the end
                 this->moveVertex_pure(mv_vrtx, new_position);
 
         } else if(*collidd_edge->originVertex() == new_position) { // if target place is already habited
-                LOGOK
 #ifdef DEBUG
                 assert(mv_vrtx != collidd_edge->originVertex());
                 assert(not this->haveCorner(collidd_edge->originVertex()));
 #endif
                 // give all to this existant Vertex
-                LOGOK
                 mv_vrtx->giveVirtualVerticesTo(collidd_edge->originVertex());
-                LOGOK
 #ifdef DEBUG
                 assert(mv_vrtx->getObjectCount() == 0);
 #endif
-                logs("(%f;%f) (%f;%f)\n",
-                                mv_vrtx->x(), mv_vrtx->y(),
-                                collidd_edge->originVertex()->x(),
-                                collidd_edge->originVertex()->y()
-                );
-                LOGOK
                 // del mv_vrtx, because we don't need it anymore
                 this->delVertex(mv_vrtx);
-                LOGOK
                 // the mv_vrtx is now the existant one (and don't need to be moved anymore)
                 mv_vrtx = collidd_edge->originVertex();
 
         } else if(collidd_edge->length() > 2*EPSILON) { // must be dividable
-                LOGOK
                 // get current middle of collision edge as the next step
                 Coordinates next_step = collidd_edge->middle();
                 // operate flip on collision edge (can break Delaunay condition)
@@ -392,16 +377,11 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
                 // recursiv call, lets go to the next step !
                 mv_vrtx = this->moveVertexTo(mv_vrtx, new_position);
 
-        } else { // hard way
-                // add new vertex
+        } else { // hard way: create a new vertex at target place and delete the one to be moved.
                 Vertex* new_vrtx = this->addVertexAt(new_position, collidd_edge);
-                // give all VirtualVertices to it
                 mv_vrtx->giveVirtualVerticesTo(new_vrtx);
-                // del the asked to move Vertex
                 this->delVertex(mv_vrtx);
-                // and finally break recursiv recall
-                mv_vrtx = new_vrtx;
-                // no anymore move required !
+                mv_vrtx = new_vrtx; // break recursiv recall
         }
 
 // ENDING
@@ -445,8 +425,6 @@ Vertex* Triangulation::vertexAt(float x, float y, float precision) const {
  */
 void Triangulation::delVertex(Vertex* del_vrtx) {
 // INIT
-        logs("\n%u:delVertex(%p==(%u:%f;%f) {\n", __LINE__,
-                del_vrtx, del_vrtx->getID(), del_vrtx->x(), del_vrtx->y());
 #ifdef DEBUG
         assert(del_vrtx != NULL);
         assert(this->have(del_vrtx));
@@ -471,11 +449,6 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
         // The end of local simplification is when no modification is done, or if del_vrtx have exactly 3 neighbors.
         // At this time of the algo, Delaunay condition is breaked, and suppression of the point
         // is easy. (point will be in a triangle, or on an edge exactly)
-        logs("%u:Neighbors of (%u;%f;%f) are %i:\n", __LINE__, del_vrtx->getID(),
-                del_vrtx->x(), del_vrtx->y(), nei_vrtx.size());
-        for(auto it : nei_vrtx) {
-                logs("\t(%u;%f;%f)\n", it->getID(), it->x(), it->y());
-        }
         unsigned int prev_size = 0; // impossible value
         while(prev_size != nei_vrtx.size() && nei_vrtx.size() != 3) {
                 prev_size = nei_vrtx.size();
@@ -497,49 +470,26 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
                                 Coordinates* tmp = triangle_del[0];
                                 triangle_del[0] = triangle_del[2];
                                 triangle_del[2] = tmp;
-                                logs("%u:Invertion performed between %u and %u (triangle del)\n",
-                                    __LINE__, nei_vrtx[id1]->getID(), nei_vrtx[id3]->getID());
                         } if(not geometry::pointInCounterClockwiseOrder(triangle_id2)) {
                                 Coordinates* tmp = triangle_id2[0];
                                 triangle_id2[0] = triangle_id2[2];
                                 triangle_id2[2] = tmp;
-                                logs("%u:Invertion performed between %u and %u (triangle id2)\n",
-                                    __LINE__, nei_vrtx[id1]->getID(), nei_vrtx[id3]->getID());
                         }
 #ifdef DEBUG
                         assert(geometry::pointInCounterClockwiseOrder(triangle_del));
                         assert(geometry::pointInCounterClockwiseOrder(triangle_id2));
 #endif
-                        logs("%u:IDS: {%u,%u,%u%%%u}=>{%u,%u,%u}\n", __LINE__,
-                                target, target+1, target+2, nei_vrtx.size(), id1, id2, id3);
-                        logs("Tested neighbors of (%u,%f;%f):\n", del_vrtx->getID(),
-                                del_vrtx->x(), del_vrtx->y());
-                        logs("\t(%u:%f;%f)\n", nei_vrtx[id1]->getID(),
-                                nei_vrtx[id1]->x(), nei_vrtx[id1]->y());
-                        logs("\t(%u:%f;%f)\n", nei_vrtx[id2]->getID(),
-                                nei_vrtx[id2]->x(), nei_vrtx[id2]->y());
-                        logs("\t(%u:%f;%f)\n", nei_vrtx[id3]->getID(),
-                                nei_vrtx[id3]->x(), nei_vrtx[id3]->y());
-
                         // collision between del_vrtx and triangle formed by neighbors
                         bool del_vrtx_not_in_triangle_id2 = not geometry::pointInTriangle(
                             *triangle_id2[0], *triangle_id2[1], *triangle_id2[2], *del_vrtx
                         );
-                        LOGOK
                         // collision between middle neighbor and triangle formed by the 3 others
                         bool id2_not_in_triangle_del = not geometry::pointInTriangle(
                             *triangle_del[0], *triangle_del[1], *triangle_del[2], *nei_vrtx[id2]
                         );
-                        LOGOK
                         // if neighbors are aligned, no operation will be performed.
                         bool not_aligned_neighbors = not geometry::alignedPoints(
                                 *nei_vrtx[id1], *nei_vrtx[id2], *nei_vrtx[id3]);
-                        logs("\t%u:In triangle(del): %i\n", __LINE__,
-                                (int)(!del_vrtx_not_in_triangle_id2));
-                        logs("\t%u:In triangle(id2): %i\n", __LINE__,
-                                (int)(!id2_not_in_triangle_del));
-                        logs("\t%u:Aligned neighbors: %i\n", __LINE__,
-                                (int)(!not_aligned_neighbors));
                         // if del_vrtx not in triangle formed by the three neighbors,
                         //   and id2 is not in triangle formed by id1, id3 and del_vrtx,
                         //   and id1, id2 and id3 are not aligned,
@@ -547,28 +497,18 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
                         //   it will break the delaunay condition, but remove one
                         //   neighbor for del_vrtx.
                         if(del_vrtx_not_in_triangle_id2 && id2_not_in_triangle_del && not_aligned_neighbors) {
-                                LOGOK
                                 // operate flip on the middle edge
                                 this->operateFlip(nei_edge[id2]);
-                                LOGOK
                                 // The modified faces must be referenced :
                                 //   it probably break the Delaunay condition
                                 //   the face used must not be adjacent to deleted point !
                                 modified_faces.push_back(nei_edge[id3]->nextLeftEdge()->rightFace());
-                                logs("%u:Neighbor %u discarded ; remain neighbors = %i\n",
-                                        __LINE__, nei_vrtx[id2]->getID(), nei_vrtx.size()-1);
-                                LOGOK
                                 // remove middle vertex (id2) from neighbors lists
                                 nei_edge.erase(nei_edge.begin() + id2);
                                 nei_vrtx.erase(nei_vrtx.begin() + id2);
                                 assert(nei_vrtx.size() == nei_edge.size());
                         }
                 }
-        }
-        logs("%u:Neighbors of (%u;%f;%f) reduced to %i:\n", __LINE__, del_vrtx->getID(),
-                del_vrtx->x(), del_vrtx->y(), nei_vrtx.size());
-        for(auto it : nei_vrtx) {
-                logs("\t(%u;%f;%f)\n", it->getID(), it->x(), it->y());
         }
 #ifdef DEBUG
         // Some tests
@@ -683,7 +623,6 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
 
 // RESTORE DELAUNAY CONDITION
         // Delaunay condition was break. It's time to restore it.
-        LOGOK
         for(Face* face : modified_faces) {
                 this->applyDelaunayCondition(face);
         }
