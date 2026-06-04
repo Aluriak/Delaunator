@@ -266,9 +266,9 @@ bool geometry::pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates
         // D E F        3 4 5
         // G H I        6 7 8
         // Translate in:
-        // p1.x() - p0.x()      p1.y() - p0.y()     (p1.x()*p1.x()-p0.x()*p0.x()) + (p1.y()*p1.y()-p0.y()*p0.y())
-        // p2.x() - p0.x()      p2.y() - p0.y()     (p2.x()*p2.x()-p0.x()*p0.x()) + (p2.y()*p2.y()-p0.y()*p0.y())
-        // p3.x() - p0.x()      p3.y() - p0.y()     (p3.x()*p3.x()-p0.x()*p0.x()) + (p3.y()*p3.y()-p0.y()*p0.y())
+        // p1.x - p0.x      p1.y - p0.y     (p1.x*p1.x-p0.x*p0.x) + (p1.y*p1.y-p0.y*p0.y)
+        // p2.x - p0.x      p2.y - p0.y     (p2.x*p2.x-p0.x*p0.x) + (p2.y*p2.y-p0.y*p0.y)
+        // p3.x - p0.x      p3.y - p0.y     (p3.x*p3.x-p0.x*p0.x) + (p3.y*p3.y-p0.y*p0.y)
         // If determinant of this matrix is < 0, p is in circumcircle of t
         // NB: the algorithm assume that Y axis is inverted.
         // determinant: AEI + BFG + CDH - AFH - BDI - CEG
@@ -286,30 +286,22 @@ bool geometry::pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates
                 return false;
         }
 
+        // Les termes de la 3e colonne peuvent atteindre 2×N^2 -> 2×2^62 -> __int128 requis
+        __int128 A = p1.x()-p0.x(),         B = p1.y()-p0.y(),          C = (p1.x()*p1.x()-p0.x()*p0.x()) + (p1.y()*p1.y()-p0.y()*p0.y());
+        __int128 D = p2.x()-p0.x(),         E = p2.y()-p0.y(),          C = (p2.x()*p2.x()-p0.x()*p0.x()) + (p2.y()*p3.y()-p0.y()*p0.y());
+        __int128 G = p3.x()-p0.x(),         H = p3.y()-p0.y(),          C = (p3.x()*p3.x()-p0.x()*p0.x()) + (p2.y()*p3.y()-p0.y()*p0.y());
+        __int128 d = A*E*I + B*F*G + C*D*H - A*F*H - B*D*I - C*E*G;
+
         // according to algorithm definition, determinant sign must be changed if points not in clockwise order
-        __int128 d = (geometry::pointInClockwiseOrder(3, p1, p2, p3) ? 1 : -1)*(
-        // AEI
-          (p1.x()-p0.x()) * (p2.y()-p0.y()) * ((p3.x()*p3.x()-p0.x()*p0.x()) + (p3.y()*p3.y()-p0.y()*p0.y()))
-        // BFG
-        + (p1.y()-p0.y()) * ((p2.x()*p2.x()-p0.x()*p0.x()) + (p2.y()*p2.y()-p0.y()*p0.y())) * (p3.x()-p0.x())
-        // CDH
-        + ((p1.x()*p1.x()-p0.x()*p0.x()) + (p1.y()*p1.y()-p0.y()*p0.y())) * (p2.x()-p0.x()) * (p3.y()-p0.y())
-        // AFH
-        - (p1.x()-p0.x()) * ((p2.x()*p2.x()-p0.x()*p0.x()) + (p2.y()*p2.y()-p0.y()*p0.y())) * (p3.y()-p0.y())
-        // BDI
-        - (p1.y()-p0.y()) * (p2.x()-p0.x()) * ((p3.x()*p3.x()-p0.x()*p0.x()) + (p3.y()*p3.y()-p0.y()*p0.y()))
-        // CEG
-        - ((p1.x()*p1.x()-p0.x()*p0.x()) + (p1.y()*p1.y()-p0.y()*p0.y())) * (p2.y()-p0.y()) * (p3.x()-p0.x())
-        );
+        bool ccw = geometry::pointInClockwiseOrder(3, p1, p2, p3);
 
 #if DEBUG
-        assert(fabs(d) > -1); // According to Murphy's law, it will happen.
+        std::cout << "points: {" << p1 << ", " << p2 << ", " << p3 << "} are in "
+                  << (geometry::pointInClockwiseOrder(3, p1, p2, p3) ? "" : "counter ")
+                  << "clockwise order; tested: " << p0
+                  << "; d = " << d << std::endl;
 #endif
-        //std::cout << "points: {" << p1 << ", " << p2 << ", " << p3 << "} are in "
-                  //<< (geometry::pointInClockwiseOrder(3, p1, p2, p3) ? "" : "counter ")
-                  //<< "clockwise order; tested: " << p0
-                  //<< "; d = " << d << std::endl;
-        return d > 0.;
+        return ccw ? d > 0 : d < 0;
 }
 
 
