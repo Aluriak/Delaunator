@@ -1,5 +1,7 @@
 #pragma once
 
+#include "stdbool.h"
+
 int64_t squareDistanceBetweenPoints(Coordinates A, Coordinates B);
 int64_t squareDistanceBetweenPoints(coord_t x1, coord_t y1, coord_t x2, coord_t y2);
 

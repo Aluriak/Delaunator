@@ -8,7 +8,7 @@
  * @return square distance between the two points
  * @warning return value is square of distance, not real distance
  */
-int64_t geometry::squareDistanceBetweenPoints(coord_t x1, coord_t y1, coord_t x2, coord_t y2) {
+int64_t squareDistanceBetweenPoints(coord_t x1, coord_t y1, coord_t x2, coord_t y2) {
         return (x1-x2) * (x1-x2) + (y1-y2) * (y1-y2);
 }
 /**
@@ -17,8 +17,8 @@ int64_t geometry::squareDistanceBetweenPoints(coord_t x1, coord_t y1, coord_t x2
  * @return square distance between the two points
  * @warning return value is square of distance, not real distance
  */
-int64_t geometry::squareDistanceBetweenPoints(Coordinates A, Coordinates B) {
-        return squareDistanceBetweenPoints(A.x(), A.y(), B.x(), B.y());
+int64_t squareDistanceBetweenPoints(Coordinates A, Coordinates B) {
+        return squareDistanceBetweenPoints(A.x, A.y, B.x, B.y);
 }
 
 
@@ -33,7 +33,7 @@ int64_t geometry::squareDistanceBetweenPoints(Coordinates A, Coordinates B) {
  * @note false iff circle defined by three aligned points
  * @note assume that Y axis IS inverted
  */
-bool geometry::pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0) {
+bool pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0) {
         // Algorithm found here: https://en.wikipedia.org/wiki/Delaunay_triangulation#Algorithms
         // matrix:
         // A B C        0 1 2
@@ -48,30 +48,30 @@ bool geometry::pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates
         // determinant: AEI + BFG + CDH - AFH - BDI - CEG
         // NB: circumcircle points (p1,p2,p3) must be in clockwise order. Else, determinant sign must be changed.
 
-        //if(geometry::pointInCounterClockwiseOrder((unsigned int)3, p1, p2, p3)) {
+        //if(pointInCounterClockwiseOrder((unsigned int)3, p1, p2, p3)) {
                 //logs("%u:HEAVYDEBUG: (%f;%f) (%f;%f) (%f;%f)\n", __LINE__,
-                        //p1.x(), p1.y(), p2.x(), p2.y(), p3.x(), p3.y()
+                        //p1.x, p1.y, p2.x, p2.y, p3.x, p3.y
                     //);
-                //assert(geometry::pointInCounterClockwiseOrder(3, p1, p2, p3));
+                //assert(pointInCounterClockwiseOrder(3, p1, p2, p3));
         //}
         // abnormal case : aligned points : p0 is not in the circumcircle
-        if(geometry::alignedPoints(p1, p2, p3)) {
-                assert(geometry::signedPolygonArea(3, p1, p2, p3) == 0.);
+        if(alignedPoints(p1, p2, p3)) {
+                assert(signedPolygonArea(3, p1, p2, p3) == 0.);
                 return false;
         }
 
         // Les termes de la 3e colonne peuvent atteindre 2×N^2 -> 2×2^62 -> __int128 requis
-        __int128 A = p1.x()-p0.x(),         B = p1.y()-p0.y(),          C = (p1.x()*p1.x()-p0.x()*p0.x()) + (p1.y()*p1.y()-p0.y()*p0.y());
-        __int128 D = p2.x()-p0.x(),         E = p2.y()-p0.y(),          C = (p2.x()*p2.x()-p0.x()*p0.x()) + (p2.y()*p3.y()-p0.y()*p0.y());
-        __int128 G = p3.x()-p0.x(),         H = p3.y()-p0.y(),          C = (p3.x()*p3.x()-p0.x()*p0.x()) + (p2.y()*p3.y()-p0.y()*p0.y());
+        __int128 A = p1.x-p0.x,         B = p1.y-p0.y,          C = (p1.x*p1.x-p0.x*p0.x) + (p1.y*p1.y-p0.y*p0.y);
+        __int128 D = p2.x-p0.x,         E = p2.y-p0.y,          C = (p2.x*p2.x-p0.x*p0.x) + (p2.y*p3.y-p0.y*p0.y);
+        __int128 G = p3.x-p0.x,         H = p3.y-p0.y,          C = (p3.x*p3.x-p0.x*p0.x) + (p2.y*p3.y-p0.y*p0.y);
         __int128 d = A*E*I + B*F*G + C*D*H - A*F*H - B*D*I - C*E*G;
 
         // according to algorithm definition, determinant sign must be changed if points not in clockwise order
-        bool ccw = geometry::pointInClockwiseOrder(3, p1, p2, p3);
+        bool ccw = pointInClockwiseOrder(3, p1, p2, p3);
 
 #if DEBUG
         std::cout << "points: {" << p1 << ", " << p2 << ", " << p3 << "} are in "
-                  << (geometry::pointInClockwiseOrder(3, p1, p2, p3) ? "" : "counter ")
+                  << (pointInClockwiseOrder(3, p1, p2, p3) ? "" : "counter ")
                   << "clockwise order; tested: " << p0
                   << "; d = " << d << std::endl;
 #endif
@@ -86,15 +86,15 @@ bool geometry::pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates
  * @param C Coordinates of a point of triangle
  * @return C Coordinates of triangle's circumcenter
  */
-Coordinates geometry::circumcenterOf(Coordinates A, Coordinates B, Coordinates C) {
+Coordinates circumcenterOf(Coordinates A, Coordinates B, Coordinates C) {
         // Source: wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates
-        uint64_t D = 2*(A.x()*(B.y() - C.y()) + B.x()*(C.y() - A.y()) + C.x()*(A.y() - B.y()));
-        uint64_t factA = A.x()*A.x() + A.y()*A.y();
-        uint64_t factB = B.x()*B.x() + B.y()*B.y();
-        uint64_t factC = C.x()*C.x() + C.y()*C.y();
+        uint64_t D = 2*(A.x*(B.y - C.y) + B.x*(C.y - A.y) + C.x*(A.y - B.y));
+        uint64_t factA = A.x*A.x + A.y*A.y;
+        uint64_t factB = B.x*B.x + B.y*B.y;
+        uint64_t factC = C.x*C.x + C.y*C.y;
         Coordinates center;
-        center.setX(  (factA*(B.y()- C.y()) + factB*(C.y() - A.y()) + factC*(A.y() - B.y()))  / D);
-        center.setY(  (factA*(C.x()- B.x()) + factB*(A.x() - C.x()) + factC*(B.x() - A.x()))  / D);
+        center.setX(  (factA*(B.y- C.y) + factB*(C.y - A.y) + factC*(A.y - B.y))  / D);
+        center.setY(  (factA*(C.x- B.x) + factB*(A.x - C.x) + factC*(B.x - A.x))  / D);
         return center;
 }
 
@@ -152,16 +152,16 @@ inline uint64_t collideAt_squareDistancePointToSegment(coord_t x1, coord_t y1, c
  * @return true iff tested point is in triangle composed by p1, p2 and p3.
  * @note assume that p1, p2 and p3 are given in counterclockwise order
  */
-bool geometry::pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0) {
+bool pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0) {
 #ifdef DEBUG
         std::vector<Coordinates*> assert_data = {&p1, &p2, &p3};
-        assert(geometry::pointInCounterClockwiseOrder(assert_data));
+        assert(pointInCounterClockwiseOrder(assert_data));
 #endif
         bool collide = false;
-        coord_t x1 = p1.x(), y1 = p1.y();
-        coord_t x2 = p2.x(), y2 = p2.y();
-        coord_t x3 = p3.x(), y3 = p3.y();
-        coord_t x  = p0.x(), y  = p0.y();
+        coord_t x1 = p1.x, y1 = p1.y;
+        coord_t x2 = p2.x, y2 = p2.y;
+        coord_t x3 = p3.x, y3 = p3.y;
+        coord_t x  = p0.x, y  = p0.y;
         coord_t xmin = min(x1, min(x2, x3));
         coord_t xmax = max(x1, max(x2, x3));
         coord_t ymin = min(y1, min(y2, y3));
@@ -199,23 +199,23 @@ bool geometry::pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, C
  * @return shorter square distance between segment and point
  * @warning return value is square of distance, not real distance
  */
-float geometry::squareDistanceBetweenSegmentAndPoint(float x1, float x2, float y1, float y2, float px, float py) {
+float squareDistanceBetweenSegmentAndPoint(float x1, float x2, float y1, float y2, float px, float py) {
         float distance = -1.;
         // Algorithm found on
         //   http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
-        const float square_len = geometry::squareDistanceBetweenPoints(x1, y1, x2, y2);  // distance squared
+        const float square_len = squareDistanceBetweenPoints(x1, y1, x2, y2);  // distance squared
         if(abs(square_len) < EPSILON)
-                distance = geometry::squareDistanceBetweenPoints(x1, y1, px, py);
+                distance = squareDistanceBetweenPoints(x1, y1, px, py);
 
         Coordinates pxy1(px-x1, py-y1), pxy2(px-x2, py-y2);
-        const float t = (pxy1.x()*pxy2.x() + pxy1.y()*pxy2.y()) / square_len;
+        const float t = (pxy1.x*pxy2.x + pxy1.y*pxy2.y) / square_len;
 
         if(t < 0.) {
-                distance = geometry::squareDistanceBetweenPoints(px, py, x1, y1);
+                distance = squareDistanceBetweenPoints(px, py, x1, y1);
         } else if(t > 1.) {
-                distance = geometry::squareDistanceBetweenPoints(px, py, x2, y2);
+                distance = squareDistanceBetweenPoints(px, py, x2, y2);
         } else {
-                distance = geometry::squareDistanceBetweenPoints(px, py, x1 + t*(x2-x1), y1 + t*(y2-y1));
+                distance = squareDistanceBetweenPoints(px, py, x1 + t*(x2-x1), y1 + t*(y2-y1));
         }
 
         return distance;
@@ -237,13 +237,13 @@ float geometry::squareDistanceBetweenSegmentAndPoint(float x1, float x2, float y
  * @return true if lines are parallels
  * @warning if A == B or C == D, lines are parallel
  */
-bool geometry::parallelLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
+bool parallelLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
         // source: https://en.wikipedia.org/wiki/Line-line_intersection#Mathematics
         //if(A == B)
-                //logs("A(%f;%f) == B(%f;%f)\n", A.x(), A.y(), B.x(), B.y());
+                //logs("A(%f;%f) == B(%f;%f)\n", A.x, A.y, B.x, B.y);
         //if(C == D)
-                //logs("C(%f;%f) == D(%f;%f)\n", C.x(), C.y(), D.x(), D.y());
-        return fabs((A.x()-B.x()) * (C.y()-D.y())  -  (A.y()-B.y()) * (C.x()-D.x())) < EPSILON;
+                //logs("C(%f;%f) == D(%f;%f)\n", C.x, C.y, D.x, D.y);
+        return fabs((A.x-B.x) * (C.y-D.y)  -  (A.y-B.y) * (C.x-D.x)) < EPSILON;
 }
 
 
@@ -255,9 +255,9 @@ bool geometry::parallelLines(Coordinates A, Coordinates B, Coordinates C, Coordi
  * @param B Coordinates of another point
  * @param C Coordinates of another point
  * @return true if points are aligned
- * @note prediction performed with a call to geometry::parallelLines(4)
+ * @note prediction performed with a call to parallelLines(4)
  */
-bool geometry::alignedPoints(Coordinates A, Coordinates B, Coordinates C) {
+bool alignedPoints(Coordinates A, Coordinates B, Coordinates C) {
         return parallelLines(A, B, A, C);
 }
 
@@ -274,14 +274,14 @@ bool geometry::alignedPoints(Coordinates A, Coordinates B, Coordinates C) {
  * @return Coordinates of intersection of the lines
  * @assert lines are not parallel
  */
-Coordinates geometry::intersectionOfLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
-        assert(!geometry::parallelLines(A,B,C,D));
+Coordinates intersectionOfLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
+        assert(!parallelLines(A,B,C,D));
         Coordinates intersec;
-        float det = (A.x()-B.x()) * (C.y()-D.y())  -  (A.y()-B.y()) * (C.x()-D.x());
-        float fA = A.x()*B.y() - A.y()*B.x();
-        float fB = C.x()*D.y() - C.y()*D.x();
-        intersec.setX((fA*(C.x()-D.x()) - (A.x()-B.x())*fB) / det);
-        intersec.setY((fA*(C.y()-D.y()) - (A.y()-B.y())*fB) / det);
+        float det = (A.x-B.x) * (C.y-D.y)  -  (A.y-B.y) * (C.x-D.x);
+        float fA = A.x*B.y - A.y*B.x;
+        float fB = C.x*D.y - C.y*D.x;
+        intersec.setX((fA*(C.x-D.x) - (A.x-B.x)*fB) / det);
+        intersec.setY((fA*(C.y-D.y) - (A.y-B.y)*fB) / det);
         return intersec;
 }
 
@@ -300,7 +300,7 @@ Coordinates geometry::intersectionOfLines(Coordinates A, Coordinates B, Coordina
  * @note returned point is nearer of A than B; difference is about EPSILON
  * @assert lines are not parallel
  */
-Coordinates geometry::behindIntersectionOfLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
+Coordinates behindIntersectionOfLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
         Coordinates intersec = intersectionOfLines(A, B, C, D), behinder(0, 0);
         // behinder is the intersection of the segment [AB] and circle of center A and
         //      radius equal to |AB| - EPSILON
@@ -328,14 +328,14 @@ Coordinates geometry::behindIntersectionOfLines(Coordinates A, Coordinates B, Co
  * @return true if [OP] segment cross with (AB) line
  * @return 0 if [OP] and (AB) don't cross, 1 if ]OP[ cross (AB) or 2 if O or P are on (AB)
  */
-bool geometry::collisionBetweenSegmentAndLine(Coordinates O, Coordinates P, Coordinates A, Coordinates B) {
+bool collisionBetweenSegmentAndLine(Coordinates O, Coordinates P, Coordinates A, Coordinates B) {
         // 0,1    1,0   0,0     2,2
-        float AB_x = B.x() - A.x();  // 2
-        float AB_y = B.y() - A.y();  // 2
-        float AP_x = P.x() - A.x();  // 1
-        float AP_y = P.y() - A.y();  // 0
-        float AO_x = O.x() - A.x();  // 0
-        float AO_y = O.y() - A.y();  // 1
+        float AB_x = B.x - A.x;  // 2
+        float AB_y = B.y - A.y;  // 2
+        float AP_x = P.x - A.x;  // 1
+        float AP_y = P.y - A.y;  // 0
+        float AO_x = O.x - A.x;  // 0
+        float AO_y = O.y - A.y;  // 1
         // -2 * 2
         float tmp = (AB_x*AP_y - AB_y*AP_x)*(AB_x*AO_y - AB_y*AO_x);
         if(fabs(tmp - 0.) < EPSILON)    tmp = 2;
@@ -357,7 +357,7 @@ bool geometry::collisionBetweenSegmentAndLine(Coordinates O, Coordinates P, Coor
  * @param D Coordinates of another second segment point
  * @return true if [AB] segment cross with [CD] segment
  */
-bool geometry::collisionBetweenSegmentAndSegment(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
+bool collisionBetweenSegmentAndSegment(Coordinates A, Coordinates B, Coordinates C, Coordinates D) {
         return collisionBetweenSegmentAndLine(A, B, C, D) && collisionBetweenSegmentAndLine(C, D, A, B);
 }
 
@@ -375,11 +375,11 @@ bool geometry::collisionBetweenSegmentAndSegment(Coordinates A, Coordinates B, C
  * @param radius of the circle
  * @return true if circle collide with (AB) line
  */
-bool geometry::collisionBetweenLineAndCircle(Coordinates A, Coordinates B, Coordinates C, float radius) {
-        float u_x = B.x() - A.x();
-        float u_y = B.y() - A.y();
-        float AC_x = C.x() - A.x();
-        float AC_y = C.y() - A.y();
+bool collisionBetweenLineAndCircle(Coordinates A, Coordinates B, Coordinates C, float radius) {
+        float u_x = B.x - A.x;
+        float u_y = B.y - A.y;
+        float AC_x = C.x - A.x;
+        float AC_y = C.y - A.y;
         float numerator = fabs(u_x*AC_y - u_y*AC_x);
         float denominator = sqrt(u_x*u_x + u_y*u_y);
         return (numerator / denominator) < radius;
@@ -399,8 +399,8 @@ bool geometry::collisionBetweenLineAndCircle(Coordinates A, Coordinates B, Coord
  * @return true if tested point is inside circle
  * @note return false if point is exactly on circle
  */
-bool geometry::pointInsideCircle(const Coordinates A, const Coordinates C, const float radius) {
-        return (A.x()-C.x())*(A.x()-C.x()) + (A.y()-C.y())*(A.y()-C.y()) < radius*radius;
+bool pointInsideCircle(const Coordinates A, const Coordinates C, const float radius) {
+        return (A.x-C.x)*(A.x-C.x) + (A.y-C.y)*(A.y-C.y) < radius*radius;
 }
 
 
@@ -416,8 +416,8 @@ bool geometry::pointInsideCircle(const Coordinates A, const Coordinates C, const
  * @param radius of the circle
  * @return true if tested point is on circle, false if tested point is inside or outside the circle
  */
-bool geometry::pointOnCircle(const Coordinates A, const Coordinates C, const float radius) {
-        return fabs((A.x()-C.x())*(A.x()-C.x()) + (A.y()-C.y())*(A.y()-C.y()) - radius*radius) < EPSILON;
+bool pointOnCircle(const Coordinates A, const Coordinates C, const float radius) {
+        return fabs((A.x-C.x)*(A.x-C.x) + (A.y-C.y)*(A.y-C.y) - radius*radius) < EPSILON;
 }
 
 
@@ -434,7 +434,7 @@ bool geometry::pointOnCircle(const Coordinates A, const Coordinates C, const flo
  * @note consider that Y axis is NOT inverted. Else, sign of returned value is false
  * @see pointInClockwiseOrder and pointInCounterClockwiseOrder functions.
  */
-float geometry::signedPolygonArea(const unsigned int n, ...) {
+float signedPolygonArea(const unsigned int n, ...) {
         //std::cout<<__LINE__<<":signedPolygonArea(n, ...): " << n << std::endl;
         std::vector<Coordinates*> coords;
         va_list args;
@@ -444,7 +444,7 @@ float geometry::signedPolygonArea(const unsigned int n, ...) {
             coords.push_back(&x);
         }
         va_end(args);
-        return  geometry::signedPolygonArea(coords);
+        return  signedPolygonArea(coords);
 
 }
 
@@ -455,10 +455,10 @@ float geometry::signedPolygonArea(const unsigned int n, ...) {
  * @note consider that Y axis is NOT inverted. Else, sign of returned value is false
  * @see pointInClockwiseOrder and pointInCounterClockwiseOrder functions.
  */
-float geometry::signedPolygonArea(const std::vector<Coordinates> coords) {
+float signedPolygonArea(const std::vector<Coordinates> coords) {
         // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
         float sum = 0.;
-        //std::cout<<__LINE__<<":geometry::signedPolygonArea(const std::vector<Coordinates> coords): { ";
+        //std::cout<<__LINE__<<":signedPolygonArea(const std::vector<Coordinates> coords): { ";
         if(coords.size() > 1) {
                 unsigned int summed = 1;
                 for(; summed < coords.size(); summed++) {
@@ -482,10 +482,10 @@ float geometry::signedPolygonArea(const std::vector<Coordinates> coords) {
  * @note consider that Y axis is NOT inverted. Else, sign of returned value is false
  * @see pointInClockwiseOrder and pointInCounterClockwiseOrder functions.
  */
-float geometry::signedPolygonArea(const std::vector<Coordinates*> coords) {
+float signedPolygonArea(const std::vector<Coordinates*> coords) {
         // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
         float sum = 0.;
-        //std::cout<<__LINE__<<":geometry::signedPolygonArea(const std::vector<Coordinates*> coords): { ";
+        //std::cout<<__LINE__<<":signedPolygonArea(const std::vector<Coordinates*> coords): { ";
         if(coords.size() > 1) {
                 unsigned int summed = 1;
                 for(; summed < coords.size(); summed++) {
@@ -514,7 +514,7 @@ float geometry::signedPolygonArea(const std::vector<Coordinates*> coords) {
  * @note as geometry module assume that Y axis IS inverted, positiv area returns false
  * @see http://stackoverflow.com/a/1165943/3077939
  */
-bool geometry::clockwiseSignedPolygonArea(float signed_area) {
+bool clockwiseSignedPolygonArea(float signed_area) {
         return signed_area <= 0.;
 }
 /**
@@ -522,10 +522,10 @@ bool geometry::clockwiseSignedPolygonArea(float signed_area) {
  * @return true iff given signed area is 0 or an impossible area for a clockwise ordered polygon
  * @note consider that Y axis IS "inverted". Else, returned value is false
  */
-bool geometry::counterclockwiseSignedPolygonArea(float signed_area) {
+bool counterclockwiseSignedPolygonArea(float signed_area) {
         if(abs(signed_area) < EPSILON)
                 return true;
-        else    return not geometry::clockwiseSignedPolygonArea(signed_area);
+        else    return not clockwiseSignedPolygonArea(signed_area);
 }
 
 
@@ -540,7 +540,7 @@ bool geometry::counterclockwiseSignedPolygonArea(float signed_area) {
  * @return true iff n <= 1 or received Coordinates are given in Counter Clockwise order
  * @note consider that Y axis is NOT inverted. Else, returned value is false
  */
-bool geometry::pointInCounterClockwiseOrder(const unsigned int n, ...) {
+bool pointInCounterClockwiseOrder(const unsigned int n, ...) {
         // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
         //std::cout<<__LINE__<<":pointInCounterClockwiseOrder(n, ...): " << n << std::endl;
         // get a vector from variadic arguments and call overloaded function
@@ -551,7 +551,7 @@ bool geometry::pointInCounterClockwiseOrder(const unsigned int n, ...) {
             coords.push_back(va_arg(args, Coordinates));
         }
         va_end(args);
-        return geometry::counterclockwiseSignedPolygonArea(geometry::signedPolygonArea(coords));
+        return counterclockwiseSignedPolygonArea(signedPolygonArea(coords));
 }
 
 
@@ -561,11 +561,11 @@ bool geometry::pointInCounterClockwiseOrder(const unsigned int n, ...) {
  * @return true iff Coordinates are stored in Counter Clockwise order
  * @note consider that Y axis is NOT inverted. Else, returned value is false
  */
-bool geometry::pointInCounterClockwiseOrder(const std::vector<Coordinates*> coords) {
+bool pointInCounterClockwiseOrder(const std::vector<Coordinates*> coords) {
         // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
         // if negativ, its counter-clockwise.
         //std::cout<<__LINE__<<":pointInCounterClockwiseOrder(vector<Coordinates*>): " << coords.size() << std::endl;
-        return geometry::counterclockwiseSignedPolygonArea(geometry::signedPolygonArea(coords));
+        return counterclockwiseSignedPolygonArea(signedPolygonArea(coords));
 }
 
 
@@ -575,11 +575,11 @@ bool geometry::pointInCounterClockwiseOrder(const std::vector<Coordinates*> coor
  * @return true iff Coordinates are stored in Counter Clockwise order
  * @note consider that Y axis is NOT inverted. Else, returned value is false
  */
-bool geometry::pointInCounterClockwiseOrder(const std::vector<Coordinates> coords) {
+bool pointInCounterClockwiseOrder(const std::vector<Coordinates> coords) {
         // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
         // if negativ, its counter-clockwise.
         //std::cout<<__LINE__<<":pointInCounterClockwiseOrder(vector<Coordinates>): " << coords.size() << std::endl;
-        return geometry::counterclockwiseSignedPolygonArea(geometry::signedPolygonArea(coords));
+        return counterclockwiseSignedPolygonArea(signedPolygonArea(coords));
 }
 
 
@@ -591,7 +591,7 @@ bool geometry::pointInCounterClockwiseOrder(const std::vector<Coordinates> coord
  * @return true iff n == 0 or received Coordinates are given in Clockwise order
  * @note consider that Y axis is NOT inverted. Else, returned value is false
  */
-bool geometry::pointInClockwiseOrder(const unsigned int n, ...) {
+bool pointInClockwiseOrder(const unsigned int n, ...) {
         // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
         //std::cout<<__LINE__<<":pointInClockwiseOrder(n, ...): " << n << std::endl;
         // get a vector from variadic arguments and call overloaded function
@@ -602,7 +602,7 @@ bool geometry::pointInClockwiseOrder(const unsigned int n, ...) {
             coords.push_back(va_arg(args, Coordinates));
         }
         va_end(args);
-        return geometry::clockwiseSignedPolygonArea(geometry::signedPolygonArea(coords));
+        return clockwiseSignedPolygonArea(signedPolygonArea(coords));
 }
 
 
@@ -611,11 +611,11 @@ bool geometry::pointInClockwiseOrder(const unsigned int n, ...) {
  * @return true iff Coordinates are stored in Clockwise order
  * @note consider that Y axis is NOT inverted. Else, returned value is false
  */
-bool geometry::pointInClockwiseOrder(const std::vector<Coordinates*> coords) {
+bool pointInClockwiseOrder(const std::vector<Coordinates*> coords) {
         // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
         // if negativ, its counter-clockwise.
         //std::cout<<__LINE__<<":pointInClockwiseOrder(vector<Coordinates*>): " << coords.size() << std::endl;
-        return geometry::clockwiseSignedPolygonArea(geometry::signedPolygonArea(coords));
+        return clockwiseSignedPolygonArea(signedPolygonArea(coords));
 }
 
 
@@ -624,11 +624,11 @@ bool geometry::pointInClockwiseOrder(const std::vector<Coordinates*> coords) {
  * @return true iff Coordinates are stored in Clockwise order
  * @note consider that Y axis is NOT inverted. Else, returned value is false
  */
-bool geometry::pointInClockwiseOrder(const std::vector<Coordinates> coords) {
+bool pointInClockwiseOrder(const std::vector<Coordinates> coords) {
         // Solution found here: http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order?rq=1
         // if negativ, its counter-clockwise.
         //std::cout<<__LINE__<<":pointInClockwiseOrder(vector<Coordinates>): " << coords.size() << std::endl;
-        return geometry::clockwiseSignedPolygonArea(geometry::signedPolygonArea(coords));
+        return clockwiseSignedPolygonArea(signedPolygonArea(coords));
 }
 
 
@@ -645,9 +645,9 @@ bool geometry::pointInClockwiseOrder(const std::vector<Coordinates> coords) {
  * @param radius of the circle
  * @return true if circle collide with [AB] segment
  */
-bool geometry::collisionBetweenSegmentAndCircle(Coordinates A, Coordinates B, Coordinates C, float radius) {
+bool collisionBetweenSegmentAndCircle(Coordinates A, Coordinates B, Coordinates C, float radius) {
         bool collision = false;
-        if(geometry::collisionBetweenLineAndCircle(A, B, C, radius)) {
+        if(collisionBetweenLineAndCircle(A, B, C, radius)) {
                 float AB_x = B.x() - A.x();
                 float AB_y = B.y() - A.y();
                 float AC_x = C.x() - A.x();
@@ -658,8 +658,8 @@ bool geometry::collisionBetweenSegmentAndCircle(Coordinates A, Coordinates B, Co
                 float scal2 = (-AB_x)*BC_x + (-AB_y)*BC_y;  // scalar product
                 // I is between A and B, or A or B is in the circle
                 collision = (scal1 >= 0 && scal2 >= 0)
-                          || geometry::pointInsideCircle(A, C, radius)
-                          || geometry::pointInsideCircle(B, C, radius);
+                          || pointInsideCircle(A, C, radius)
+                          || pointInsideCircle(B, C, radius);
         }
         return collision;
 }
@@ -677,7 +677,7 @@ bool geometry::collisionBetweenSegmentAndCircle(Coordinates A, Coordinates B, Co
  * @param C the evaluated point
  * @return the projection of evaluated point on the line
  */
-Coordinates geometry::projectionOfPointOnLine(Coordinates A, Coordinates B, Coordinates C) {
+Coordinates projectionOfPointOnLine(Coordinates A, Coordinates B, Coordinates C) {
         float u_x  = B.x() - A.x();
         float u_y  = B.y() - A.y();
         float AC_x = C.x() - A.x();
@@ -704,7 +704,7 @@ Coordinates geometry::projectionOfPointOnLine(Coordinates A, Coordinates B, Coor
  * @return number of solution, 0, 1 or 2
  * @note if return 0, S1 and S2 are not modified, if 1, S1 only is modifed, else, both modified
  */
-unsigned int geometry::intersectionsBetweenLineAndCircle(Coordinates A, Coordinates B, Coordinates C,
+unsigned int intersectionsBetweenLineAndCircle(Coordinates A, Coordinates B, Coordinates C,
                 float square_radius, Coordinates* S1, Coordinates* S2) {
 #if DEBUG
         assert(S1 != NULL);
@@ -810,9 +810,9 @@ unsigned int geometry::intersectionsBetweenLineAndCircle(Coordinates A, Coordina
  * @return number of solution, 0, 1 or 2
  * @note if return 2, S1 and S2 are modified, if 1, S1 is modified and maybe S2, else both can be modified
  */
-unsigned int geometry::intersectionsBetweenSegmentAndCircle(Coordinates A, Coordinates B, Coordinates C,
+unsigned int intersectionsBetweenSegmentAndCircle(Coordinates A, Coordinates B, Coordinates C,
                 float square_radius, Coordinates* S1, Coordinates* S2) {
-        unsigned int nb_solution = geometry::intersectionsBetweenLineAndCircle(A, B, C, square_radius, S1, S2);
+        unsigned int nb_solution = intersectionsBetweenLineAndCircle(A, B, C, square_radius, S1, S2);
         float distance_AB = A.squareDistanceTo(B);
 
         // RETRACT solutions that aren't on [AB]
@@ -850,12 +850,12 @@ unsigned int geometry::intersectionsBetweenSegmentAndCircle(Coordinates A, Coord
  * @return false if line is vertical, else true
  * @warning if line is vertical, ordn only is modifed and represent the offset in x axis
  */
-bool geometry::coeffAndOrdnOfLine(Coordinates A, Coordinates B, float* coef, float* ordn) {
+bool coeffAndOrdnOfLine(Coordinates A, Coordinates B, float* coef, float* ordn) {
 #if DEBUG
         assert(coef != NULL);
         assert(ordn != NULL);
 #endif
-        bool isVertical = fabs(A.x() - B.x()) < EPSILON;
+        bool isVertical = abs(A.x() - B.x());
         if(isVertical) *ordn = A.x();
         else {
                 *coef = round_float((B.y() - A.y()) / (B.x() - A.x()), EPSILON*10.);

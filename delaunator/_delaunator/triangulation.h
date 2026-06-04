@@ -10,7 +10,6 @@ typedef int32_t coord_t;
  * First: the first added Edge
  * Middle: the Edge in the middle of the Edge list
  * Last: the last added Edge (default value)
- * @note Last mode is certainly the better, especially in case where added Vertex are close to previous one
  */
 enum VertexFinderMode {
         VERTEX_FINDER_MODE_RANDOM,
@@ -30,46 +29,17 @@ enum VertexFinderMode {
 typedef struct Edge   Edge;
 typedef struct Vertex Vertex;
 typedef struct Face   Face;
+typedef struct Coordinates   Coordinates;
 typedef struct Triangulation Triangulation;
 
-struct Edge {
-    Vertex* origin;
-    Edge*   opposite;
-    Edge*   next_left;
-    Face*   left_face;
-    int     visible;
-    unsigned int id;
-};
-
-struct Vertex {
-    float x, y;
-    Edge* edge;       // une arête sortante
-    unsigned int id;
-};
-
-struct Face {
-    Edge* edge;
-    int   visible;
-    float cx, cy;         // centroïde
-    float ccx, ccy;       // circoncentre
-    unsigned int id;
-};
-
-struct Triangulation {
-    float xmin, xmax, ymin, ymax;
-
-    Vertex** vertices;  int n_vertices, cap_vertices;
-    Edge**   edges;     int n_edges,    cap_edges;
-    Face**   faces;     int n_faces,    cap_faces;
-};
 
 // API publique (exposée à Python)
-Triangulation* tri_new(float xmin, float xmax, float ymin, float ymax);
+Triangulation* tri_new(coord_t xmin, coord_t xmax, coord_t ymin, coord_t ymax);
 void           tri_free(Triangulation* t);
-Vertex*        tri_add_vertex(Triangulation* t, float x, float y);
-Vertex*        tri_move_vertex(Triangulation* t, Vertex* v, float nx, float ny);
+Vertex*        tri_add_vertex(Triangulation* t, coord_t x, coord_t y);
+Vertex*        tri_move_vertex(Triangulation* t, Vertex* v, coord_t nx, coord_t ny);
 void           tri_del_vertex(Triangulation* t, Vertex* v);
 // Pour le rendu : remplit un buffer de flottants (x1,y1,x2,y2,...)
-int            tri_get_edges(Triangulation* t, float* buf, int max_edges);
+int            tri_get_edges(Triangulation* t, coord_t* buf, uint64_t max_edges);
 
 void           unit_tests(); // call that once for verify integrity of geometry fonctions

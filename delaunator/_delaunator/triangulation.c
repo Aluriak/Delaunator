@@ -1,5 +1,40 @@
-#include "delaunator.h"
+#include "triangulation.h"
+#include "da.h"
+#include "geometry.h"
 
+struct Coordinates {
+    coord_t x, y;
+};
+
+struct Edge {
+    Vertex* origin;
+    Edge*   opposite;
+    Edge*   next_left;
+    Face*   left_face;
+    int     visible;
+    unsigned int id;
+};
+
+struct Vertex {
+    coord_t x, y;
+    Edge* edge;       // une arête sortante
+    unsigned int id;
+};
+
+struct Face {
+    Edge* edge;
+    int   visible;
+    float cx, cy;         // centroïde
+    float ccx, ccy;       // circoncentre
+    unsigned int id;
+};
+
+struct Triangulation {
+    float xmin, xmax, ymin, ymax;
+    struct { Vertex** data; int len; int cap; } vertices;
+    struct { Edge**   data; int len; int cap; } edges;
+    struct { Face**   data; int len; int cap; } faces;
+};
 
 
 /**
@@ -11,13 +46,22 @@
  * @param finder_mode for choose which mode of finder will be used for search Coordinates, LAST by default
  * @see VertexFinderMode
  */
+Triangulation*
 tri_new(const coord_t xmin, const coord_t xmax,
-        const coord_t ymin, const coord_t ymax,
-        const VertexFinderMode finder_mode = VERTEX_FINDER_MODE_MIDDLE) {
+        const coord_t ymin, const coord_t ymax) {
+        //const VertexFinderMode finder_mode = VERTEX_FINDER_MODE_MIDDLE) {
 #ifdef DEBUG
         assert(xmin < xmax);
         assert(ymin < ymax);
 #endif
+    Triangulation* t = malloc(sizeof *t);
+    assert(t);
+    t->xmin = xmin; t->xmax = xmax;
+    t->ymin = ymin; t->ymax = ymax;
+    DA_INIT(t->vertices);
+    DA_INIT(t->edges);
+    DA_INIT(t->faces);
+
 // Initialize some values
         this->setFinderMode(finder_mode);
 // Creation of primitive mesh, with four points.
@@ -136,7 +180,7 @@ tri_new(const coord_t xmin, const coord_t xmax,
 /**
  * Frees all Faces, Vertices and Edges.
  */
-Triangulation::~Triangulation() {
+tri_~Triangulation() {
         // free's !
         for(auto it : this->faces)      delete it;
         for(auto it : this->vertices)   delete it;
@@ -158,7 +202,7 @@ Triangulation::~Triangulation() {
  * @return address of that point in Mesh, or NULL if not found.
  * @note if out of bounds, a correction is applied.
  */
-Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
+Vertex* tri_addVertexAt(Coordinates p, Edge* first) {
 // initialization
         Face* container = NULL; // container of p
         Vertex* new_vertex = NULL; // returned vertex
@@ -284,7 +328,7 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
  * @return address of the Vertex, or of a new Vertex if given was freed
  * @note given Vertex can be deleted, but data is keeped in returned Vertex.
  */
-Vertex* Triangulation::moveVertex(Vertex* mv_vrtx, coord_t x, coord_t y) {
+Vertex* tri_moveVertex(Vertex* mv_vrtx, coord_t x, coord_t y) {
         return this->moveVertexTo(mv_vrtx, Coordinates(mv_vrtx->x()+x, mv_vrtx->y()+y));
 }
 
@@ -299,7 +343,7 @@ Vertex* Triangulation::moveVertex(Vertex* mv_vrtx, coord_t x, coord_t y) {
  * @return address of the Vertex, or of a new Vertex if given was freed
  * @note given Vertex can be deleted, but data is keeped in returned Vertex.
  */
-Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
+Vertex* tri_moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
         // ALGORITHM:
         //      - detect collision with limiter edges/Vertex
         //              - if edge is too short to be divide:
@@ -394,7 +438,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
  * @return vertex found at given coords, around precision. or NULL iff no vertex found.
  * @note never return the corners Vertex
  */
-Vertex* Triangulation::vertexAt(coord_t x, coord_t y, float precision) const {
+Vertex* tri_vertexAt(coord_t x, coord_t y, float precision) const {
         Vertex *target = NULL;
         // pass the fourth first vertices, that defines the mesh
         auto it = this->vertices.cbegin();
@@ -418,7 +462,7 @@ Vertex* Triangulation::vertexAt(coord_t x, coord_t y, float precision) const {
  * Iterators will be invalidated, and vertex will be free.
  * @param del_vrtx targeted Vertex
  */
-void Triangulation::delVertex(Vertex* del_vrtx) {
+void tri_delVertex(Vertex* del_vrtx) {
 // INIT
 #ifdef DEBUG
         assert(del_vrtx != NULL);
@@ -637,7 +681,7 @@ void Triangulation::delVertex(Vertex* del_vrtx) {
  * @param v_destroyed the Vertex that will be destroyed
  * @note all iterators and pointers on v_destroyed will be destroyed
  */
-void Triangulation::mergeVertex(Vertex* v, Vertex* v_destroyed) {
+void tri_mergeVertex(Vertex* v, Vertex* v_destroyed) {
 #if DEBUG
         assert(v->isNeighbourOf(v_destroyed));
 #endif
@@ -656,7 +700,7 @@ void Triangulation::mergeVertex(Vertex* v, Vertex* v_destroyed) {
  * @param c Coordinates
  * @return Coordinates that are equal to c, or, if c is out of bounds, a projection of c on this.
  */
-Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
+Coordinates tri_coordinateCorrection(Coordinates c) const {
         if(c.x() < this->xmin)  c.setX(this->xmin);
         if(c.x() > this->xmax)  c.setX(this->xmax);
         if(c.y() < this->ymin)  c.setY(this->ymin);
@@ -672,7 +716,7 @@ Coordinates Triangulation::coordinateCorrection(Coordinates c) const {
 /*
  * DEBUG TESTS.
  */
-void Triangulation::unittests() const {
+void tri_unittests() const {
         for(auto edge : this->edges) {
                 assert(edge->originVertex() != NULL);
                 assert(edge->oppositeEdge() != NULL);
@@ -757,7 +801,7 @@ void Triangulation::unittests() const {
 /**
  * Generate dot representation of graph
  */
-void Triangulation::representation() const {
+void tri_representation() const {
         std::ofstream f;
         f.open("DT_representation.dot");
         f << "digraph G {" << std::endl;
@@ -788,7 +832,7 @@ void Triangulation::representation() const {
 /**
  * @return list of adresses of all VirtualVertex contained by all Vertices of this instance
  */
-std::list<VirtualVertex*> Triangulation::getVirtualVertices() const {
+std::list<VirtualVertex*> tri_getVirtualVertices() const {
         std::list<VirtualVertex*> finded_vv;
         for(auto vertex : this->vertices) {
                 for(auto vv : vertex->getObjects()) {
@@ -805,11 +849,11 @@ std::list<VirtualVertex*> Triangulation::getVirtualVertices() const {
 VertexFinderMode getFinderMode() const {
         VertexFinderMode finder_mode = VERTEX_FINDER_MODE_RANDOM;
         // testing pointer with different values it can took is necessary for find the mode
-        if(this->finderInitialEdge == &Triangulation::finderInitial_middle)
+        if(this->finderInitialEdge == &tri_finderInitial_middle)
                 finder_mode = VERTEX_FINDER_MODE_MIDDLE;
-        else if(this->finderInitialEdge == &Triangulation::finderInitial_first)
+        else if(this->finderInitialEdge == &tri_finderInitial_first)
                 finder_mode = VERTEX_FINDER_MODE_FIRST;
-        else if(this->finderInitialEdge == &Triangulation::finderInitial_last)
+        else if(this->finderInitialEdge == &tri_finderInitial_last)
                 finder_mode = VERTEX_FINDER_MODE_LAST;
         return finder_mode;
 }
@@ -817,20 +861,20 @@ VertexFinderMode getFinderMode() const {
 /**
  * @param m VertexFinderMode value, that tell which Edge this instance will used as first Edge for search
  */
-void Triangulation::setFinderMode(VertexFinderMode m) {
+void tri_setFinderMode(VertexFinderMode m) {
         switch(m) {
                 case VERTEX_FINDER_MODE_RANDOM:
-                        this->finderInitialEdge = &Triangulation::finderInitial_random;
+                        this->finderInitialEdge = &tri_finderInitial_random;
                         break;
                 case VERTEX_FINDER_MODE_FIRST:
-                        this->finderInitialEdge = &Triangulation::finderInitial_first;
+                        this->finderInitialEdge = &tri_finderInitial_first;
                         break;
                 case VERTEX_FINDER_MODE_MIDDLE:
-                        this->finderInitialEdge = &Triangulation::finderInitial_middle;
+                        this->finderInitialEdge = &tri_finderInitial_middle;
                         break;
                 case VERTEX_FINDER_MODE_LAST:
                 default:
-                        this->finderInitialEdge = &Triangulation::finderInitial_last;
+                        this->finderInitialEdge = &tri_finderInitial_last;
                         break;
         }
 }
@@ -848,7 +892,7 @@ void Triangulation::setFinderMode(VertexFinderMode m) {
  * @param v tested Vertex
  * @return true iff tested Vertex is referenced by triangulation
  */
-bool Triangulation::have(Vertex* v) const {
+bool tri_have(Vertex* v) const {
         return std::find(this->vertices.begin(), this->vertices.end(), v) != this->vertices.end();
 }
 
@@ -859,7 +903,7 @@ bool Triangulation::have(Vertex* v) const {
  * @return true iff tested Vertex is referenced by triangulation
  * as a Corner Vertex, generally inaccessible from user.
  */
-bool Triangulation::haveCorner(Vertex* vertex) const {
+bool tri_haveCorner(Vertex* vertex) const {
         return vertex == this->vertices.front()
             || vertex == *(std::next(this->vertices.cbegin(), 1))
             || vertex == *(std::next(this->vertices.cbegin(), 2))
@@ -873,31 +917,16 @@ bool Triangulation::haveCorner(Vertex* vertex) const {
  * @param c Coordinates of tested point
  * @return true if point is in-limit of this
  */
-bool Triangulation::collideAt(Coordinates c) const {
+bool tri_collideAt(Coordinates c) const {
         return !(c.x() < this->xmin || this->xmax < c.x() || c.y() < this->ymin || this->ymax < c.y());
 }
 
-
-
-
-
-/***************************************************
- * ITERATORS
- ***************************************************/
-
-
-
-
-
-/***************************************************
- * PRIVATE METHODS
- ***************************************************/
 /**
  * @param target Coordinates that must be valid (no out of bounds).
  * @param edge_cur the first Vertex used for research. if NULL, first will be set accordins to FinderMode.
  * @return address of Face of Triangulation that contains given coordinates, or NULL if error. If out of bounds, return the unvisible face that contain p
  */
-Face* Triangulation::findContainerOf(Coordinates target, Edge* edge_cur) const {
+Face* tri_findContainerOf(Coordinates target, Edge* edge_cur) const {
 // initialization
         Face* container = NULL;
 
@@ -976,7 +1005,7 @@ Face* Triangulation::findContainerOf(Coordinates target, Edge* edge_cur) const {
  * @param f_ref a reference to a Face that can't be NULL and must be integrated in triangulation
  * @return true if modifications operate on tiangulation
  */
-bool Triangulation::applyDelaunayCondition(Face* f_ref, std::unordered_set<Face*>* processed_faces) {
+bool tri_applyDelaunayCondition(Face* f_ref, std::unordered_set<Face*>* processed_faces) {
 // PRECONDITIONS: no processing necessary if this face was already processed
         assert(f_ref != NULL && f_ref->getEdge() != NULL);
         if(processed_faces != NULL && processed_faces->find(f_ref) != processed_faces->end())
@@ -1035,7 +1064,7 @@ bool Triangulation::applyDelaunayCondition(Face* f_ref, std::unordered_set<Face*
  * Operate the flip algorithm, as if the received Edge don't respect the Delaunay condition.
  * @param illegal_edge1 an Edge that is defined illegal
  */
-void Triangulation::operateFlip(Edge* illegal_edge1) {
+void tri_operateFlip(Edge* illegal_edge1) {
 // DEDUCE SOME SHORTCUTS
         Edge *illegal_edge2 = illegal_edge1->oppositeEdge();
         Vertex *illegal_vertex1 = illegal_edge1->nextLeftEdge()->destinVertex();
