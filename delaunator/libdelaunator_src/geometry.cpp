@@ -226,7 +226,7 @@ void geometry::unit_tests() {
  * @return square distance between the two points
  * @warning return value is square of distance, not real distance
  */
-float geometry::squareDistanceBetweenPoints(float x1, float y1, float x2, float y2) {
+int64_t geometry::squareDistanceBetweenPoints(coord_t x1, coord_t y1, coord_t x2, coord_t y2) {
         return (x1-x2) * (x1-x2) + (y1-y2) * (y1-y2);
 }
 /**
@@ -235,7 +235,7 @@ float geometry::squareDistanceBetweenPoints(float x1, float y1, float x2, float 
  * @return square distance between the two points
  * @warning return value is square of distance, not real distance
  */
-float geometry::squareDistanceBetweenPoints(Coordinates A, Coordinates B) {
+int64_t geometry::squareDistanceBetweenPoints(Coordinates A, Coordinates B) {
         return squareDistanceBetweenPoints(A.x(), A.y(), B.x(), B.y());
 }
 
@@ -287,8 +287,7 @@ bool geometry::pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates
         }
 
         // according to algorithm definition, determinant sign must be changed if points not in clockwise order
-        float d = (geometry::pointInClockwiseOrder(3, p1, p2, p3) ? 1. : -1.)*(
-        //float d = (
+        __int128 d = (geometry::pointInClockwiseOrder(3, p1, p2, p3) ? 1 : -1)*(
         // AEI
           (p1.x()-p0.x()) * (p2.y()-p0.y()) * ((p3.x()*p3.x()-p0.x()*p0.x()) + (p3.y()*p3.y()-p0.y()*p0.y()))
         // BFG
@@ -331,10 +330,10 @@ bool geometry::pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates
  */
 Coordinates geometry::circumcenterOf(Coordinates A, Coordinates B, Coordinates C) {
         // Source: wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates
-        float D = 2*(A.x()*(B.y() - C.y()) + B.x()*(C.y() - A.y()) + C.x()*(A.y() - B.y()));
-        float factA = A.x()*A.x() + A.y()*A.y();
-        float factB = B.x()*B.x() + B.y()*B.y();
-        float factC = C.x()*C.x() + C.y()*C.y();
+        uint64_t D = 2*(A.x()*(B.y() - C.y()) + B.x()*(C.y() - A.y()) + C.x()*(A.y() - B.y()));
+        uint64_t factA = A.x()*A.x() + A.y()*A.y();
+        uint64_t factB = B.x()*B.x() + B.y()*B.y();
+        uint64_t factC = C.x()*C.x() + C.y()*C.y();
         Coordinates center;
         center.setX(  (factA*(B.y()- C.y()) + factB*(C.y() - A.y()) + factC*(A.y() - B.y()))  / D);
         center.setY(  (factA*(C.x()- B.x()) + factB*(A.x() - C.x()) + factC*(B.x() - A.x()))  / D);
@@ -365,7 +364,7 @@ Coordinates geometry::circumcenterOf(Coordinates A, Coordinates B, Coordinates C
  * @return result of dot product for given points
  * @see pointInTriangle function that does an important use of this function
  */
-inline float collideAt_side(float x1, float y1, float x2, float y2, float x, float y) {
+inline uint64_t collideAt_side(coord_t x1, coord_t y1, coord_t x2, coord_t y2, coord_t x, coord_t y) {
          return (y2 - y1)*(x - x1) + (-x2 + x1)*(y - y1);
 }
 
@@ -379,8 +378,8 @@ inline float collideAt_side(float x1, float y1, float x2, float y2, float x, flo
  * @return square distance between point (x,y) and segment [(x1,y1)(x2,y2)]
  * @see pointInTriangle function that does an important use of this function
  */
-inline float collideAt_squareDistancePointToSegment(float x1, float y1, float x2, float y2, float x, float y) {
-        float p1_p2_square_dist = (x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1);
+inline uint64_t collideAt_squareDistancePointToSegment(coord_t x1, coord_t y1, coord_t x2, coord_t y2, coord_t x, coord_t y) {
+        uint64_t p1_p2_square_dist = (x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1);
         float dotProduct = ((x - x1)*(x2 - x1) + (y - y1)*(y2 - y1)) / p1_p2_square_dist;
         if(dotProduct < 0)
                 return (x - x1)*(x - x1) + (y - y1)*(y - y1);
@@ -406,14 +405,14 @@ bool geometry::pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, C
         assert(geometry::pointInCounterClockwiseOrder(assert_data));
 #endif
         bool collide = false;
-        float x1 = p1.x(), y1 = p1.y();
-        float x2 = p2.x(), y2 = p2.y();
-        float x3 = p3.x(), y3 = p3.y();
-        float x  = p0.x(), y  = p0.y();
-        float xmin = min(x1, min(x2, x3)) - EPSILON;
-        float xmax = max(x1, max(x2, x3)) + EPSILON;
-        float ymin = min(y1, min(y2, y3)) - EPSILON;
-        float ymax = max(y1, max(y2, y3)) + EPSILON;
+        coord_t x1 = p1.x(), y1 = p1.y();
+        coord_t x2 = p2.x(), y2 = p2.y();
+        coord_t x3 = p3.x(), y3 = p3.y();
+        coord_t x  = p0.x(), y  = p0.y();
+        coord_t xmin = min(x1, min(x2, x3));
+        coord_t xmax = max(x1, max(x2, x3));
+        coord_t ymin = min(y1, min(y2, y3));
+        coord_t ymax = max(y1, max(y2, y3));
 
         if(xmin <= x && x <= xmax && ymin <= y && y <= ymax) {
                 bool checkside1 = collideAt_side(x1, y1, x2, y2, x, y) >= 0;

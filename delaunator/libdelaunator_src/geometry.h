@@ -29,15 +29,15 @@ namespace geometry {
         void unit_tests(); // call that once for verify integrity of geometry fonctions
 
 
-        float squareDistanceBetweenPoints(Coordinates A, Coordinates B);
-        float squareDistanceBetweenPoints(float x1, float y1, float x2, float y2);
+        int64_t squareDistanceBetweenPoints(Coordinates A, Coordinates B);
+        int64_t squareDistanceBetweenPoints(coord_t x1, coord_t y1, coord_t x2, coord_t y2);
 
         bool pointInCircumcircleOf(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0);
         Coordinates circumcenterOf(Coordinates A, Coordinates B, Coordinates C);
 
         bool pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, Coordinates p0);
 
-        float squareDistanceBetweenSegmentAndPoint(float x1, float x2, float y1, float y2, float px, float py);
+        int64_t squareDistanceBetweenSegmentAndPoint(coord_t x1, coord_t x2, coord_t y1, coord_t y2, coord_t px, coord_t py);
 
         bool parallelLines(Coordinates A, Coordinates B, Coordinates C, Coordinates D);
         bool alignedPoints(Coordinates A, Coordinates B, Coordinates C);

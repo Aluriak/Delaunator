@@ -14,7 +14,7 @@ unsigned int Vertex::last_id = 1;
  * @param edge reference to an Edge that have this new Vertex for origin
  * @return a new and well initialized Vertex
  */
-Vertex::Vertex(const float x, const float y, Edge* edge) : Coordinates(x,y), edge(edge) {
+Vertex::Vertex(const coord_t x, const coord_t y, Edge* edge) : Coordinates(x,y), edge(edge) {
 #ifdef DEBUG
         assert(this->getObjectCount() == 0);
 #endif

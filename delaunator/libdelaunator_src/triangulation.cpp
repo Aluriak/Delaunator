@@ -14,8 +14,8 @@
  * @param finder_mode for choose which mode of finder will be used for search Coordinates, LAST by default
  * @see VertexFinderMode
  */
-Triangulation::Triangulation(const float xmin, const float xmax,
-                             const float ymin, const float ymax,
+Triangulation::Triangulation(const coord_t xmin, const coord_t xmax,
+                             const coord_t ymin, const coord_t ymax,
                              const VertexFinderMode finder_mode) :
                                    xmin(xmin), xmax(xmax),
                                    ymin(ymin), ymax(ymax) {
@@ -289,7 +289,7 @@ Vertex* Triangulation::addVertexAt(Coordinates p, Edge* first) {
  * @return address of the Vertex, or of a new Vertex if given was freed
  * @note given Vertex can be deleted, but data is keeped in returned Vertex.
  */
-Vertex* Triangulation::moveVertex(Vertex* mv_vrtx, float x, float y) {
+Vertex* Triangulation::moveVertex(Vertex* mv_vrtx, coord_t x, coord_t y) {
         return this->moveVertexTo(mv_vrtx, Coordinates(mv_vrtx->x()+x, mv_vrtx->y()+y));
 }
 
@@ -399,7 +399,7 @@ Vertex* Triangulation::moveVertexTo(Vertex* mv_vrtx, Coordinates new_position) {
  * @return vertex found at given coords, around precision. or NULL iff no vertex found.
  * @note never return the corners Vertex
  */
-Vertex* Triangulation::vertexAt(float x, float y, float precision) const {
+Vertex* Triangulation::vertexAt(coord_t x, coord_t y, float precision) const {
         Vertex *target = NULL;
         // pass the fourth first vertices, that defines the mesh
         auto it = this->vertices.cbegin();

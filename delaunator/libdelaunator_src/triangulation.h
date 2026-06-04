@@ -20,6 +20,7 @@
  * DEFINES
  */
 
+typedef int32_t coord_t;
 
 
 /*
@@ -65,18 +66,18 @@ class Triangulation {
                 typedef Edge* (Triangulation::*finderInitialEdge_mode)() const;
 
         // CONSTRUCTOR
-                Triangulation(const float, const float,
-                           const float, const float, const VertexFinderMode = VERTEX_FINDER_MODE_LAST);
+                Triangulation(const coord_t, const coord_t,
+                           const coord_t, const coord_t, const VertexFinderMode = VERTEX_FINDER_MODE_LAST);
                 ~Triangulation();
         // PUBLIC METHODS
                 // vertex managing
                 Vertex* addVertexAt(Coordinates, Edge* = NULL);
-                Vertex* addVertexAt(float x, float y, Edge* e = NULL)
+                Vertex* addVertexAt(coord_t x, coord_t y, Edge* e = NULL)
                         { return this->addVertexAt(Coordinates(x, y), e); }
-                Vertex* vertexAt(float, float, float=EPSILON) const;
-                Vertex* vertexAt(Coordinates c, float p=EPSILON) const { return this->vertexAt(c.x(), c.y(), p); }
+                Vertex* vertexAt(coord_t, coord_t, float=EPSILON) const;
+                Vertex* vertexAt(Coordinates c, coord_t p=EPSILON) const { return this->vertexAt(c.x(), c.y(), p); }
                 Vertex* moveVertex(Vertex* v, Coordinates c) { return this->moveVertex(v, c.x(), c.y()); }
-                Vertex* moveVertex(Vertex* v, float x, float y);
+                Vertex* moveVertex(Vertex* v, coord_t x, coord_t y);
                 Vertex* moveVertexTo(Vertex* v, Coordinates c);
                 void delVertex(Vertex* v);
                 void mergeVertex(Vertex* v, Vertex* v_destroyed);
@@ -89,10 +90,10 @@ class Triangulation {
                 std::list<Vertex*> getVertices()  const { return this->vertices; }
                 std::list<VirtualVertex*> getVirtualVertices() const;
                 unsigned int getVerticeCount() const { return this->vertices.size(); }
-                float getXmin() const { return this->xmin; }
-                float getXmax() const { return this->xmax; }
-                float getYmin() const { return this->ymin; }
-                float getYmax() const { return this->ymax; }
+                coord_t getXmin() const { return this->xmin; }
+                coord_t getXmax() const { return this->xmax; }
+                coord_t getYmin() const { return this->ymin; }
+                coord_t getYmax() const { return this->ymax; }
                 float epsilon() const { return EPSILON; }
                 VertexFinderMode getFinderMode() const;
                 void setFinderMode(VertexFinderMode); 
@@ -119,7 +120,7 @@ class Triangulation {
 // PRIVATE
         private:
         // ATTRIBUTES
-                float xmin, xmax, ymin, ymax;
+                coord_t xmin, xmax, ymin, ymax;
                 std::list<Vertex*> vertices;
                 std::list<Edge*> edges;
                 std::list<Face*> faces;
