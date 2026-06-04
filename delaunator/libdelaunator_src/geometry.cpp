@@ -450,7 +450,7 @@ bool geometry::pointInTriangle(Coordinates p1, Coordinates p2, Coordinates p3, C
  * @return shorter square distance between segment and point
  * @warning return value is square of distance, not real distance
  */
-float geometry::squareDistanceBetweenSegmentAndPoint(float x1, float y1, float x2, float y2, float px, float py) {
+float geometry::squareDistanceBetweenSegmentAndPoint(float x1, float x2, float y1, float y2, float px, float py) {
         float distance = -1.;
         // Algorithm found on
         //   http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
